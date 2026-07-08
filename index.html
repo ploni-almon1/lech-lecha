@@ -54,7 +54,7 @@
     /* ŽEBŘÍČKY A SEZNAMY */
     .leaderboard-title { font-size: 1.1em; font-weight: 700; margin-bottom: 15px; color: var(--text-dark); display: flex; justify-content: space-between; align-items: center;}
     .leaderboard-list { display: flex; flex-direction: column; }
-    .leaderboard-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-light); }
+    .leaderboard-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-light); position: relative; }
     .leaderboard-item:last-child { border-bottom: none; padding-bottom: 0; }
     .lb-rank { width: 30px; font-weight: 600; color: var(--gray-text); font-size: 1.1em; }
     .lb-avatar { width: 35px; height: 35px; background-color: var(--primary-purple); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 15px; font-size: 1em; overflow: hidden; }
@@ -80,8 +80,15 @@
     .profile-actions { padding: 0 20px 20px 20px; display: flex; justify-content: flex-end; gap: 10px; }
     .btn-outline { border: 1px solid var(--text-dark); background: transparent; padding: 8px 15px; border-radius: 20px; font-size: 0.85em; font-weight: 600; cursor: pointer; color: var(--text-dark); display: flex; align-items: center; gap: 5px;}
     .btn-outline svg { width: 14px; height: 14px; fill: var(--text-dark); }
+    .btn-outline.active-edit { background-color: var(--primary-orange); color: var(--white); border-color: var(--primary-orange); }
+    .btn-outline.active-edit svg { fill: var(--white); }
 
     .activity-list-icon { width: 24px; height: 24px; fill: var(--text-dark); margin-right: 15px; }
+    
+    /* Tlačítko tužky pro editaci konkrétní aktivity */
+    .btn-inline-edit { display: none; background: var(--gray-light); border: none; padding: 5px; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; align-items: center; justify-content: center; margin-left: 10px; }
+    .btn-inline-edit svg { width: 14px; height: 14px; fill: var(--primary-purple); }
+    .edit-mode-active .btn-inline-edit { display: flex; } /* Ukáže se jen při aktivním režimu úprav */
 
     /* SPODNÍ NAVIGAČNÍ LIŠTA */
     .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--white); display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 100; }
@@ -90,7 +97,7 @@
     .nav-item.active { color: var(--primary-purple); }
     .nav-item.active svg { fill: var(--primary-purple); }
 
-    /* VYSKAKOVACÍ OKNO */
+    /* VYSKAKOVACÍ OKNA (Modaly) */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
     .modal-overlay.active { opacity: 1; pointer-events: all; }
     .modal-content { background-color: var(--white); padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; }
@@ -100,16 +107,23 @@
     .chip.active { background-color: #e8e6f1; color: var(--primary-purple); border-color: var(--primary-purple); }
     .km-input-wrapper { margin-bottom: 20px; }
     .km-input { width: 100px; font-size: 2em; font-weight: 700; text-align: center; border: none; border-bottom: 2px solid var(--primary-purple); outline: none; color: var(--text-dark); padding: 5px; }
-    .modal-buttons { display: flex; gap: 10px; }
+    
+    .date-input-wrapper { margin-bottom: 20px; text-align: left; }
+    .date-input-wrapper label { font-size: 0.85em; color: var(--gray-text); font-weight: 600; display: block; margin-bottom: 5px; }
+    .date-input { width: 100%; padding: 12px; border: 1px solid var(--gray-light); border-radius: 10px; font-family: inherit; font-size: 1em; outline: none; }
+
+    .modal-buttons { display: flex; gap: 10px; flex-direction: column; }
+    .modal-buttons-row { display: flex; gap: 10px; width: 100%; }
     .btn-save { flex: 1; background-color: var(--primary-orange); color: var(--white); border: none; padding: 15px; border-radius: 10px; font-weight: 600; cursor: pointer; }
     .btn-cancel { flex: 1; background-color: var(--gray-light); color: var(--text-dark); border: none; padding: 15px; border-radius: 10px; font-weight: 600; cursor: pointer; }
+    .btn-delete { background-color: #d63031; color: var(--white); border: none; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; margin-top: 5px; font-size: 0.9em; }
   </style>
 </head>
 <body>
 
   <div id="public-view">
     <h1 class="hero-title">Z Olomouce do Jeruzaléma</h1>
-    <p>Přidej se k naší společné výzvě a pojďme překonat přes 3000 kilometrů!</p>
+    <p>Přidej se k naší společné výzvě and pojďme překonać přes 3000 kilometrů!</p>
     <div id="map-placeholder">Zde bude mapa</div>
     <p>Už jsme ušli celkem: <strong id="public-total-km">0 km</strong></p>
 
@@ -130,18 +144,14 @@
   <div id="private-view" class="hidden">
     
     <div id="tab-dashboard">
-      <div class="top-bar">
-        <span>Lech lecha!</span>
-      </div>
+      <div class="top-bar"><span>Lech lecha!</span></div>
       
       <div class="dashboard-header">
         <div class="card distance-card">
           <h2 id="my-km-text">0</h2>
           <p>moje vzdálenost v km</p>
         </div>
-        <div class="card logo-card">
-          <h1 style="color: white; font-size: 4em;">^</h1>
-        </div>
+        <div class="card logo-card"><h1 style="color: white; font-size: 4em;">^</h1></div>
       </div>
 
       <div class="progress-section">
@@ -172,9 +182,7 @@
     </div> 
 
     <div id="tab-statistics" class="hidden">
-      <div class="top-bar">
-        <span>Statistika</span>
-      </div>
+      <div class="top-bar"><span>Statistika</span></div>
 
       <div class="leaderboard-section" style="padding-top: 15px;">
         <div class="card">
@@ -196,9 +204,7 @@
     </div> 
 
     <div id="tab-profile" class="hidden">
-      <div class="top-bar">
-        <span>Lech lecha!</span>
-      </div>
+      <div class="top-bar"><span>Lech lecha!</span></div>
 
       <div class="profile-header">
         <div class="profile-avatar-large" id="profile-avatar">J</div>
@@ -212,8 +218,8 @@
       </div>
 
       <div class="profile-actions">
-        <button class="btn-outline" onclick="alert('Zatím nepřipojeno k úpravám')">
-          <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> Upravit
+        <button class="btn-outline" onclick="alert('Zatím nepřipojeno k úpravám jména')">
+          <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> Upravit profil
         </button>
         <button class="btn-outline" onclick="logoutUser()">Odhlásit</button>
       </div>
@@ -222,7 +228,7 @@
         <div class="card">
           <div class="leaderboard-title">
             Přehled aktivit
-            <button class="btn-outline" style="border: none; padding: 0;" onclick="alert('Zapne režim úprav (připravujeme)')">
+            <button class="btn-outline" id="btn-toggle-edit-mode" onclick="toggleEditMode()">
               <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> Upravit
             </button>
           </div>
@@ -233,7 +239,6 @@
         </div>
       </div>
     </div> 
-
 
     <div class="bottom-nav">
       <div class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
@@ -263,9 +268,35 @@
         <input type="number" id="km-input" class="km-input" placeholder="0.0" step="0.1" min="0">
         <span style="font-size: 1.2em; font-weight: 600;"> km</span>
       </div>
-      <div class="modal-buttons">
+      <div class="modal-buttons-row">
         <button class="btn-cancel" onclick="closeModal()">Zrušit</button>
         <button class="btn-save" onclick="saveActivity()">Uložit</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="edit-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>Upravit aktivitu</h3>
+      <div class="activity-chips">
+        <div class="chip" id="edit-chip-Chůze" data-type="Chůze" onclick="selectEditChip(this)">Chůze</div>
+        <div class="chip" id="edit-chip-Běh" data-type="Běh" onclick="selectEditChip(this)">Běh</div>
+        <div class="chip" id="edit-chip-Kolo" data-type="Kolo" onclick="selectEditChip(this)">Kolo</div>
+      </div>
+      <div class="km-input-wrapper">
+        <input type="number" id="edit-km-input" class="km-input" step="0.1" min="0">
+        <span style="font-size: 1.2em; font-weight: 600;"> km</span>
+      </div>
+      <div class="date-input-wrapper">
+        <label for="edit-date-input">Datum aktivity:</label>
+        <input type="date" id="edit-date-input" class="date-input">
+      </div>
+      <div class="modal-buttons">
+        <div class="modal-buttons-row">
+          <button class="btn-cancel" onclick="closeEditModal()">Zrušit</button>
+          <button class="btn-save" onclick="saveEditActivity()">Uložit změny</button>
+        </div>
+        <button class="btn-delete" onclick="deleteActivity()">❌ Smazat aktivitu</button>
       </div>
     </div>
   </div>
@@ -273,8 +304,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    // Přidány importy pro práci s kolekcemi (addDoc, where, getDocs)
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, increment, onSnapshot, collection, query, orderBy, addDoc, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    // Přidán import deleteDoc pro mazání záznamů
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, increment, onSnapshot, collection, query, orderBy, addDoc, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDI_7D0jyBM2LbU4hpoumGp3VPdcBn2jEY",
@@ -300,40 +331,35 @@
     let unsubscribeLeaderboard = null;
     let unsubscribeActivities = null;
     
-    // Uložení aktuálně vybrané aktivity z modalu
     let currentActivityType = "Chůze";
+    let editActivityType = "";
+    let selectedActivityId = null; // Drží ID upravované aktivity
+    let selectedActivityOldKm = 0; // Drží původní km pro výpočet rozdílu
 
-    // POMOCNÁ FUNKCE: Získá číslo aktuálního týdne (Neděle - Sobota)
     function getWeekNumber(d) {
         d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
         d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
         var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
         var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
-        // Upravíme posun pro neděli
         let isSunday = new Date().getDay() === 0;
         if(isSunday) weekNo += 1;
         return d.getUTCFullYear() + "-" + weekNo;
     }
 
-    // POMOCNÁ FUNKCE: Výpočet zbývajících dní
     function calculateDaysLeft() {
         const endDate = new Date("2026-09-15T23:59:59");
         const today = new Date();
         const diffTime = endDate - today;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-        if (diffDays > 0) {
-            document.getElementById("countdown-text").innerText = `zbývá ${diffDays} dní`;
-        } else {
-            document.getElementById("countdown-text").innerText = "Výzva skončila";
-        }
+        if (diffDays > 0) { document.getElementById("countdown-text").innerText = `zbývá ${diffDays} dní`; } 
+        else { document.getElementById("countdown-text").innerText = "Výzva skončila"; }
     }
-    calculateDaysLeft(); // Spustí se hned při načtení
+    calculateDaysLeft();
 
-    // Ikonky pro seznam aktivit
     const icons = {
       "Běh": `<svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>`,
       "Kolo": `<svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm5.8-10l2.4-2.4.8.8c1.3 1.3 3 2.1 5.1 2.1V9c-1.5 0-2.7-.6-3.6-1.5l-1.9-1.9c-.5-.4-1-.7-1.6-.7s-1.1.2-1.4.6L8.5 8.4c-.3.4-.5.8-.5 1.4v5h2v-4.1l1.8-1.8zM19 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z"/></svg>`,
-      "Chůze": `<svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>` // Pro chůzi použijeme stejnou ikonu jako pro běh
+      "Chůze": `<svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>`
     };
 
     onAuthStateChanged(auth, async (user) => {
@@ -352,43 +378,38 @@
         }
 
         const globalSnap = await getDoc(globalRef);
-        if (!globalSnap.exists()) {
-          await setDoc(globalRef, { totalKm: 0 });
-        }
+        if (!globalSnap.exists()) { await setDoc(globalRef, { totalKm: 0 }); }
 
-        // NASLOUCHÁNÍ DATŮM UŽIVATELE
         unsubscribeUser = onSnapshot(userRef, (docSnap) => {
+          if (!docSnap.exists()) return;
           const data = docSnap.data();
           const myKm = data.personalKm || 0;
           const myName = data.name || 'Neznámý';
-          
           document.getElementById('my-km-text').innerHTML = myKm.toLocaleString('cs-CZ');
           document.getElementById('profile-name').innerText = myName;
           document.getElementById('profile-total-km').innerText = myKm.toLocaleString('cs-CZ') + ' km';
           document.getElementById('profile-avatar').innerText = myName.charAt(0).toUpperCase();
         });
 
-        // NASLOUCHÁNÍ GLOBÁLNÍM DATŮM
         unsubscribeGlobal = onSnapshot(globalRef, (docSnap) => {
+          if (!docSnap.exists()) return;
           const data = docSnap.data();
           const totalKm = data.totalKm || 0;
           const targetKm = 3240;
           document.getElementById('global-km-text').innerHTML = `📏 ${totalKm.toLocaleString('cs-CZ')} <span style="color: var(--gray-text);">/ 3 240 km</span>`;
           document.getElementById('public-total-km').innerText = `${totalKm.toLocaleString('cs-CZ')} km`;
-
           let percent = (totalKm / targetKm) * 100;
           if(percent > 100) percent = 100;
           document.getElementById('progress-bar-fill').style.width = `${percent}%`;
         });
 
-        // NAČTENÍ AKTIVIT DO PROFILU (Deníček)
+        // NAČTENÍ AKTIVIT + VYTVOŘENÍ MAZACÍHO TLAČÍTKA TUŽKY
         const activitiesCol = collection(db, "activities");
         const myActivitiesQuery = query(activitiesCol, where("uid", "==", user.uid), orderBy("timestamp", "desc"));
         
         unsubscribeActivities = onSnapshot(myActivitiesQuery, (snapshot) => {
            const listContainer = document.getElementById('profile-activity-list');
            listContainer.innerHTML = '';
-           
            document.getElementById('profile-total-activities').innerText = snapshot.size;
 
            if(snapshot.empty) {
@@ -396,30 +417,36 @@
                return;
            }
 
-           snapshot.forEach(doc => {
-               const data = doc.data();
+           snapshot.forEach(docSnap => {
+               const data = docSnap.data();
                const dateObj = data.timestamp ? data.timestamp.toDate() : new Date();
                const dateStr = dateObj.toLocaleDateString('cs-CZ');
+               const isoDate = dateObj.toISOString().split('T')[0]; // Pro předání do inputu
                const icon = icons[data.type] || icons["Chůze"];
+               const actId = docSnap.id;
                
-               listContainer.innerHTML += `
-                <div class="leaderboard-item">
+               // Každému řádku vložíme skryté tlačítko pro editaci
+               const item = document.createElement('div');
+               item.className = 'leaderboard-item';
+               item.innerHTML = `
                   ${icon}
                   <div class="lb-name" style="font-weight: 400;">${dateStr} <span style="font-size: 0.8em; color: var(--gray-text); margin-left: 5px;">(${data.type})</span></div>
                   <div class="lb-score">${data.km.toLocaleString('cs-CZ')} km</div>
-                </div>
+                  <button class="btn-inline-edit" onclick="openEditModal('${actId}', ${data.km}, '${data.type}', '${isoDate}')">
+                    <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                  </button>
                `;
+               listContainer.appendChild(item);
            });
         });
 
-        // Dočasný kód pro žebříček (beze změny, upravíme v dalším kroku)
+        // ŽEBŘÍČEK
         const usersCol = collection(db, "users");
         const q = query(usersCol, orderBy("personalKm", "desc"));
         unsubscribeLeaderboard = onSnapshot(q, (querySnapshot) => {
           const dashList = document.getElementById('dashboard-leaderboard-list');
           const statsWeeklyList = document.getElementById('stats-weekly-list');
           const statsOverallList = document.getElementById('stats-overall-list');
-          
           dashList.innerHTML = ''; statsWeeklyList.innerHTML = ''; statsOverallList.innerHTML = '';
           
           let rank = 1;
@@ -448,7 +475,6 @@
         currentUser = null;
         publicView.classList.remove('hidden');
         privateView.classList.add('hidden');
-        
         if(unsubscribeUser) unsubscribeUser();
         if(unsubscribeGlobal) unsubscribeGlobal();
         if(unsubscribeLeaderboard) unsubscribeLeaderboard();
@@ -456,7 +482,7 @@
       }
     });
 
-    // ULOŽENÍ NOVÉ AKTIVITY
+    // ZÁPIS NOVÉ AKTIVITY
     window.saveActivity = async () => {
       let rawInput = document.getElementById('km-input').value.replace(',', '.');
       const km = parseFloat(rawInput);
@@ -465,42 +491,122 @@
         const userRef = doc(db, "users", currentUser.uid);
         const globalRef = doc(db, "global", "stats");
         const activitiesCol = collection(db, "activities");
-        
         try {
-            // 1. Vytvoření samostatného záznamu do deníčku
             await addDoc(activitiesCol, {
                 uid: currentUser.uid,
                 km: km,
                 type: currentActivityType,
                 timestamp: new Date(),
-                weekStr: getWeekNumber(new Date()) // Uloží např. "2026-27"
+                weekStr: getWeekNumber(new Date())
             });
-
-            // 2. Přičtení do agregovaných součtů
             await updateDoc(userRef, { personalKm: increment(km) });
             await updateDoc(globalRef, { totalKm: increment(km) });
-            
             window.closeModal();
-        } catch (error) {
-            console.error("Chyba při ukládání:", error);
-            alert("Něco se pokazilo při komunikaci s databází.");
-        }
-      } else {
-        alert("Zadej platný počet kilometrů.");
-      }
+        } catch (error) { console.error(error); alert("Chyba při ukládání."); }
+      } else { alert("Zadej platný počet kilometrů."); }
     };
 
+    // ZAPNUTÍ / VYPNUTÍ REŽIMU ÚPRAW (ZOBRAZENÍ TUŽTIČEK)
+    window.toggleEditMode = () => {
+        const listContainer = document.getElementById('profile-activity-list');
+        const editBtn = document.getElementById('btn-toggle-edit-mode');
+        
+        listContainer.classList.toggle('edit-mode-active');
+        editBtn.classList.toggle('active-edit');
+    };
+
+    // OTEVŘENÍ OKNA PRO ÚPRAVU
+    window.openEditModal = (id, km, type, isoDate) => {
+        selectedActivityId = id;
+        selectedActivityOldKm = km;
+        editActivityType = type;
+        
+        document.getElementById('edit-km-input').value = km;
+        document.getElementById('edit-date-input').value = isoDate;
+        
+        // Aktivuje správnou bublinu typu aktivity
+        const chips = document.querySelectorAll('#edit-modal .chip');
+        chips.forEach(c => c.classList.remove('active'));
+        document.getElementById('edit-chip-' + type).classList.add('active');
+        
+        document.getElementById('edit-modal').classList.add('active');
+    };
+
+    window.closeEditModal = () => { document.getElementById('edit-modal').classList.remove('active'); selectedActivityId = null; };
+
+    window.selectEditChip = (element) => {
+        const chips = document.querySelectorAll('#edit-modal .chip');
+        chips.forEach(c => c.classList.remove('active'));
+        element.classList.add('active');
+        editActivityType = element.getAttribute('data-type');
+    };
+
+    // FUNKCE: ULOŽIT ZMĚNY AKTIVITY (EDITACE)
+    window.saveEditActivity = async () => {
+        let rawInput = document.getElementById('edit-km-input').value.replace(',', '.');
+        const newKm = parseFloat(rawInput);
+        const newDateVal = document.getElementById('edit-date-input').value;
+
+        if(newKm > 0 && selectedActivityId && currentUser) {
+            const diffKm = newKm - selectedActivityOldKm; // Spořítá rozdíl (může být i záporný)
+            const actRef = doc(db, "activities", selectedActivityId);
+            const userRef = doc(db, "users", currentUser.uid);
+            const globalRef = doc(db, "global", "stats");
+            
+            const newDate = newDateVal ? new Date(newDateVal) : new Date();
+
+            try {
+                // 1. Aktualizace samotné aktivity
+                await updateDoc(actRef, {
+                    km: newKm,
+                    type: editActivityType,
+                    timestamp: newDate,
+                    weekStr: getWeekNumber(newDate)
+                });
+
+                // 2. Připočtení/odečtení rozdílu do celkových statistik
+                await updateDoc(userRef, { personalKm: increment(diffKm) });
+                await updateDoc(globalRef, { totalKm: increment(diffKm) });
+
+                window.closeEditModal();
+            } catch (error) { console.error(error); alert("Chyba při úpravě dat."); }
+        } else { alert("Zadej platné hodnoty."); }
+    };
+
+    // FUNKCE: SMAZAT AKTIVITU
+    window.deleteActivity = async () => {
+        if(selectedActivityId && currentUser && confirm("Opravdu chceš tuto aktivitu smazat?")) {
+            const actRef = doc(db, "activities", selectedActivityId);
+            const userRef = doc(db, "users", currentUser.uid);
+            const globalRef = doc(db, "global", "stats");
+            
+            // Odečteme celou hodnotu smazané aktivity
+            const minusKm = -selectedActivityOldKm;
+
+            try {
+                // 1. Smazání z deníčku
+                await deleteDoc(actRef);
+
+                // 2. Odečtení kilometrů z počítadel
+                await updateDoc(userRef, { personalKm: increment(minusKm) });
+                await updateDoc(globalRef, { totalKm: increment(minusKm) });
+
+                window.closeEditModal();
+            } catch (error) { console.error(error); alert("Chyba při mazání aktivity."); }
+        }
+    };
+
+    // OSTATNÍ STRUKTURÁLNÍ FUNKCE
     window.switchTab = (tabId) => {
-      document.getElementById('tab-dashboard').classList.add('hidden');
-      document.getElementById('tab-statistics').classList.add('hidden');
-      document.getElementById('tab-profile').classList.add('hidden');
+      document.getElementById('tab-dashboard').classList.add('hidden'); document.getElementById('tab-statistics').classList.add('hidden'); document.getElementById('tab-profile').classList.add('hidden');
+      document.getElementById('nav-dashboard').classList.remove('active'); document.getElementById('nav-statistics').classList.remove('active'); document.getElementById('nav-profile').classList.remove('active');
+      document.getElementById('tab-' + tabId).classList.remove('hidden'); document.getElementById('nav-' + tabId).classList.add('active');
       
-      document.getElementById('nav-dashboard').classList.remove('active');
-      document.getElementById('nav-statistics').classList.remove('active');
-      document.getElementById('nav-profile').classList.remove('active');
-      
-      document.getElementById('tab-' + tabId).classList.remove('hidden');
-      document.getElementById('nav-' + tabId).classList.add('active');
+      // Při přepnutí záložky raději vypneme režim úprav
+      const listContainer = document.getElementById('profile-activity-list');
+      if (listContainer) listContainer.classList.remove('edit-mode-active');
+      const editBtn = document.getElementById('btn-toggle-edit-mode');
+      if (editBtn) editBtn.classList.remove('active-edit');
     };
 
     window.registerUser = () => { const email = document.getElementById('email-input').value; const password = document.getElementById('password-input').value; errorMsg.style.display = 'none'; createUserWithEmailAndPassword(auth, email, password).catch((e) => { errorMsg.textContent = "Chyba: " + e.message; errorMsg.style.display = 'block'; }); };
@@ -511,14 +617,7 @@
     const modal = document.getElementById('activity-modal');
     window.openModal = () => { modal.classList.add('active'); document.getElementById('km-input').value = ''; currentActivityType = "Chůze"; selectChip(document.querySelector('.chip[data-type="Chůze"]')); };
     window.closeModal = () => { modal.classList.remove('active'); };
-    
-    // Úprava funkce pro bubliny, aby ukládala vybraný typ aktivity
-    window.selectChip = (element) => { 
-        const chips = document.querySelectorAll('.chip'); 
-        chips.forEach(c => c.classList.remove('active')); 
-        element.classList.add('active'); 
-        currentActivityType = element.getAttribute('data-type');
-    };
+    window.selectChip = (element) => { const chips = document.querySelectorAll('#activity-modal .chip'); chips.forEach(c => c.classList.remove('active')); element.classList.add('active'); currentActivityType = element.getAttribute('data-type'); };
   </script>
 </body>
 </html>
