@@ -39,7 +39,6 @@
 
     /* SOUKROMÁ ČÁST */
     #private-view { max-width: 600px; margin: 0 auto; padding-bottom: 90px; }
-    /* TOP BAR - upravený, aby už neměl tlačítko odhlásit */
     .top-bar { background-color: var(--primary-purple); color: var(--white); padding: 20px; font-size: 1.3em; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
     
     .dashboard-header { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
@@ -133,7 +132,7 @@
     <div id="tab-dashboard">
       <div class="top-bar">
         <span>Lech lecha!</span>
-        </div>
+      </div>
       
       <div class="dashboard-header">
         <div class="card distance-card">
@@ -150,7 +149,7 @@
           <h3 style="margin-bottom: 10px;">Lech lecha!</h3>
           <p style="display: flex; justify-content: space-between; font-size: 0.9em;">
             <span id="global-km-text" style="color: #27ae60; font-weight: 600;">📏 0 <span style="color: var(--gray-text);">/ 3 240 km</span></span>
-            <span style="color: var(--gray-text);">Cíl: Jeruzalém</span>
+            <span style="color: var(--gray-text);" id="countdown-text">Cíl: Jeruzalém</span>
           </p>
           <div style="background-color: var(--gray-light); border-radius: 10px; height: 10px; margin-top: 10px; overflow: hidden;">
             <div id="progress-bar-fill" style="background-color: #27ae60; width: 0%; height: 100%; transition: width 0.5s ease;"></div>
@@ -170,7 +169,9 @@
           </div>
         </div>
       </div>
-    </div> <div id="tab-statistics" class="hidden">
+    </div> 
+
+    <div id="tab-statistics" class="hidden">
       <div class="top-bar">
         <span>Statistika</span>
       </div>
@@ -192,7 +193,9 @@
           </div>
         </div>
       </div>
-    </div> <div id="tab-profile" class="hidden">
+    </div> 
+
+    <div id="tab-profile" class="hidden">
       <div class="top-bar">
         <span>Lech lecha!</span>
       </div>
@@ -224,26 +227,15 @@
             </button>
           </div>
           
-          <div class="leaderboard-list">
-            <div class="leaderboard-item">
-              <svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>
-              <div class="lb-name" style="font-weight: 400;">30. 6. 2026</div>
-              <div class="lb-score">20,5 km</div>
-            </div>
-            <div class="leaderboard-item">
-              <svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>
-              <div class="lb-name" style="font-weight: 400;">28. 6. 2026</div>
-              <div class="lb-score">10,0 km</div>
-            </div>
-            <div class="leaderboard-item">
-              <svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>
-              <div class="lb-name" style="font-weight: 400;">12. 6. 2026</div>
-              <div class="lb-score">5,6 km</div>
-            </div>
+          <div id="profile-activity-list" class="leaderboard-list">
+            <div style="text-align: center; color: var(--gray-text); padding: 10px;">Zatím nemáš zapsanou žádnou aktivitu.</div>
           </div>
         </div>
       </div>
-    </div> <div class="bottom-nav">
+    </div> 
+
+
+    <div class="bottom-nav">
       <div class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
         <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Přehled
       </div>
@@ -263,7 +255,9 @@
     <div class="modal-content">
       <h3>Nová aktivita</h3>
       <div class="activity-chips">
-        <div class="chip active" onclick="selectChip(this)">Chůze</div><div class="chip" onclick="selectChip(this)">Běh</div><div class="chip" onclick="selectChip(this)">Kolo</div>
+        <div class="chip active" data-type="Chůze" onclick="selectChip(this)">Chůze</div>
+        <div class="chip" data-type="Běh" onclick="selectChip(this)">Běh</div>
+        <div class="chip" data-type="Kolo" onclick="selectChip(this)">Kolo</div>
       </div>
       <div class="km-input-wrapper">
         <input type="number" id="km-input" class="km-input" placeholder="0.0" step="0.1" min="0">
@@ -279,7 +273,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, increment, onSnapshot, collection, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    // Přidány importy pro práci s kolekcemi (addDoc, where, getDocs)
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, increment, onSnapshot, collection, query, orderBy, addDoc, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDI_7D0jyBM2LbU4hpoumGp3VPdcBn2jEY",
@@ -303,6 +298,43 @@
     let unsubscribeUser = null;
     let unsubscribeGlobal = null;
     let unsubscribeLeaderboard = null;
+    let unsubscribeActivities = null;
+    
+    // Uložení aktuálně vybrané aktivity z modalu
+    let currentActivityType = "Chůze";
+
+    // POMOCNÁ FUNKCE: Získá číslo aktuálního týdne (Neděle - Sobota)
+    function getWeekNumber(d) {
+        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+        var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+        var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+        // Upravíme posun pro neděli
+        let isSunday = new Date().getDay() === 0;
+        if(isSunday) weekNo += 1;
+        return d.getUTCFullYear() + "-" + weekNo;
+    }
+
+    // POMOCNÁ FUNKCE: Výpočet zbývajících dní
+    function calculateDaysLeft() {
+        const endDate = new Date("2026-09-15T23:59:59");
+        const today = new Date();
+        const diffTime = endDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        if (diffDays > 0) {
+            document.getElementById("countdown-text").innerText = `zbývá ${diffDays} dní`;
+        } else {
+            document.getElementById("countdown-text").innerText = "Výzva skončila";
+        }
+    }
+    calculateDaysLeft(); // Spustí se hned při načtení
+
+    // Ikonky pro seznam aktivit
+    const icons = {
+      "Běh": `<svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>`,
+      "Kolo": `<svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm5.8-10l2.4-2.4.8.8c1.3 1.3 3 2.1 5.1 2.1V9c-1.5 0-2.7-.6-3.6-1.5l-1.9-1.9c-.5-.4-1-.7-1.6-.7s-1.1.2-1.4.6L8.5 8.4c-.3.4-.5.8-.5 1.4v5h2v-4.1l1.8-1.8zM19 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z"/></svg>`,
+      "Chůze": `<svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>` // Pro chůzi použijeme stejnou ikonu jako pro běh
+    };
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -324,19 +356,19 @@
           await setDoc(globalRef, { totalKm: 0 });
         }
 
+        // NASLOUCHÁNÍ DATŮM UŽIVATELE
         unsubscribeUser = onSnapshot(userRef, (docSnap) => {
           const data = docSnap.data();
           const myKm = data.personalKm || 0;
           const myName = data.name || 'Neznámý';
           
           document.getElementById('my-km-text').innerHTML = myKm.toLocaleString('cs-CZ');
-          
-          // Naplnění profilu aktuálními daty
           document.getElementById('profile-name').innerText = myName;
           document.getElementById('profile-total-km').innerText = myKm.toLocaleString('cs-CZ') + ' km';
           document.getElementById('profile-avatar').innerText = myName.charAt(0).toUpperCase();
         });
 
+        // NASLOUCHÁNÍ GLOBÁLNÍM DATŮM
         unsubscribeGlobal = onSnapshot(globalRef, (docSnap) => {
           const data = docSnap.data();
           const totalKm = data.totalKm || 0;
@@ -349,17 +381,46 @@
           document.getElementById('progress-bar-fill').style.width = `${percent}%`;
         });
 
+        // NAČTENÍ AKTIVIT DO PROFILU (Deníček)
+        const activitiesCol = collection(db, "activities");
+        const myActivitiesQuery = query(activitiesCol, where("uid", "==", user.uid), orderBy("timestamp", "desc"));
+        
+        unsubscribeActivities = onSnapshot(myActivitiesQuery, (snapshot) => {
+           const listContainer = document.getElementById('profile-activity-list');
+           listContainer.innerHTML = '';
+           
+           document.getElementById('profile-total-activities').innerText = snapshot.size;
+
+           if(snapshot.empty) {
+               listContainer.innerHTML = '<div style="text-align: center; color: var(--gray-text); padding: 10px;">Zatím nemáš zapsanou žádnou aktivitu.</div>';
+               return;
+           }
+
+           snapshot.forEach(doc => {
+               const data = doc.data();
+               const dateObj = data.timestamp ? data.timestamp.toDate() : new Date();
+               const dateStr = dateObj.toLocaleDateString('cs-CZ');
+               const icon = icons[data.type] || icons["Chůze"];
+               
+               listContainer.innerHTML += `
+                <div class="leaderboard-item">
+                  ${icon}
+                  <div class="lb-name" style="font-weight: 400;">${dateStr} <span style="font-size: 0.8em; color: var(--gray-text); margin-left: 5px;">(${data.type})</span></div>
+                  <div class="lb-score">${data.km.toLocaleString('cs-CZ')} km</div>
+                </div>
+               `;
+           });
+        });
+
+        // Dočasný kód pro žebříček (beze změny, upravíme v dalším kroku)
         const usersCol = collection(db, "users");
         const q = query(usersCol, orderBy("personalKm", "desc"));
-        
         unsubscribeLeaderboard = onSnapshot(q, (querySnapshot) => {
           const dashList = document.getElementById('dashboard-leaderboard-list');
           const statsWeeklyList = document.getElementById('stats-weekly-list');
           const statsOverallList = document.getElementById('stats-overall-list');
           
-          dashList.innerHTML = '';
-          statsWeeklyList.innerHTML = '';
-          statsOverallList.innerHTML = '';
+          dashList.innerHTML = ''; statsWeeklyList.innerHTML = ''; statsOverallList.innerHTML = '';
           
           let rank = 1;
           querySnapshot.forEach((docSnap) => {
@@ -376,11 +437,9 @@
                 <div class="lb-score">${km.toLocaleString('cs-CZ')} km</div>
               </div>
             `;
-            
             if(rank <= 3) dashList.innerHTML += htmlItem;
             statsWeeklyList.innerHTML += htmlItem;
             statsOverallList.innerHTML += htmlItem;
-            
             rank++;
           });
         });
@@ -393,9 +452,11 @@
         if(unsubscribeUser) unsubscribeUser();
         if(unsubscribeGlobal) unsubscribeGlobal();
         if(unsubscribeLeaderboard) unsubscribeLeaderboard();
+        if(unsubscribeActivities) unsubscribeActivities();
       }
     });
 
+    // ULOŽENÍ NOVÉ AKTIVITY
     window.saveActivity = async () => {
       let rawInput = document.getElementById('km-input').value.replace(',', '.');
       const km = parseFloat(rawInput);
@@ -403,9 +464,22 @@
       if(km > 0 && currentUser) {
         const userRef = doc(db, "users", currentUser.uid);
         const globalRef = doc(db, "global", "stats");
+        const activitiesCol = collection(db, "activities");
+        
         try {
+            // 1. Vytvoření samostatného záznamu do deníčku
+            await addDoc(activitiesCol, {
+                uid: currentUser.uid,
+                km: km,
+                type: currentActivityType,
+                timestamp: new Date(),
+                weekStr: getWeekNumber(new Date()) // Uloží např. "2026-27"
+            });
+
+            // 2. Přičtení do agregovaných součtů
             await updateDoc(userRef, { personalKm: increment(km) });
             await updateDoc(globalRef, { totalKm: increment(km) });
+            
             window.closeModal();
         } catch (error) {
             console.error("Chyba při ukládání:", error);
@@ -419,11 +493,11 @@
     window.switchTab = (tabId) => {
       document.getElementById('tab-dashboard').classList.add('hidden');
       document.getElementById('tab-statistics').classList.add('hidden');
-      document.getElementById('tab-profile').classList.add('hidden'); // Skrýváme profil
+      document.getElementById('tab-profile').classList.add('hidden');
       
       document.getElementById('nav-dashboard').classList.remove('active');
       document.getElementById('nav-statistics').classList.remove('active');
-      document.getElementById('nav-profile').classList.remove('active'); // Odbarvíme ikonu profilu
+      document.getElementById('nav-profile').classList.remove('active');
       
       document.getElementById('tab-' + tabId).classList.remove('hidden');
       document.getElementById('nav-' + tabId).classList.add('active');
@@ -435,9 +509,16 @@
     window.logoutUser = () => { signOut(auth); };
 
     const modal = document.getElementById('activity-modal');
-    window.openModal = () => { modal.classList.add('active'); document.getElementById('km-input').value = ''; };
+    window.openModal = () => { modal.classList.add('active'); document.getElementById('km-input').value = ''; currentActivityType = "Chůze"; selectChip(document.querySelector('.chip[data-type="Chůze"]')); };
     window.closeModal = () => { modal.classList.remove('active'); };
-    window.selectChip = (element) => { const chips = document.querySelectorAll('.chip'); chips.forEach(c => c.classList.remove('active')); element.classList.add('active'); };
+    
+    // Úprava funkce pro bubliny, aby ukládala vybraný typ aktivity
+    window.selectChip = (element) => { 
+        const chips = document.querySelectorAll('.chip'); 
+        chips.forEach(c => c.classList.remove('active')); 
+        element.classList.add('active'); 
+        currentActivityType = element.getAttribute('data-type');
+    };
   </script>
 </body>
 </html>
