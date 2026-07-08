@@ -31,8 +31,9 @@
     #map-placeholder { background-color: var(--gray-light); height: 300px; border-radius: 10px; margin: 20px 0; display: flex; align-items: center; justify-content: center; color: var(--gray-text); font-weight: 600; }
     
     .auth-form { background-color: var(--white); padding: 20px; border-radius: 15px; margin-top: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-    .auth-input { width: 100%; padding: 15px; margin-bottom: 10px; border: 1px solid var(--gray-light); border-radius: 10px; font-size: 1em; outline: none; }
-    .btn-login { background-color: var(--primary-orange); color: var(--white); border: none; padding: 15px; font-size: 1.1em; font-weight: 600; border-radius: 10px; cursor: pointer; width: 100%; margin-bottom: 5px; }
+    .auth-input { width: 100%; padding: 15px; margin-bottom: 10px; border: 1px solid var(--gray-light); border-radius: 10px; font-size: 1em; }
+    .btn-login { background-color: var(--primary-orange); color: var(--white); border: none; padding: 15px; font-size: 1.1em; font-weight: 600; border-radius: 10px; cursor: pointer; width: 100%; margin-bottom: 10px; }
+    .btn-register { background-color: var(--primary-purple); color: var(--white); border: none; padding: 15px; font-size: 1em; font-weight: 600; border-radius: 10px; cursor: pointer; width: 100%; margin-bottom: 15px;}
     .divider { display: flex; align-items: center; text-align: center; margin-bottom: 15px; color: var(--gray-text); font-size: 0.9em; }
     .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--gray-light); }
     .btn-google { background-color: var(--white); color: var(--text-dark); border: 1px solid var(--gray-light); padding: 15px; font-size: 1em; font-weight: 600; border-radius: 10px; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
@@ -65,6 +66,12 @@
     .lb-name { flex: 1; font-weight: 600; color: var(--text-dark); font-size: 0.95em; }
     .lb-score { font-weight: 700; color: var(--text-dark); font-size: 1em; }
 
+    .overall-banner { background-color: var(--primary-purple); color: var(--white); }
+    .overall-banner .leaderboard-title { color: var(--white); }
+    .overall-banner .leaderboard-item { border-bottom: 1px solid rgba(255,255,255,0.2); }
+    .overall-banner .lb-rank, .overall-banner .lb-name, .overall-banner .lb-score { color: var(--white); }
+    .overall-banner .lb-avatar { background-color: var(--white); color: var(--primary-purple); }
+
     /* PROFILOVÁ ZÁLOŽKA */
     .profile-header { padding: 20px; display: flex; gap: 20px; align-items: center; }
     .profile-avatar-large { width: 80px; height: 80px; background-color: var(--primary-purple); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2em; font-weight: 700; overflow: hidden; }
@@ -77,6 +84,8 @@
     .profile-actions { padding: 0 20px 20px 20px; display: flex; justify-content: flex-end; gap: 10px; }
     .btn-outline { border: 1px solid var(--text-dark); background: transparent; padding: 8px 15px; border-radius: 20px; font-size: 0.85em; font-weight: 600; cursor: pointer; color: var(--text-dark); display: flex; align-items: center; gap: 5px;}
     .btn-outline svg { width: 14px; height: 14px; fill: var(--text-dark); }
+    .btn-outline.active-edit { background-color: var(--primary-orange); color: var(--white); border-color: var(--primary-orange); }
+    .btn-outline.active-edit svg { fill: var(--white); }
 
     .activity-list-icon { width: 24px; height: 24px; fill: var(--text-dark); margin-right: 15px; }
     
@@ -128,13 +137,9 @@
 
     <div class="auth-form">
       <input type="email" id="email-input" class="auth-input" placeholder="Tvůj e-mail">
-      <input type="password" id="password-input" class="auth-input" placeholder="Heslo">
+      <input type="password" id="password-input" class="auth-input" placeholder="Heslo (min. 6 znaků)">
       <button onclick="loginUser()" class="btn-login">Přihlásit se</button>
-      
-      <p style="margin: 15px 0; font-size: 0.9em; color: var(--text-dark);">
-        Nemáš ještě účet? <span onclick="openRegisterModal()" style="color: var(--primary-purple); font-weight: 700; cursor: pointer; text-decoration: underline;">Zaregistruj se</span>
-      </p>
-
+      <button onclick="registerUser()" class="btn-register">Vytvořit nový účet</button>
       <div class="divider">nebo</div>
       <button onclick="loginWithGoogle()" class="btn-google">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo">
@@ -196,12 +201,15 @@
         </div>
       </div>
 
-      <div class="card">
-  <h3 class="leaderboard-title">Celkový historický postup</h3>
-  <div id="stats-overall-list" class="leaderboard-list">
-    <div style="text-align: center; color: var(--gray-text); padding: 10px;">Načítám celková data...</div>
-  </div>
-</div>
+      <div class="leaderboard-section">
+        <div class="card overall-banner">
+          <h3 class="leaderboard-title">Celkový historický postup</h3>
+          <div id="stats-overall-list" class="leaderboard-list">
+            <div style="text-align: center; color: var(--white); padding: 10px;">Načítám celková data...</div>
+          </div>
+        </div>
+      </div>
+    </div> 
 
     <div id="tab-profile" class="hidden">
       <div class="top-bar"><span>Lech lecha!</span></div>
@@ -325,28 +333,6 @@
     </div>
   </div>
 
-  <div id="register-modal" class="modal-overlay">
-    <div class="modal-content">
-      <h3>Vytvořit nový účet</h3>
-      <div style="margin-bottom: 10px; text-align: left;">
-        <input type="email" id="reg-email-input" class="auth-input" placeholder="Tvůj e-mail" style="margin-bottom: 0;">
-      </div>
-      <div style="margin-bottom: 10px; text-align: left;">
-        <input type="password" id="reg-password-input" class="auth-input" placeholder="Heslo (min. 6 znaků)" style="margin-bottom: 0;">
-      </div>
-      <div style="margin-bottom: 15px; text-align: left;">
-        <input type="password" id="reg-password-confirm-input" class="auth-input" placeholder="Zadej heslo znovu pro kontrolu" style="margin-bottom: 0;">
-      </div>
-      
-      <p id="reg-auth-error" style="color: #d63031; font-size: 0.9em; font-weight: 600; margin-bottom: 15px; display: none; text-align: center;"></p>
-      
-      <div class="modal-buttons-row">
-        <button class="btn-cancel" onclick="closeRegisterModal()">Zrušit</button>
-        <button class="btn-save" onclick="submitRegisterUser()">Vytvořit účet</button>
-      </div>
-    </div>
-  </div>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -386,6 +372,7 @@
     function getWeekNumber(d) {
         d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
         d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+        var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
         var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
         let isSunday = new Date().getDay() === 0;
         if(isSunday) weekNo += 1;
@@ -438,8 +425,12 @@
           document.getElementById('profile-total-km').innerText = myKm.toLocaleString('cs-CZ') + ' km';
           
           const pAvatarNode = document.getElementById('profile-avatar');
-          if (avatarUrl) { pAvatarNode.innerHTML = `<img src="${avatarUrl}" alt="avatar">`; } 
-          else { pAvatarNode.innerHTML = myName.charAt(0).toUpperCase(); }
+          if (avatarUrl) {
+              pAvatarNode.innerHTML = `<img src="${avatarUrl}" alt="avatar">`;
+          } else {
+              pAvatarNode.innerText = myName.charAt(0).toUpperCase();
+              pAvatarNode.innerHTML = myName.charAt(0).toUpperCase();
+          }
         });
 
         unsubscribeGlobal = onSnapshot(globalRef, (docSnap) => {
@@ -549,78 +540,47 @@
       } else { alert("Zadej platný počet kilometrů."); }
     };
 
-    // LOGIKA PRO REGISTRAČNÍ MODAL
-    window.openRegisterModal = () => {
-        document.getElementById('reg-email-input').value = "";
-        document.getElementById('reg-password-input').value = "";
-        document.getElementById('reg-password-confirm-input').value = "";
-        document.getElementById('reg-auth-error').style.display = "none";
-        document.getElementById('register-modal').classList.add('active');
-    };
-
-    window.closeRegisterModal = () => { document.getElementById('register-modal').classList.remove('active'); };
-
-    window.submitRegisterUser = () => {
-        const email = document.getElementById('reg-email-input').value.trim();
-        const password = document.getElementById('reg-password-input').value.trim();
-        const confirmPassword = document.getElementById('reg-password-confirm-input').value.trim();
-        const regError = document.getElementById('reg-auth-error');
-        
-        regError.style.display = "none";
-        
-        if(!email || !password || !confirmPassword) {
-            regError.textContent = "Prosím, vyplň všechna pole.";
-            regError.style.display = "block"; return;
-        }
-        if(!email.includes('@')) {
-            regError.textContent = "Zadej platnou e-mailovou adresu.";
-            regError.style.display = "block"; return;
-        }
-        if(password.length < 6) {
-            regError.textContent = "Heslo musí mít alespoň 6 znaků.";
-            regError.style.display = "block"; return;
-        }
-        if(password !== confirmPassword) {
-            regError.textContent = "Zadaná hesla se neshodují.";
-            regError.style.display = "block"; return;
-        }
-        
-        createUserWithEmailAndPassword(auth, email, password)
-            .then(() => { window.closeRegisterModal(); })
-            .catch((e) => { regError.textContent = "Chyba registrace: " + e.message; regError.style.display = "block"; });
-    };
-
-    // LOGIKA PRO PROFIL
     window.openProfileEditModal = async () => {
         if(!currentUser) return;
         const userSnap = await getDoc(doc(db, "users", currentUser.uid));
         const deleteBtn = document.getElementById('btn-delete-avatar');
+        
         if(userSnap.exists()){
             const data = userSnap.data();
             document.getElementById('profile-edit-name-input').value = data.name || "";
-            if(data.avatarUrl) { deleteBtn.style.display = "block"; } else { deleteBtn.style.display = "none"; }
+            if(data.avatarUrl) { deleteBtn.style.display = "block"; } 
+            else { deleteBtn.style.display = "none"; }
         }
+        
         document.getElementById('profile-file-input').value = "";
         document.getElementById('cropper-wrapper').style.display = "none";
         if(cropper) { cropper.destroy(); cropper = null; }
         document.getElementById('profile-edit-modal').classList.add('active');
     };
 
-    window.closeProfileEditModal = () => { document.getElementById('profile-edit-modal').classList.remove('active'); if(cropper) { cropper.destroy(); cropper = null; } };
+    window.closeProfileEditModal = () => {
+        document.getElementById('profile-edit-modal').classList.remove('active');
+        if(cropper) { cropper.destroy(); cropper = null; }
+    };
 
     window.deleteProfilePhoto = async () => {
         if(!currentUser) return;
         if(confirm("Opravdu chceš smazat svou profilovou fotku?")) {
-            try { await updateDoc(doc(db, "users", currentUser.uid), { avatarUrl: "" }); window.closeProfileEditModal(); } catch (error) { console.error(error); alert("Chyba při mazání fotky."); }
+            try {
+                await updateDoc(doc(db, "users", currentUser.uid), { avatarUrl: "" });
+                window.closeProfileEditModal();
+            } catch (error) { console.error(error); alert("Chyba při mazání fotky."); }
         }
     };
 
     window.handleProfileFileSelect = (input) => {
-        const file = input.files[0]; if(!file) return;
+        const file = input.files[0];
+        if(!file) return;
         document.getElementById('btn-delete-avatar').style.display = "none";
         const reader = new FileReader();
         reader.onload = function(e) {
-            const imageNode = document.getElementById('cropper-image'); imageNode.src = e.target.result;
+            const imageNode = document.getElementById('cropper-image');
+            imageNode.src = e.target.result;
             document.getElementById('cropper-wrapper').style.display = "block";
             if(cropper) cropper.destroy();
             cropper = new Cropper(imageNode, { aspectRatio: 1, viewMode: 1, autoCropArea: 1, background: false });
@@ -633,70 +593,128 @@
         if(!newName) { alert("Jméno nesmí být prázdné."); return; }
         const userRef = doc(db, "users", currentUser.uid);
         let updateData = { name: newName };
+        
         if(cropper) {
             const canvas = cropper.getCroppedCanvas({ width: 150, height: 150 });
-            updateData.avatarUrl = canvas.toDataURL('image/jpeg', 0.75);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+            updateData.avatarUrl = dataUrl;
         }
-        try { await updateDoc(userRef, updateData); window.closeProfileEditModal(); } catch (error) { console.error(error); alert("Chyba při ukládání."); }
+        try {
+            await updateDoc(userRef, updateData);
+            window.closeProfileEditModal();
+        } catch (error) { console.error(error); alert("Chyba při ukládání."); }
     };
 
-    // OSTATNÍ FUNKCE
     window.toggleEditMode = () => {
         const listContainer = document.getElementById('profile-activity-list');
         const editBtn = document.getElementById('btn-toggle-edit-mode');
-        listContainer.classList.toggle('edit-mode-active'); editBtn.classList.toggle('active-edit');
+        listContainer.classList.toggle('edit-mode-active');
+        editBtn.classList.toggle('active-edit');
     };
 
     window.openEditModal = (id, km, type, isoDate) => {
         selectedActivityId = id; selectedActivityOldKm = km; editActivityType = type;
-        document.getElementById('edit-km-input').value = km; document.getElementById('edit-date-input').value = isoDate;
+        document.getElementById('edit-km-input').value = km;
+        document.getElementById('edit-date-input').value = isoDate;
         const chips = document.querySelectorAll('#edit-modal .chip');
-        chips.forEach(c => c.classList.remove('active')); document.getElementById('edit-chip-' + type).classList.add('active');
+        chips.forEach(c => c.classList.remove('active'));
+        document.getElementById('edit-chip-' + type).classList.add('active');
         document.getElementById('edit-modal').classList.add('active');
     };
 
     window.closeEditModal = () => { document.getElementById('edit-modal').classList.remove('active'); selectedActivityId = null; };
-    window.selectEditChip = (element) => { const chips = document.querySelectorAll('#edit-modal .chip'); chips.forEach(c => c.classList.remove('active')); element.classList.add('active'); editActivityType = element.getAttribute('data-type'); };
+    window.selectEditChip = (element) => {
+        const chips = document.querySelectorAll('#edit-modal .chip');
+        chips.forEach(c => c.classList.remove('active'));
+        element.classList.add('active'); editActivityType = element.getAttribute('data-type');
+    };
 
     window.saveEditActivity = async () => {
-        let rawInput = document.getElementById('edit-km-input').value.replace(',', '.'); const newKm = parseFloat(rawInput); const newDateVal = document.getElementById('edit-date-input').value;
+        let rawInput = document.getElementById('edit-km-input').value.replace(',', '.');
+        const newKm = parseFloat(rawInput);
+        const newDateVal = document.getElementById('edit-date-input').value;
         if(newKm > 0 && selectedActivityId && currentUser) {
-            const diffKm = newKm - selectedActivityOldKm; const actRef = doc(db, "activities", selectedActivityId); const userRef = doc(db, "users", currentUser.uid); const globalRef = doc(db, "global", "stats"); const newDate = newDateVal ? new Date(newDateVal) : new Date();
-            try { await updateDoc(actRef, { km: newKm, type: editActivityType, timestamp: newDate, weekStr: getWeekNumber(newDate) }); await updateDoc(userRef, { personalKm: increment(diffKm) }); await updateDoc(globalRef, { totalKm: increment(diffKm) }); window.closeEditModal(); } catch (error) { console.error(error); alert("Chyba při úpravě."); }
+            const diffKm = newKm - selectedActivityOldKm; 
+            const actRef = doc(db, "activities", selectedActivityId);
+            const userRef = doc(db, "users", currentUser.uid);
+            const globalRef = doc(db, "global", "stats");
+            const newDate = newDateVal ? new Date(newDateVal) : new Date();
+            try {
+                await updateDoc(actRef, { km: newKm, type: editActivityType, timestamp: newDate, weekStr: getWeekNumber(newDate) });
+                await updateDoc(userRef, { personalKm: increment(diffKm) });
+                await updateDoc(globalRef, { totalKm: increment(diffKm) });
+                window.closeEditModal();
+            } catch (error) { console.error(error); alert("Chyba při úpravě."); }
         } else { alert("Zadej platné hodnoty."); }
     };
 
     window.deleteActivity = async () => {
         if(selectedActivityId && currentUser && confirm("Opravdu chceš tuto aktivitu smazat?")) {
-            const actRef = doc(db, "activities", selectedActivityId); const userRef = doc(db, "users", currentUser.uid); const globalRef = doc(db, "global", "stats"); const minusKm = -selectedActivityOldKm;
-            try { await deleteDoc(actRef); await updateDoc(userRef, { personalKm: increment(minusKm) }); await updateDoc(globalRef, { totalKm: increment(minusKm) }); window.closeEditModal(); } catch (error) { console.error(error); alert("Chyba při mazání."); }
+            const actRef = doc(db, "activities", selectedActivityId);
+            const userRef = doc(db, "users", currentUser.uid);
+            const globalRef = doc(db, "global", "stats");
+            const minusKm = -selectedActivityOldKm;
+            try {
+                await deleteDoc(actRef);
+                await updateDoc(userRef, { personalKm: increment(minusKm) });
+                await updateDoc(globalRef, { totalKm: increment(minusKm) });
+                window.closeEditModal();
+            } catch (error) { console.error(error); alert("Chyba při mazání."); }
         }
     };
 
     window.switchTab = (tabId) => {
       document.getElementById('tab-dashboard').classList.add('hidden'); document.getElementById('tab-statistics').classList.add('hidden'); document.getElementById('tab-profile').classList.add('hidden');
       document.getElementById('nav-dashboard').classList.remove('active'); document.getElementById('nav-statistics').classList.remove('active'); document.getElementById('nav-profile').classList.remove('active');
-      document.getElementById('tab-' + tabId).classList.remove('hidden'); document.getElementById('nav-' + tabId).classList.add('active');
-      const listContainer = document.getElementById('profile-activity-list'); if (listContainer) listContainer.classList.remove('edit-mode-active');
-      const editBtn = document.getElementById('btn-toggle-edit-mode'); if (editBtn) editBtn.classList.remove('active-edit');
+      document.getElementById('tab-' + tabId).classList.remove('hidden'); document.getElementById('nav-' + tabId).add('active');
+      const listContainer = document.getElementById('profile-activity-list');
+      if (listContainer) listContainer.classList.remove('edit-mode-active');
+      const editBtn = document.getElementById('btn-toggle-edit-mode');
+      if (editBtn) editBtn.classList.remove('active-edit');
     };
 
-    // PŘIHLÁŠENÍ (Neprůstřelná kontrola prázdných polí před odesláním)
+    // POJISTKA PRO CHYBY: Pokud pole nejsou vyplněná vůbec nebo chybí správný formát e-mailu, nepustíme to k Firebase
+    window.registerUser = () => { 
+        const email = document.getElementById('email-input').value.trim(); 
+        const password = document.getElementById('password-input').value.trim(); 
+        
+        if(!email || !password) {
+            errorMsg.textContent = "Prosím, vyplň e-mail i heslo.";
+            errorMsg.style.display = 'block';
+            return;
+        }
+        if(!email.includes('@')) {
+            errorMsg.textContent = "Zadej prosím platnou e-mailovou adresu (např. se zavináčem @).";
+            errorMsg.style.display = 'block';
+            return;
+        }
+        if(password.length < 6) {
+            errorMsg.textContent = "Heslo musí mít alespoň 6 znaků.";
+            errorMsg.style.display = 'block';
+            return;
+        }
+        errorMsg.style.display = 'none'; 
+        createUserWithEmailAndPassword(auth, email, password).catch((e) => { 
+            errorMsg.textContent = "Chyba registrace: " + e.message; 
+            errorMsg.style.display = 'block'; 
+        }); 
+    };
+    
     window.loginUser = () => { 
         const email = document.getElementById('email-input').value.trim(); 
         const password = document.getElementById('password-input').value.trim(); 
         
-        errorMsg.style.display = 'none';
-        
         if(!email || !password) {
             errorMsg.textContent = "Prosím, vyplň e-mail i heslo.";
-            errorMsg.style.display = 'block'; return;
+            errorMsg.style.display = 'block';
+            return;
         }
         if(!email.includes('@')) {
             errorMsg.textContent = "Zadej prosím platnou e-mailovou adresu.";
-            errorMsg.style.display = 'block'; return;
+            errorMsg.style.display = 'block';
+            return;
         }
-        
+        errorMsg.style.display = 'none'; 
         signInWithEmailAndPassword(auth, email, password).catch((e) => { 
             errorMsg.textContent = "Chybný e-mail nebo heslo."; 
             errorMsg.style.display = 'block'; 
