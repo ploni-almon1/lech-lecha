@@ -61,7 +61,6 @@
     .leaderboard-item:last-child { border-bottom: none; padding-bottom: 0; }
     .lb-rank { width: 30px; font-weight: 600; color: var(--gray-text); font-size: 1.1em; }
     
-    /* Avatary podporují jak písmeno, tak vložený obrázek */
     .lb-avatar { width: 35px; height: 35px; background-color: var(--primary-purple); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 15px; font-size: 1em; overflow: hidden; }
     .lb-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .lb-name { flex: 1; font-weight: 600; color: var(--text-dark); font-size: 0.95em; }
@@ -122,9 +121,10 @@
     .btn-cancel { flex: 1; background-color: var(--gray-light); color: var(--text-dark); border: none; padding: 15px; border-radius: 10px; font-weight: 600; cursor: pointer; }
     .btn-delete { background-color: #d63031; color: var(--white); border: none; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; margin-top: 5px; font-size: 0.9em; }
 
-    /* STYL PRO OŘEZOVOU OBLAST VE VYSKAKOVACÍM OKNĚ */
     .cropper-container-wrapper { width: 100%; max-height: 220px; margin-top: 15px; background-color: #eee; overflow: hidden; border-radius: 10px; display: none; }
     .cropper-container-wrapper img { max-width: 100%; display: block; }
+    
+    .btn-delete-photo { background-color: transparent; border: 1px solid #d63031; color: #d63031; padding: 10px 15px; border-radius: 10px; font-weight: 600; cursor: pointer; margin-top: 10px; width: 100%; display: none; }
   </style>
 </head>
 <body>
@@ -317,8 +317,9 @@
         <input type="text" id="profile-edit-name-input" class="date-input" placeholder="Jméno">
       </div>
       <div class="date-input-wrapper">
-        <label for="profile-file-input">Profilová fotka:</label>
+        <label for="profile-file-input">Nová profilová fotka:</label>
         <input type="file" id="profile-file-input" class="date-input" accept="image/*" onchange="handleProfileFileSelect(this)">
+        <button type="button" class="btn-delete-photo" id="btn-delete-avatar" onclick="deleteProfilePhoto()">Smazat stávající fotku</button>
       </div>
       
       <div class="cropper-container-wrapper" id="cropper-wrapper">
@@ -366,7 +367,7 @@
     let selectedActivityId = null; 
     let selectedActivityOldKm = 0; 
     
-    let cropper = null; // Instance ořezávače fotek
+    let cropper = null; 
 
     function getWeekNumber(d) {
         d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
@@ -423,7 +424,6 @@
           document.getElementById('profile-name').innerText = myName;
           document.getElementById('profile-total-km').innerText = myKm.toLocaleString('cs-CZ') + ' km';
           
-          // Pokud uživatel má nahranou fotku, zobrazíme ji v Profilu, jinak iniciálu
           const pAvatarNode = document.getElementById('profile-avatar');
           if (avatarUrl) {
               pAvatarNode.innerHTML = `<img src="${avatarUrl}" alt="avatar">`;
@@ -445,7 +445,6 @@
           document.getElementById('progress-bar-fill').style.width = `${percent}%`;
         });
 
-        // NAČTENÍ HISTORIE AKTIVIT
         const activitiesCol = collection(db, "activities");
         const myActivitiesQuery = query(activitiesCol, where("uid", "==", user.uid), orderBy("timestamp", "desc"));
         
@@ -481,7 +480,6 @@
            });
         });
 
-        // ŽEBŘÍČEK (Aktualizováno, aby zobrazoval profilové fotky, pokud existují!)
         const usersCol = collection(db, "users");
         const q = query(usersCol, orderBy("personalKm", "desc"));
         unsubscribeLeaderboard = onSnapshot(q, (querySnapshot) => {
@@ -498,7 +496,6 @@
             const avatarUrl = data.avatarUrl || "";
             const initial = name.charAt(0).toUpperCase();
             
-            // Určení, zda vypsat fotku nebo iniciálu do žebříčku
             const avatarHtml = avatarUrl ? `<img src="${avatarUrl}" alt="avatar">` : initial;
             
             const htmlItem = `
@@ -527,7 +524,6 @@
       }
     });
 
-    // ZÁPIS AKTIVITY
     window.saveActivity = async () => {
       let rawInput = document.getElementById('km-input').value.replace(',', '.');
       const km = parseFloat(rawInput);
@@ -544,18 +540,21 @@
       } else { alert("Zadej platný počet kilometrů."); }
     };
 
-    // LOGIKA PRO FUNKČNÍ ÚPRAWU PROFILU
     window.openProfileEditModal = async () => {
         if(!currentUser) return;
         const userSnap = await getDoc(doc(db, "users", currentUser.uid));
+        const deleteBtn = document.getElementById('btn-delete-avatar');
+        
         if(userSnap.exists()){
-            document.getElementById('profile-edit-name-input').value = userSnap.data().name || "";
+            const data = userSnap.data();
+            document.getElementById('profile-edit-name-input').value = data.name || "";
+            if(data.avatarUrl) { deleteBtn.style.display = "block"; } 
+            else { deleteBtn.style.display = "none"; }
         }
-        // Reset okna fotky
+        
         document.getElementById('profile-file-input').value = "";
         document.getElementById('cropper-wrapper').style.display = "none";
         if(cropper) { cropper.destroy(); cropper = null; }
-        
         document.getElementById('profile-edit-modal').classList.add('active');
     };
 
@@ -564,57 +563,48 @@
         if(cropper) { cropper.destroy(); cropper = null; }
     };
 
-    // Zobrazení a start ořezávání při vybrání souboru
+    window.deleteProfilePhoto = async () => {
+        if(!currentUser) return;
+        if(confirm("Opravdu chceš smazat svou profilovou fotku?")) {
+            try {
+                await updateDoc(doc(db, "users", currentUser.uid), { avatarUrl: "" });
+                window.closeProfileEditModal();
+            } catch (error) { console.error(error); alert("Chyba při mazání fotky."); }
+        }
+    };
+
     window.handleProfileFileSelect = (input) => {
         const file = input.files[0];
         if(!file) return;
-        
+        document.getElementById('btn-delete-avatar').style.display = "none";
         const reader = new FileReader();
         reader.onload = function(e) {
             const imageNode = document.getElementById('cropper-image');
             imageNode.src = e.target.result;
-            
             document.getElementById('cropper-wrapper').style.display = "block";
-            
             if(cropper) cropper.destroy();
-            
-            // Nastavení ořezávače: perfektní kruh/čtverec (1:1)
-            cropper = new Cropper(imageNode, {
-                aspectRatio: 1,
-                viewMode: 1,
-                autoCropArea: 1,
-                background: false
-            });
+            cropper = new Cropper(imageNode, { aspectRatio: 1, viewMode: 1, autoCropArea: 1, background: false });
         };
         reader.readAsDataURL(file);
     };
 
-    // ULOŽENÍ ZMĚN PROFILU
     window.saveProfileEdit = async () => {
         const newName = document.getElementById('profile-edit-name-input').value.trim();
         if(!newName) { alert("Jméno nesmí být prázdné."); return; }
-        
         const userRef = doc(db, "users", currentUser.uid);
         let updateData = { name: newName };
         
-        // Pokud uživatel nahrál a ořízl novou fotku
         if(cropper) {
-            // Vytáhne oříznuté plátno zmenšené na 150x150 px a převede ho na komprimovaný text
             const canvas = cropper.getCroppedCanvas({ width: 150, height: 150 });
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.75); // Kvalita 75% pro úsporu místa
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
             updateData.avatarUrl = dataUrl;
         }
-        
         try {
             await updateDoc(userRef, updateData);
             window.closeProfileEditModal();
-        } catch (error) {
-            console.error(error);
-            alert("Chyba při ukládání profilu.");
-        }
+        } catch (error) { console.error(error); alert("Chyba při ukládání."); }
     };
 
-    // EDITACE AKTIVIT
     window.toggleEditMode = () => {
         const listContainer = document.getElementById('profile-activity-list');
         const editBtn = document.getElementById('btn-toggle-edit-mode');
@@ -676,15 +666,61 @@
     window.switchTab = (tabId) => {
       document.getElementById('tab-dashboard').classList.add('hidden'); document.getElementById('tab-statistics').classList.add('hidden'); document.getElementById('tab-profile').classList.add('hidden');
       document.getElementById('nav-dashboard').classList.remove('active'); document.getElementById('nav-statistics').classList.remove('active'); document.getElementById('nav-profile').classList.remove('active');
-      document.getElementById('tab-' + tabId).classList.remove('hidden'); document.getElementById('nav-' + tabId).classList.add('active');
+      document.getElementById('tab-' + tabId).classList.remove('hidden'); document.getElementById('nav-' + tabId).add('active');
       const listContainer = document.getElementById('profile-activity-list');
       if (listContainer) listContainer.classList.remove('edit-mode-active');
       const editBtn = document.getElementById('btn-toggle-edit-mode');
       if (editBtn) editBtn.classList.remove('active-edit');
     };
 
-    window.registerUser = () => { const email = document.getElementById('email-input').value; const password = document.getElementById('password-input').value; errorMsg.style.display = 'none'; createUserWithEmailAndPassword(auth, email, password).catch((e) => { errorMsg.textContent = "Chyba: " + e.message; errorMsg.style.display = 'block'; }); };
-    window.loginUser = () => { const email = document.getElementById('email-input').value; const password = document.getElementById('password-input').value; errorMsg.style.display = 'none'; signInWithEmailAndPassword(auth, email, password).catch((e) => { errorMsg.textContent = "Chybný e-mail nebo heslo."; errorMsg.style.display = 'block'; }); };
+    // POJISTKA PRO CHYBY: Pokud pole nejsou vyplněná vůbec nebo chybí správný formát e-mailu, nepustíme to k Firebase
+    window.registerUser = () => { 
+        const email = document.getElementById('email-input').value.trim(); 
+        const password = document.getElementById('password-input').value.trim(); 
+        
+        if(!email || !password) {
+            errorMsg.textContent = "Prosím, vyplň e-mail i heslo.";
+            errorMsg.style.display = 'block';
+            return;
+        }
+        if(!email.includes('@')) {
+            errorMsg.textContent = "Zadej prosím platnou e-mailovou adresu (např. se zavináčem @).";
+            errorMsg.style.display = 'block';
+            return;
+        }
+        if(password.length < 6) {
+            errorMsg.textContent = "Heslo musí mít alespoň 6 znaků.";
+            errorMsg.style.display = 'block';
+            return;
+        }
+        errorMsg.style.display = 'none'; 
+        createUserWithEmailAndPassword(auth, email, password).catch((e) => { 
+            errorMsg.textContent = "Chyba registrace: " + e.message; 
+            errorMsg.style.display = 'block'; 
+        }); 
+    };
+    
+    window.loginUser = () => { 
+        const email = document.getElementById('email-input').value.trim(); 
+        const password = document.getElementById('password-input').value.trim(); 
+        
+        if(!email || !password) {
+            errorMsg.textContent = "Prosím, vyplň e-mail i heslo.";
+            errorMsg.style.display = 'block';
+            return;
+        }
+        if(!email.includes('@')) {
+            errorMsg.textContent = "Zadej prosím platnou e-mailovou adresu.";
+            errorMsg.style.display = 'block';
+            return;
+        }
+        errorMsg.style.display = 'none'; 
+        signInWithEmailAndPassword(auth, email, password).catch((e) => { 
+            errorMsg.textContent = "Chybný e-mail nebo heslo."; 
+            errorMsg.style.display = 'block'; 
+        }); 
+    };
+    
     window.loginWithGoogle = () => { errorMsg.style.display = 'none'; signInWithPopup(auth, googleProvider).catch((e) => { errorMsg.textContent = "Chyba Google přihlášení: " + e.message; errorMsg.style.display = 'block'; }); };
     window.logoutUser = () => { signOut(auth); };
 
