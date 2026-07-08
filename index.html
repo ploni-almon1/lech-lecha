@@ -33,16 +33,14 @@
     .btn-register { background-color: var(--primary-purple); color: var(--white); border: none; padding: 15px; font-size: 1em; font-weight: 600; border-radius: 10px; cursor: pointer; width: 100%; margin-bottom: 15px;}
     .divider { display: flex; align-items: center; text-align: center; margin-bottom: 15px; color: var(--gray-text); font-size: 0.9em; }
     .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--gray-light); }
-    .divider:not(:empty)::before { margin-right: .25em; }
-    .divider:not(:empty)::after { margin-left: .25em; }
     .btn-google { background-color: var(--white); color: var(--text-dark); border: 1px solid var(--gray-light); padding: 15px; font-size: 1em; font-weight: 600; border-radius: 10px; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
     .btn-google img { width: 20px; height: 20px; }
     #auth-error { color: #d63031; margin-top: 10px; font-size: 0.9em; font-weight: 600; display: none; }
 
-    /* SOUKROMÁ ČÁST (Společný kontejner) */
+    /* SOUKROMÁ ČÁST */
     #private-view { max-width: 600px; margin: 0 auto; padding-bottom: 90px; }
+    /* TOP BAR - upravený, aby už neměl tlačítko odhlásit */
     .top-bar { background-color: var(--primary-purple); color: var(--white); padding: 20px; font-size: 1.3em; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
-    .btn-logout { background-color: transparent; color: var(--white); border: 1px solid var(--white); padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8em; }
     
     .dashboard-header { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
     .dashboard-header .card { aspect-ratio: 1 / 1; display: flex; flex-direction: column; justify-content: center; }
@@ -54,22 +52,37 @@
     .progress-section, .action-section, .leaderboard-section { padding: 0 15px 15px 15px; }
     .btn-action { background-color: var(--primary-purple); color: var(--white); border: none; padding: 18px; font-size: 1.1em; font-weight: 600; border-radius: 10px; cursor: pointer; width: 100%; }
 
-    /* ŽEBŘÍČEK */
-    .leaderboard-title { font-size: 1.1em; font-weight: 700; margin-bottom: 15px; color: var(--text-dark); }
+    /* ŽEBŘÍČKY A SEZNAMY */
+    .leaderboard-title { font-size: 1.1em; font-weight: 700; margin-bottom: 15px; color: var(--text-dark); display: flex; justify-content: space-between; align-items: center;}
     .leaderboard-list { display: flex; flex-direction: column; }
     .leaderboard-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-light); }
     .leaderboard-item:last-child { border-bottom: none; padding-bottom: 0; }
     .lb-rank { width: 30px; font-weight: 600; color: var(--gray-text); font-size: 1.1em; }
-    .lb-avatar { width: 35px; height: 35px; background-color: var(--primary-purple); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 15px; font-size: 1em; }
+    .lb-avatar { width: 35px; height: 35px; background-color: var(--primary-purple); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 15px; font-size: 1em; overflow: hidden; }
+    .lb-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .lb-name { flex: 1; font-weight: 600; color: var(--text-dark); font-size: 0.95em; }
     .lb-score { font-weight: 700; color: var(--text-dark); font-size: 1em; }
 
-    /* Speciální banner pro celkovou statistiku */
     .overall-banner { background-color: var(--primary-purple); color: var(--white); }
     .overall-banner .leaderboard-title { color: var(--white); }
     .overall-banner .leaderboard-item { border-bottom: 1px solid rgba(255,255,255,0.2); }
     .overall-banner .lb-rank, .overall-banner .lb-name, .overall-banner .lb-score { color: var(--white); }
     .overall-banner .lb-avatar { background-color: var(--white); color: var(--primary-purple); }
+
+    /* PROFILOVÁ ZÁLOŽKA */
+    .profile-header { padding: 20px; display: flex; gap: 20px; align-items: center; }
+    .profile-avatar-large { width: 80px; height: 80px; background-color: var(--primary-purple); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2em; font-weight: 700; overflow: hidden; }
+    .profile-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-info { flex: 1; }
+    .profile-name { font-size: 1.4em; font-weight: 700; margin-bottom: 5px; }
+    .profile-stats { display: flex; gap: 20px; font-size: 0.85em; color: var(--gray-text); }
+    .profile-stats strong { color: var(--text-dark); font-size: 1.2em; display: block; margin-top: 2px;}
+    
+    .profile-actions { padding: 0 20px 20px 20px; display: flex; justify-content: flex-end; gap: 10px; }
+    .btn-outline { border: 1px solid var(--text-dark); background: transparent; padding: 8px 15px; border-radius: 20px; font-size: 0.85em; font-weight: 600; cursor: pointer; color: var(--text-dark); display: flex; align-items: center; gap: 5px;}
+    .btn-outline svg { width: 14px; height: 14px; fill: var(--text-dark); }
+
+    .activity-list-icon { width: 24px; height: 24px; fill: var(--text-dark); margin-right: 15px; }
 
     /* SPODNÍ NAVIGAČNÍ LIŠTA */
     .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--white); display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 100; }
@@ -120,8 +133,7 @@
     <div id="tab-dashboard">
       <div class="top-bar">
         <span>Lech lecha!</span>
-        <button onclick="logoutUser()" class="btn-logout">Odhlásit</button>
-      </div>
+        </div>
       
       <div class="dashboard-header">
         <div class="card distance-card">
@@ -161,23 +173,73 @@
     </div> <div id="tab-statistics" class="hidden">
       <div class="top-bar">
         <span>Statistika</span>
-        <button onclick="logoutUser()" class="btn-logout">Odhlásit</button>
       </div>
 
       <div class="leaderboard-section" style="padding-top: 15px;">
         <div class="card">
-          <h3 class="leaderboard-title">Týdenní přehled</h3>
+          <h3 class="leaderboard-title">Aktuální týden (Všichni)</h3>
           <div id="stats-weekly-list" class="leaderboard-list">
-            <div style="text-align: center; color: var(--gray-text); padding: 10px;">Zatím pro všechny ukazuje stejná data, než upravíme databázi...</div>
+            <div style="text-align: center; color: var(--gray-text); padding: 10px;">Načítám data...</div>
           </div>
         </div>
       </div>
 
       <div class="leaderboard-section">
         <div class="card overall-banner">
-          <h3 class="leaderboard-title">Celkový přehled</h3>
+          <h3 class="leaderboard-title">Celkový historický postup</h3>
           <div id="stats-overall-list" class="leaderboard-list">
             <div style="text-align: center; color: var(--white); padding: 10px;">Načítám celková data...</div>
+          </div>
+        </div>
+      </div>
+    </div> <div id="tab-profile" class="hidden">
+      <div class="top-bar">
+        <span>Lech lecha!</span>
+      </div>
+
+      <div class="profile-header">
+        <div class="profile-avatar-large" id="profile-avatar">J</div>
+        <div class="profile-info">
+          <div class="profile-name" id="profile-name">Jméno uživatele</div>
+          <div class="profile-stats">
+            <div>Celkem<strong id="profile-total-km">0 km</strong></div>
+            <div>Aktivity<strong id="profile-total-activities">0</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <button class="btn-outline" onclick="alert('Zatím nepřipojeno k úpravám')">
+          <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> Upravit
+        </button>
+        <button class="btn-outline" onclick="logoutUser()">Odhlásit</button>
+      </div>
+
+      <div class="leaderboard-section">
+        <div class="card">
+          <div class="leaderboard-title">
+            Přehled aktivit
+            <button class="btn-outline" style="border: none; padding: 0;" onclick="alert('Zapne režim úprav (připravujeme)')">
+              <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> Upravit
+            </button>
+          </div>
+          
+          <div class="leaderboard-list">
+            <div class="leaderboard-item">
+              <svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>
+              <div class="lb-name" style="font-weight: 400;">30. 6. 2026</div>
+              <div class="lb-score">20,5 km</div>
+            </div>
+            <div class="leaderboard-item">
+              <svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>
+              <div class="lb-name" style="font-weight: 400;">28. 6. 2026</div>
+              <div class="lb-score">10,0 km</div>
+            </div>
+            <div class="leaderboard-item">
+              <svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>
+              <div class="lb-name" style="font-weight: 400;">12. 6. 2026</div>
+              <div class="lb-score">5,6 km</div>
+            </div>
           </div>
         </div>
       </div>
@@ -191,7 +253,7 @@
       <div class="nav-item" id="nav-map" onclick="alert('Záložka Mapa se připravuje!')">
         <svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>Mapa
       </div>
-      <div class="nav-item" id="nav-profile" onclick="alert('Záložka Profil se připravuje!')">
+      <div class="nav-item" id="nav-profile" onclick="switchTab('profile')">
         <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Profil
       </div>
     </div>
@@ -265,7 +327,14 @@
         unsubscribeUser = onSnapshot(userRef, (docSnap) => {
           const data = docSnap.data();
           const myKm = data.personalKm || 0;
+          const myName = data.name || 'Neznámý';
+          
           document.getElementById('my-km-text').innerHTML = myKm.toLocaleString('cs-CZ');
+          
+          // Naplnění profilu aktuálními daty
+          document.getElementById('profile-name').innerText = myName;
+          document.getElementById('profile-total-km').innerText = myKm.toLocaleString('cs-CZ') + ' km';
+          document.getElementById('profile-avatar').innerText = myName.charAt(0).toUpperCase();
         });
 
         unsubscribeGlobal = onSnapshot(globalRef, (docSnap) => {
@@ -280,13 +349,10 @@
           document.getElementById('progress-bar-fill').style.width = `${percent}%`;
         });
 
-        // DOČASNÉ ŘEŠENÍ: Prozatím načítáme do všech 3 žebříčků stejná data (historická). 
-        // V dalším kroku to rozdělíme na týdny a Top 3!
         const usersCol = collection(db, "users");
         const q = query(usersCol, orderBy("personalKm", "desc"));
         
         unsubscribeLeaderboard = onSnapshot(q, (querySnapshot) => {
-          // Příprava kontejnerů
           const dashList = document.getElementById('dashboard-leaderboard-list');
           const statsWeeklyList = document.getElementById('stats-weekly-list');
           const statsOverallList = document.getElementById('stats-overall-list');
@@ -311,8 +377,7 @@
               </div>
             `;
             
-            // Zkopírujeme html položku do všech žebříčků (zatím)
-            if(rank <= 3) dashList.innerHTML += htmlItem; // Jen Top 3 na Dashboardu
+            if(rank <= 3) dashList.innerHTML += htmlItem;
             statsWeeklyList.innerHTML += htmlItem;
             statsOverallList.innerHTML += htmlItem;
             
@@ -328,12 +393,6 @@
         if(unsubscribeUser) unsubscribeUser();
         if(unsubscribeGlobal) unsubscribeGlobal();
         if(unsubscribeLeaderboard) unsubscribeLeaderboard();
-        
-        getDoc(doc(db, "global", "stats")).then(docSnap => {
-           if(docSnap.exists()) {
-             document.getElementById('public-total-km').innerText = `${docSnap.data().totalKm.toLocaleString('cs-CZ')} km`;
-           }
-        });
       }
     });
 
@@ -357,17 +416,15 @@
       }
     };
 
-    // LOGIKA PRO PŘEPÍNÁNÍ ZÁLOŽEK
     window.switchTab = (tabId) => {
-      // Skryje všechny záložky
       document.getElementById('tab-dashboard').classList.add('hidden');
       document.getElementById('tab-statistics').classList.add('hidden');
+      document.getElementById('tab-profile').classList.add('hidden'); // Skrýváme profil
       
-      // Odbarví všechny ikonky v menu
       document.getElementById('nav-dashboard').classList.remove('active');
       document.getElementById('nav-statistics').classList.remove('active');
+      document.getElementById('nav-profile').classList.remove('active'); // Odbarvíme ikonu profilu
       
-      // Zobrazí tu správnou záložku a obarví ikonku
       document.getElementById('tab-' + tabId).classList.remove('hidden');
       document.getElementById('nav-' + tabId).classList.add('active');
     };
