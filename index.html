@@ -30,15 +30,19 @@
     .hero-title { font-size: 2.2em; color: var(--primary-purple); margin-top: 40px; margin-bottom: 20px; font-weight: 700; }
     #map-placeholder { background-color: var(--gray-light); height: 300px; border-radius: 10px; margin: 20px 0; display: flex; align-items: center; justify-content: center; color: var(--gray-text); font-weight: 600; }
     
-    .auth-form { background-color: var(--white); padding: 20px; border-radius: 15px; margin-top: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .auth-form { background-color: var(--white); padding: 20px; border-radius: 15px; margin-top: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: left; }
     .auth-input { width: 100%; padding: 15px; margin-bottom: 10px; border: 1px solid var(--gray-light); border-radius: 10px; font-size: 1em; }
+    
+    /* Odkaz pro zapomenuté heslo */
+    .forgot-password { display: block; text-align: right; margin-bottom: 15px; color: var(--primary-purple); font-size: 0.85em; text-decoration: none; font-weight: 600; }
+    
     .btn-login { background-color: var(--primary-orange); color: var(--white); border: none; padding: 15px; font-size: 1.1em; font-weight: 600; border-radius: 10px; cursor: pointer; width: 100%; margin-bottom: 10px; }
     .btn-register { background-color: var(--primary-purple); color: var(--white); border: none; padding: 15px; font-size: 1em; font-weight: 600; border-radius: 10px; cursor: pointer; width: 100%; margin-bottom: 15px;}
     .divider { display: flex; align-items: center; text-align: center; margin-bottom: 15px; color: var(--gray-text); font-size: 0.9em; }
     .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--gray-light); }
     .btn-google { background-color: var(--white); color: var(--text-dark); border: 1px solid var(--gray-light); padding: 15px; font-size: 1em; font-weight: 600; border-radius: 10px; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
     .btn-google img { width: 20px; height: 20px; }
-    #auth-error { color: #d63031; margin-top: 10px; font-size: 0.9em; font-weight: 600; display: none; }
+    #auth-error { color: #d63031; margin-top: 15px; font-size: 0.9em; font-weight: 600; display: none; text-align: center; }
 
     /* SOUKROMÁ ČÁST */
     #private-view { max-width: 600px; margin: 0 auto; padding-bottom: 90px; }
@@ -129,6 +133,7 @@
 </head>
 <body>
 
+  <!-- VEŘEJNÁ ČÁST -->
   <div id="public-view">
     <h1 class="hero-title">Z Olomouce do Jeruzaléma</h1>
     <p>Přidej se k naší společné výzvě a pojďme překonat přes 3000 kilometrů!</p>
@@ -138,6 +143,10 @@
     <div class="auth-form">
       <input type="email" id="email-input" class="auth-input" placeholder="Tvůj e-mail">
       <input type="password" id="password-input" class="auth-input" placeholder="Heslo (min. 6 znaků)">
+      
+      <!-- Odkaz pro zapomenuté heslo -->
+      <a href="#" class="forgot-password" onclick="resetPassword(event)">Zapomněl(a) jsi heslo?</a>
+      
       <button onclick="loginUser()" class="btn-login">Přihlásit se</button>
       <button onclick="registerUser()" class="btn-register">Vytvořit nový účet</button>
       <div class="divider">nebo</div>
@@ -149,8 +158,10 @@
     </div>
   </div>
 
+  <!-- SOUKROMÁ ČÁST -->
   <div id="private-view" class="hidden">
     
+    <!-- ZÁLOŽKA 1: PŘEHLED -->
     <div id="tab-dashboard">
       <div class="top-bar"><span>Lech lecha!</span></div>
       
@@ -166,7 +177,8 @@
         <div class="card">
           <h3 style="margin-bottom: 10px;">Lech lecha!</h3>
           <p style="display: flex; justify-content: space-between; font-size: 0.9em;">
-            <span id="global-km-text" style="color: #27ae60; font-weight: 600;">📏 0 <span style="color: var(--gray-text);">/ 3 240 km</span></span>
+            <!-- Ikona SVG místo emoji vložená z JavaScriptu -->
+            <span id="global-km-text" style="color: #27ae60; font-weight: 600;">0 / 3 240 km</span>
             <span style="color: var(--gray-text);" id="countdown-text">Cíl: Jeruzalém</span>
           </p>
           <div style="background-color: var(--gray-light); border-radius: 10px; height: 10px; margin-top: 10px; overflow: hidden;">
@@ -189,6 +201,7 @@
       </div>
     </div> 
 
+    <!-- ZÁLOŽKA 2: STATISTIKA -->
     <div id="tab-statistics" class="hidden">
       <div class="top-bar"><span>Statistika</span></div>
 
@@ -211,6 +224,7 @@
       </div>
     </div> 
 
+    <!-- ZÁLOŽKA 4: PROFIL -->
     <div id="tab-profile" class="hidden">
       <div class="top-bar"><span>Lech lecha!</span></div>
 
@@ -248,6 +262,7 @@
       </div>
     </div> 
 
+    <!-- SPODNÍ NAVIGAČNÍ LIŠTA -->
     <div class="bottom-nav">
       <div class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
         <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Přehled
@@ -264,6 +279,7 @@
     </div>
   </div>
 
+  <!-- MODAL: NOVÁ AKTIVITA -->
   <div id="activity-modal" class="modal-overlay">
     <div class="modal-content">
       <h3>Nová aktivita</h3>
@@ -283,6 +299,7 @@
     </div>
   </div>
 
+  <!-- MODAL: ÚPRAVA / SMAZÁNÍ AKTIVITY -->
   <div id="edit-modal" class="modal-overlay">
     <div class="modal-content">
       <h3>Upravit aktivitu</h3>
@@ -309,6 +326,7 @@
     </div>
   </div>
 
+  <!-- MODAL: ÚPRAVA PROFILU -->
   <div id="profile-edit-modal" class="modal-overlay">
     <div class="modal-content">
       <h3>Upravit profil</h3>
@@ -322,6 +340,7 @@
         <button type="button" class="btn-delete-photo" id="btn-delete-avatar" onclick="deleteProfilePhoto()">Smazat stávající fotku</button>
       </div>
       
+      <!-- Ořezová mřížka -->
       <div class="cropper-container-wrapper" id="cropper-wrapper">
         <img id="cropper-image" src="">
       </div>
@@ -334,8 +353,9 @@
   </div>
 
   <script type="module">
+    // Přidán import sendPasswordResetEmail
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, increment, onSnapshot, collection, query, orderBy, addDoc, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -438,8 +458,13 @@
           const data = docSnap.data();
           const totalKm = data.totalKm || 0;
           const targetKm = 3240;
-          document.getElementById('global-km-text').innerHTML = `📏 ${totalKm.toLocaleString('cs-CZ')} <span style="color: var(--gray-text);">/ 3 240 km</span>`;
+          
+          // Nová vektorová ikona pravítka místo emoji
+          const rulerSvg = `<svg viewBox="0 0 24 24" style="width: 18px; height: 18px; vertical-align: text-bottom; margin-right: 5px; fill: var(--text-dark);"><path d="M21 11H3c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2v-4c0-1.1-.9-2-2-2zm0 6H3v-4h2v3h2v-3h2v3h2v-3h2v3h2v-3h2v3h2v-3h2v4z"/></svg>`;
+          
+          document.getElementById('global-km-text').innerHTML = `${rulerSvg}<span style="color: #27ae60;">${totalKm.toLocaleString('cs-CZ')}</span> <span style="color: var(--gray-text);">/ 3 240 km</span>`;
           document.getElementById('public-total-km').innerText = `${totalKm.toLocaleString('cs-CZ')} km`;
+          
           let percent = (totalKm / targetKm) * 100;
           if(percent > 100) percent = 100;
           document.getElementById('progress-bar-fill').style.width = `${percent}%`;
@@ -666,15 +691,42 @@
     window.switchTab = (tabId) => {
       document.getElementById('tab-dashboard').classList.add('hidden'); document.getElementById('tab-statistics').classList.add('hidden'); document.getElementById('tab-profile').classList.add('hidden');
       document.getElementById('nav-dashboard').classList.remove('active'); document.getElementById('nav-statistics').classList.remove('active'); document.getElementById('nav-profile').classList.remove('active');
-      document.getElementById('tab-' + tabId).classList.remove('hidden'); document.getElementById('nav-' + tabId).add('active');
+      document.getElementById('tab-' + tabId).classList.remove('hidden'); document.getElementById('nav-' + tabId).classList.add('active');
       const listContainer = document.getElementById('profile-activity-list');
       if (listContainer) listContainer.classList.remove('edit-mode-active');
       const editBtn = document.getElementById('btn-toggle-edit-mode');
       if (editBtn) editBtn.classList.remove('active-edit');
     };
 
-    // POJISTKA PRO CHYBY: Pokud pole nejsou vyplněná vůbec nebo chybí správný formát e-mailu, nepustíme to k Firebase
+    // POJISTKA + NOVÁ FUNKCE PRO OBNOVU HESLA
+    window.resetPassword = (event) => {
+        event.preventDefault(); // Zabrání přeskočení stránky nahoru
+        const email = document.getElementById('email-input').value.trim();
+        
+        if(!email || !email.includes('@')) {
+            errorMsg.textContent = "Pro obnovu hesla nejprve napiš svůj e-mail do horního políčka.";
+            errorMsg.style.display = 'block';
+            errorMsg.style.color = '#d63031'; // červená
+            return;
+        }
+        
+        errorMsg.style.display = 'none';
+        
+        sendPasswordResetEmail(auth, email)
+            .then(() => {
+                errorMsg.textContent = "Odkaz pro obnovu hesla byl odeslán na tvůj e-mail.";
+                errorMsg.style.color = '#27ae60'; // zelená pro úspěch
+                errorMsg.style.display = 'block';
+            })
+            .catch((error) => {
+                errorMsg.textContent = "Chyba při obnově hesla. Zkontroluj e-mail.";
+                errorMsg.style.color = '#d63031';
+                errorMsg.style.display = 'block';
+            });
+    };
+
     window.registerUser = () => { 
+        errorMsg.style.color = '#d63031'; // Vždy vrátíme na červenou pro případné chyby
         const email = document.getElementById('email-input').value.trim(); 
         const password = document.getElementById('password-input').value.trim(); 
         
@@ -695,12 +747,13 @@
         }
         errorMsg.style.display = 'none'; 
         createUserWithEmailAndPassword(auth, email, password).catch((e) => { 
-            errorMsg.textContent = "Chyba registrace: " + e.message; 
+            errorMsg.textContent = "Chyba registrace: E-mail je už nejspíš zabraný."; 
             errorMsg.style.display = 'block'; 
         }); 
     };
     
     window.loginUser = () => { 
+        errorMsg.style.color = '#d63031'; 
         const email = document.getElementById('email-input').value.trim(); 
         const password = document.getElementById('password-input').value.trim(); 
         
@@ -721,7 +774,7 @@
         }); 
     };
     
-    window.loginWithGoogle = () => { errorMsg.style.display = 'none'; signInWithPopup(auth, googleProvider).catch((e) => { errorMsg.textContent = "Chyba Google přihlášení: " + e.message; errorMsg.style.display = 'block'; }); };
+    window.loginWithGoogle = () => { errorMsg.style.display = 'none'; signInWithPopup(auth, googleProvider).catch((e) => { errorMsg.textContent = "Chyba Google přihlášení."; errorMsg.style.display = 'block'; }); };
     window.logoutUser = () => { signOut(auth); };
 
     const modal = document.getElementById('activity-modal');
