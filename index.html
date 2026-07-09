@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Lech lecha!</title>
+  <title>Lech Lecha Výzva</title>
   
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon.png">
@@ -425,7 +425,7 @@
     // ==========================================
     // Zde doplň svůj registrační e-mail (nebo i více, oddělených čárkou). 
     // Jen uživatel s tímto e-mailem uvidí tlačítko "Vytvořit výzvu".
-    const ADMIN_EMAILS = ["yqxwcedsa@gmail.com", "ter_ka@gmail.com"];
+    const ADMIN_EMAILS = ["tvuj@email.cz"];
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -705,13 +705,7 @@
 
             svgContent += `<circle cx="18" cy="18" r="15.915" fill="transparent" stroke="${color}" stroke-width="4" stroke-dasharray="${drawPct} ${100 - drawPct}" stroke-dashoffset="${offset}"></circle>`;
             offset -= pct;
-            legendHtml += `<div class="chart-legend-row" style="margin-top:10px; padding-top:10px; border-top:1px solid var(--gray-border);">
-            <div style="display:flex; align-items:center; gap:8px;">
-                <span style="width:10px; height:10px; background-color:transparent; display:inline-block;"></span>
-                <span style="color:var(--text-gray);">celkem aktivit</span>
-            </div>
-            <span style="color:var(--text-dark); font-weight:700;">${totalActs}</span>
-        </div>`;
+            legendHtml += `<div class="chart-legend-row"><div style="display:flex; align-items:center; gap:8px;"><span style="width:10px; height:10px; background-color:${color}; border-radius:50%; display:inline-block;"></span><span>${key.toLowerCase()}</span></div><span>${Math.round(pct)} %</span></div>`;
         });
         
         legendHtml += `<div class="chart-legend-row" style="margin-top:10px; padding-top:10px; border-top:1px solid var(--gray-border); color:var(--text-gray);">
