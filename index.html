@@ -14,12 +14,10 @@
   <meta name="theme-color" content="#f4f5f7">
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
   
   <style>
-    /* ZÁKLADNÍ NASTAVENÍ */
     :root { --bg-color: #f4f5f7; --text-dark: #1a1a1a; --primary-purple: #3a3358; --primary-orange: #ff5e00; --white: #ffffff; --gray-light: #e0e0e0; --gray-text: #999999; }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
     body { background-color: var(--bg-color); color: var(--text-dark); }
@@ -32,10 +30,7 @@
     
     .auth-form { background-color: var(--white); padding: 20px; border-radius: 15px; margin-top: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: left; }
     .auth-input { width: 100%; padding: 15px; margin-bottom: 10px; border: 1px solid var(--gray-light); border-radius: 10px; font-size: 1em; }
-    
-    /* Odkaz pro zapomenuté heslo */
     .forgot-password { display: block; text-align: right; margin-bottom: 15px; color: var(--primary-purple); font-size: 0.85em; text-decoration: none; font-weight: 600; }
-    
     .btn-login { background-color: var(--primary-orange); color: var(--white); border: none; padding: 15px; font-size: 1.1em; font-weight: 600; border-radius: 10px; cursor: pointer; width: 100%; margin-bottom: 10px; }
     .btn-register { background-color: var(--primary-purple); color: var(--white); border: none; padding: 15px; font-size: 1em; font-weight: 600; border-radius: 10px; cursor: pointer; width: 100%; margin-bottom: 15px;}
     .divider { display: flex; align-items: center; text-align: center; margin-bottom: 15px; color: var(--gray-text); font-size: 0.9em; }
@@ -61,10 +56,9 @@
     /* ŽEBŘÍČKY A SEZNAMY */
     .leaderboard-title { font-size: 1.1em; font-weight: 700; margin-bottom: 15px; color: var(--text-dark); display: flex; justify-content: space-between; align-items: center;}
     .leaderboard-list { display: flex; flex-direction: column; }
-    .leaderboard-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-light); position: relative; }
+    .leaderboard-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-light); position: relative; cursor: pointer; }
     .leaderboard-item:last-child { border-bottom: none; padding-bottom: 0; }
     .lb-rank { width: 30px; font-weight: 600; color: var(--gray-text); font-size: 1.1em; }
-    
     .lb-avatar { width: 35px; height: 35px; background-color: var(--primary-purple); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 15px; font-size: 1em; overflow: hidden; }
     .lb-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .lb-name { flex: 1; font-weight: 600; color: var(--text-dark); font-size: 0.95em; }
@@ -78,10 +72,10 @@
 
     /* PROFILOVÁ ZÁLOŽKA */
     .profile-header { padding: 20px; display: flex; gap: 20px; align-items: center; }
-    .profile-avatar-large { width: 80px; height: 80px; background-color: var(--primary-purple); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2em; font-weight: 700; overflow: hidden; }
+    .profile-avatar-large { width: 80px; height: 80px; background-color: var(--primary-purple); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2em; font-weight: 700; overflow: hidden; flex-shrink: 0; }
     .profile-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
     .profile-info { flex: 1; }
-    .profile-name { font-size: 1.4em; font-weight: 700; margin-bottom: 5px; }
+    .profile-name { font-size: 1.4em; font-weight: 700; margin-bottom: 5px; line-height: 1.2; }
     .profile-stats { display: flex; gap: 20px; font-size: 0.85em; color: var(--gray-text); }
     .profile-stats strong { color: var(--text-dark); font-size: 1.2em; display: block; margin-top: 2px;}
     
@@ -91,9 +85,8 @@
     .btn-outline.active-edit { background-color: var(--primary-orange); color: var(--white); border-color: var(--primary-orange); }
     .btn-outline.active-edit svg { fill: var(--white); }
 
-    .activity-list-icon { width: 24px; height: 24px; fill: var(--text-dark); margin-right: 15px; }
-    
-    .btn-inline-edit { display: none; background: var(--gray-light); border: none; padding: 5px; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; align-items: center; justify-content: center; margin-left: 10px; }
+    .activity-list-icon { width: 24px; height: 24px; fill: var(--text-dark); margin-right: 15px; flex-shrink: 0; }
+    .btn-inline-edit { display: none; background: var(--gray-light); border: none; padding: 5px; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; align-items: center; justify-content: center; margin-left: 10px; flex-shrink: 0; }
     .btn-inline-edit svg { width: 14px; height: 14px; fill: var(--primary-purple); }
     .edit-mode-active .btn-inline-edit { display: flex; } 
 
@@ -107,14 +100,15 @@
     /* MODALY / VYSKAKOVACÍ OKNA */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
     .modal-overlay.active { opacity: 1; pointer-events: all; }
-    .modal-content { background-color: var(--white); padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; }
+    .modal-content { background-color: var(--white); padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; text-align: center; position: relative; }
     .modal-content h3 { margin-bottom: 20px; color: var(--primary-purple); }
+    
     .activity-chips { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-    .chip { background-color: var(--gray-light); color: var(--text-dark); padding: 10px 20px; border-radius: 20px; font-size: 0.9em; font-weight: 600; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+    .chip { background-color: var(--gray-light); color: var(--text-dark); padding: 10px 20px; border-radius: 20px; font-size: 0.9em; font-weight: 600; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; user-select: none; }
     .chip.active { background-color: #e8e6f1; color: var(--primary-purple); border-color: var(--primary-purple); }
+    
     .km-input-wrapper { margin-bottom: 20px; }
     .km-input { width: 100px; font-size: 2em; font-weight: 700; text-align: center; border: none; border-bottom: 2px solid var(--primary-purple); outline: none; color: var(--text-dark); padding: 5px; }
-    
     .date-input-wrapper { margin-bottom: 20px; text-align: left; }
     .date-input-wrapper label { font-size: 0.85em; color: var(--gray-text); font-weight: 600; display: block; margin-bottom: 5px; }
     .date-input { width: 100%; padding: 12px; border: 1px solid var(--gray-light); border-radius: 10px; font-family: inherit; font-size: 1em; outline: none; }
@@ -127,8 +121,10 @@
 
     .cropper-container-wrapper { width: 100%; max-height: 220px; margin-top: 15px; background-color: #eee; overflow: hidden; border-radius: 10px; display: none; }
     .cropper-container-wrapper img { max-width: 100%; display: block; }
-    
     .btn-delete-photo { background-color: transparent; border: 1px solid #d63031; color: #d63031; padding: 10px 15px; border-radius: 10px; font-weight: 600; cursor: pointer; margin-top: 10px; width: 100%; display: none; }
+    
+    /* Zcela smazat profil tlačítko */
+    .btn-delete-profile-danger { background-color: #ffeaea; border: 1px solid #d63031; color: #d63031; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 30px; }
   </style>
 </head>
 <body>
@@ -143,8 +139,6 @@
     <div class="auth-form">
       <input type="email" id="email-input" class="auth-input" placeholder="Tvůj e-mail">
       <input type="password" id="password-input" class="auth-input" placeholder="Heslo (min. 6 znaků)">
-      
-      <!-- Odkaz pro zapomenuté heslo -->
       <a href="#" class="forgot-password" onclick="resetPassword(event)">Zapomněl(a) jsi heslo?</a>
       
       <button onclick="loginUser()" class="btn-login">Přihlásit se</button>
@@ -177,7 +171,6 @@
         <div class="card">
           <h3 style="margin-bottom: 10px;">Lech lecha!</h3>
           <p style="display: flex; justify-content: space-between; font-size: 0.9em;">
-            <!-- Ikona SVG místo emoji vložená z JavaScriptu -->
             <span id="global-km-text" style="color: #27ae60; font-weight: 600;">0 / 3 240 km</span>
             <span style="color: var(--gray-text);" id="countdown-text">Cíl: Jeruzalém</span>
           </p>
@@ -204,6 +197,12 @@
     <!-- ZÁLOŽKA 2: STATISTIKA -->
     <div id="tab-statistics" class="hidden">
       <div class="top-bar"><span>Statistika</span></div>
+      
+      <!-- HLAVIČKA VÝZVY -->
+      <div style="padding: 20px 15px 5px 15px; text-align: center;">
+        <h2 style="color: var(--primary-purple); font-weight: 700;">Výzva: Lech Lecha</h2>
+        <p style="color: var(--gray-text); font-size: 0.9em; margin-top: 5px;">Přehled výsledků všech účastníků</p>
+      </div>
 
       <div class="leaderboard-section" style="padding-top: 15px;">
         <div class="card">
@@ -222,9 +221,14 @@
           </div>
         </div>
       </div>
+      
+      <!-- TLAČÍTKO NOVÁ VÝZVA -->
+      <div style="padding: 0 15px 15px 15px;">
+         <button class="btn-outline" style="width: 100%; justify-content: center; padding: 15px;" onclick="openCreateChallengeModal()">+ Vytvořit novou výzvu</button>
+      </div>
     </div> 
 
-    <!-- ZÁLOŽKA 4: PROFIL -->
+    <!-- ZÁLOŽKA 4: TVŮJ PROFIL -->
     <div id="tab-profile" class="hidden">
       <div class="top-bar"><span>Lech lecha!</span></div>
 
@@ -254,7 +258,6 @@
               <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> Upravit
             </button>
           </div>
-          
           <div id="profile-activity-list" class="leaderboard-list">
             <div style="text-align: center; color: var(--gray-text); padding: 10px;">Zatím nemáš zapsanou žádnou aktivitu.</div>
           </div>
@@ -326,7 +329,7 @@
     </div>
   </div>
 
-  <!-- MODAL: ÚPRAVA PROFILU -->
+  <!-- MODAL: ÚPRAVA PROFILU + SMAZÁNÍ ÚČTU -->
   <div id="profile-edit-modal" class="modal-overlay">
     <div class="modal-content">
       <h3>Upravit profil</h3>
@@ -340,7 +343,6 @@
         <button type="button" class="btn-delete-photo" id="btn-delete-avatar" onclick="deleteProfilePhoto()">Smazat stávající fotku</button>
       </div>
       
-      <!-- Ořezová mřížka -->
       <div class="cropper-container-wrapper" id="cropper-wrapper">
         <img id="cropper-image" src="">
       </div>
@@ -349,14 +351,84 @@
         <button class="btn-cancel" onclick="closeProfileEditModal()">Zrušit</button>
         <button class="btn-save" onclick="saveProfileEdit()">Uložit profil</button>
       </div>
+      
+      <!-- Tlačítko pro celkové smazání účtu -->
+      <button class="btn-delete-profile-danger" onclick="deleteUserAccount()">Odstranit celý můj profil a data</button>
+    </div>
+  </div>
+  
+  <!-- MODAL: VYTVOŘENÍ NOVÉ VÝZVY -->
+  <div id="create-challenge-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>Nová výzva</h3>
+      <div class="date-input-wrapper">
+        <label>Název výzvy:</label>
+        <input type="text" class="date-input" placeholder="Např. Křížem krážem republikou">
+      </div>
+      <div class="date-input-wrapper">
+        <label>Cílová vzdálenost (km):</label>
+        <input type="number" class="date-input" placeholder="1000">
+      </div>
+      <div class="date-input-wrapper" style="display:flex; gap:10px;">
+        <div style="flex:1;">
+          <label>Od:</label>
+          <input type="date" class="date-input">
+        </div>
+        <div style="flex:1;">
+          <label>Do:</label>
+          <input type="date" class="date-input">
+        </div>
+      </div>
+      <div class="date-input-wrapper">
+        <label style="text-align:center; margin-top:10px;">Povolené aktivity:</label>
+        <div class="activity-chips" style="margin-bottom:0;">
+          <div class="chip active" onclick="toggleChallengeChip(this)">Chůze</div>
+          <div class="chip active" onclick="toggleChallengeChip(this)">Běh</div>
+          <div class="chip active" onclick="toggleChallengeChip(this)">Kolo</div>
+          <div class="chip" onclick="toggleChallengeChip(this)">Plavání</div>
+          <div class="chip" onclick="toggleChallengeChip(this)">Běžky</div>
+        </div>
+      </div>
+      
+      <div class="modal-buttons-row" style="margin-top: 20px;">
+        <button class="btn-cancel" onclick="closeCreateChallengeModal()">Zrušit</button>
+        <button class="btn-save" onclick="saveNewChallenge()">Vytvořit</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- MODAL: VEŘEJNÝ PROFIL (Profil kamaráda) -->
+  <div id="public-profile-modal" class="modal-overlay">
+    <div class="modal-content" style="padding:0; overflow:hidden;">
+      <div class="top-bar" style="border-radius: 15px 15px 0 0;">
+        <span>Profil účastníka</span>
+        <button class="btn-logout" style="border:none; text-decoration:underline;" onclick="closePublicProfile()">Zavřít</button>
+      </div>
+      <div style="padding: 20px; overflow-y: auto; max-height: calc(90vh - 70px);">
+          <div class="profile-header" style="padding: 0 0 20px 0;">
+            <div class="profile-avatar-large" id="public-profile-avatar">?</div>
+            <div class="profile-info" style="text-align:left;">
+              <div class="profile-name" id="public-profile-name">Načítám...</div>
+              <div class="profile-stats">
+                <div>Celkem<strong id="public-profile-total-km">0 km</strong></div>
+                <div>Aktivity<strong id="public-profile-total-activities">0</strong></div>
+              </div>
+            </div>
+          </div>
+          <div class="leaderboard-section" style="padding:0; text-align:left;">
+            <div class="leaderboard-title">Přehled aktivit</div>
+            <div id="public-profile-activity-list" class="leaderboard-list">
+              <div style="text-align: center; color: var(--gray-text); padding: 10px;">Načítám aktivity...</div>
+            </div>
+          </div>
+      </div>
     </div>
   </div>
 
   <script type="module">
-    // Přidán import sendPasswordResetEmail
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, increment, onSnapshot, collection, query, orderBy, addDoc, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, increment, onSnapshot, collection, query, orderBy, addDoc, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDI_7D0jyBM2LbU4hpoumGp3VPdcBn2jEY",
@@ -386,7 +458,6 @@
     let editActivityType = "";
     let selectedActivityId = null; 
     let selectedActivityOldKm = 0; 
-    
     let cropper = null; 
 
     function getWeekNumber(d) {
@@ -399,18 +470,9 @@
         return d.getUTCFullYear() + "-" + weekNo;
     }
 
-    function calculateDaysLeft() {
-        const endDate = new Date("2026-09-15T23:59:59");
-        const today = new Date();
-        const diffTime = endDate - today;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-        if (diffDays > 0) { document.getElementById("countdown-text").innerText = `zbývá ${diffDays} dní`; } 
-        else { document.getElementById("countdown-text").innerText = "Výzva skončila"; }
-    }
-    calculateDaysLeft();
-
+    // NOVÉ IKONY: Běh má teď odlišný SVG piktogram
     const icons = {
-      "Běh": `<svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>`,
+      "Běh": `<svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-1.98 8.15 1.1-1.18c.43-.44.92-.73 1.48-.82l2.3-.35-1.01 4.5 2.11 2z"/></svg>`,
       "Kolo": `<svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm5.8-10l2.4-2.4.8.8c1.3 1.3 3 2.1 5.1 2.1V9c-1.5 0-2.7-.6-3.6-1.5l-1.9-1.9c-.5-.4-1-.7-1.6-.7s-1.1.2-1.4.6L8.5 8.4c-.3.4-.5.8-.5 1.4v5h2v-4.1l1.8-1.8zM19 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z"/></svg>`,
       "Chůze": `<svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>`
     };
@@ -459,9 +521,7 @@
           const totalKm = data.totalKm || 0;
           const targetKm = 3240;
           
-          // Nová vektorová ikona pravítka místo emoji
           const rulerSvg = `<svg viewBox="0 0 24 24" style="width: 18px; height: 18px; vertical-align: text-bottom; margin-right: 5px; fill: var(--text-dark);"><path d="M21 11H3c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2v-4c0-1.1-.9-2-2-2zm0 6H3v-4h2v3h2v-3h2v3h2v-3h2v3h2v-3h2v3h2v-3h2v4z"/></svg>`;
-          
           document.getElementById('global-km-text').innerHTML = `${rulerSvg}<span style="color: #27ae60;">${totalKm.toLocaleString('cs-CZ')}</span> <span style="color: var(--gray-text);">/ 3 240 km</span>`;
           document.getElementById('public-total-km').innerText = `${totalKm.toLocaleString('cs-CZ')} km`;
           
@@ -516,6 +576,7 @@
           let rank = 1;
           querySnapshot.forEach((docSnap) => {
             const data = docSnap.data();
+            const userId = docSnap.id; // Získáme ID uživatele pro proklik!
             const name = data.name || 'Neznámý';
             const km = data.personalKm || 0;
             const avatarUrl = data.avatarUrl || "";
@@ -524,7 +585,7 @@
             const avatarHtml = avatarUrl ? `<img src="${avatarUrl}" alt="avatar">` : initial;
             
             const htmlItem = `
-              <div class="leaderboard-item">
+              <div class="leaderboard-item" onclick="openPublicProfile('${userId}')">
                 <div class="lb-rank">${rank}</div>
                 <div class="lb-avatar">${avatarHtml}</div>
                 <div class="lb-name">${name}</div>
@@ -595,6 +656,28 @@
                 await updateDoc(doc(db, "users", currentUser.uid), { avatarUrl: "" });
                 window.closeProfileEditModal();
             } catch (error) { console.error(error); alert("Chyba při mazání fotky."); }
+        }
+    };
+
+    // SMAZÁNÍ CELÉHO ÚČTU Z DATABÁZE
+    window.deleteUserAccount = async () => {
+        if(!currentUser) return;
+        if(confirm("⚠️ OPRAVDU chceš nenávratně smazat svůj profil a veškerá svá data? (Tvé kilometry zůstanou v celkovém historickém počítadle výzvy, ale tvůj profil zmizí).")) {
+            try {
+                // Smaže dokument uživatele v databázi
+                await deleteDoc(doc(db, "users", currentUser.uid));
+                // Smaže přihlašovací účet
+                await deleteUser(currentUser);
+                window.closeProfileEditModal();
+            } catch (error) {
+                console.error(error);
+                // Firebase vyžaduje nedávné přihlášení pro smazání účtu
+                if(error.code === 'auth/requires-recent-login') {
+                    alert("Z bezpečnostních důvodů se pro smazání účtu musíš odhlásit a znovu přihlásit. Prosím, udělej to a zkus to znovu.");
+                } else {
+                    alert("Chyba při mazání profilu: " + error.message);
+                }
+            }
         }
     };
 
@@ -698,80 +781,102 @@
       if (editBtn) editBtn.classList.remove('active-edit');
     };
 
-    // POJISTKA + NOVÁ FUNKCE PRO OBNOVU HESLA
-    window.resetPassword = (event) => {
-        event.preventDefault(); // Zabrání přeskočení stránky nahoru
-        const email = document.getElementById('email-input').value.trim();
-        
-        if(!email || !email.includes('@')) {
-            errorMsg.textContent = "Pro obnovu hesla nejprve napiš svůj e-mail do horního políčka.";
-            errorMsg.style.display = 'block';
-            errorMsg.style.color = '#d63031'; // červená
+    // FUNKCE PRO VYPISOVÁNÍ VEŘEJNÉHO PROFILU KAMARÁDA
+    window.openPublicProfile = async (uid) => {
+        if(uid === currentUser?.uid) {
+            window.switchTab('profile'); // Pokud kliknu na sebe, jdu do svého editovatelného profilu
             return;
         }
         
-        errorMsg.style.display = 'none';
+        document.getElementById('public-profile-modal').classList.add('active');
+        document.getElementById('public-profile-name').innerText = "Načítám...";
+        document.getElementById('public-profile-avatar').innerHTML = "?";
+        document.getElementById('public-profile-activity-list').innerHTML = "<div style='text-align: center; padding: 10px;'>Načítám aktivity...</div>";
         
+        try {
+            // Načtení uživatele
+            const userSnap = await getDoc(doc(db, "users", uid));
+            if(userSnap.exists()) {
+                const data = userSnap.data();
+                document.getElementById('public-profile-name').innerText = data.name;
+                document.getElementById('public-profile-total-km').innerText = (data.personalKm || 0).toLocaleString('cs-CZ') + ' km';
+                if(data.avatarUrl) {
+                    document.getElementById('public-profile-avatar').innerHTML = `<img src="${data.avatarUrl}">`;
+                } else {
+                    document.getElementById('public-profile-avatar').innerText = data.name.charAt(0).toUpperCase();
+                }
+            }
+            
+            // Načtení aktivit (Využívá index, který jsme už vytvořili!)
+            const actsQuery = query(collection(db, "activities"), where("uid", "==", uid), orderBy("timestamp", "desc"));
+            const actsSnap = await getDocs(actsQuery);
+            document.getElementById('public-profile-total-activities').innerText = actsSnap.size;
+            
+            const listContainer = document.getElementById('public-profile-activity-list');
+            listContainer.innerHTML = '';
+            
+            if(actsSnap.empty) {
+                listContainer.innerHTML = "<div style='text-align: center; padding: 10px; color: var(--gray-text);'>Zatím žádné aktivity.</div>";
+            } else {
+                actsSnap.forEach(docSnap => {
+                   const d = docSnap.data();
+                   const dateObj = d.timestamp ? d.timestamp.toDate() : new Date();
+                   const dateStr = dateObj.toLocaleDateString('cs-CZ');
+                   const icon = icons[d.type] || icons["Chůze"];
+                   listContainer.innerHTML += `
+                      <div class="leaderboard-item">
+                        ${icon}
+                        <div class="lb-name" style="font-weight: 400;">${dateStr} <span style="font-size: 0.8em; color: var(--gray-text); margin-left: 5px;">(${d.type})</span></div>
+                        <div class="lb-score">${d.km.toLocaleString('cs-CZ')} km</div>
+                      </div>
+                   `;
+                });
+            }
+        } catch (e) { console.error(e); }
+    };
+    window.closePublicProfile = () => { document.getElementById('public-profile-modal').classList.remove('active'); };
+
+    // FUNKCE PRO VIZUÁL NOVÉ VÝZVY
+    window.openCreateChallengeModal = () => { document.getElementById('create-challenge-modal').classList.add('active'); };
+    window.closeCreateChallengeModal = () => { document.getElementById('create-challenge-modal').classList.remove('active'); };
+    window.toggleChallengeChip = (element) => { element.classList.toggle('active'); };
+    window.saveNewChallenge = () => {
+        alert("Funkce pro vytváření více výzev najednou vyžaduje strukturální úpravu databáze. Jako grafický návrh do budoucna je to ale připraveno!");
+        window.closeCreateChallengeModal();
+    };
+
+    window.resetPassword = (event) => {
+        event.preventDefault(); 
+        const email = document.getElementById('email-input').value.trim();
+        if(!email || !email.includes('@')) {
+            errorMsg.textContent = "Pro obnovu hesla nejprve napiš svůj e-mail do horního políčka.";
+            errorMsg.style.display = 'block'; errorMsg.style.color = '#d63031'; return;
+        }
+        errorMsg.style.display = 'none';
         sendPasswordResetEmail(auth, email)
-            .then(() => {
-                errorMsg.textContent = "Odkaz pro obnovu hesla byl odeslán na tvůj e-mail.";
-                errorMsg.style.color = '#27ae60'; // zelená pro úspěch
-                errorMsg.style.display = 'block';
-            })
-            .catch((error) => {
-                errorMsg.textContent = "Chyba při obnově hesla. Zkontroluj e-mail.";
-                errorMsg.style.color = '#d63031';
-                errorMsg.style.display = 'block';
-            });
+            .then(() => { errorMsg.textContent = "Odkaz pro obnovu hesla byl odeslán na tvůj e-mail."; errorMsg.style.color = '#27ae60'; errorMsg.style.display = 'block'; })
+            .catch((error) => { errorMsg.textContent = "Chyba při obnově hesla. Zkontroluj e-mail."; errorMsg.style.color = '#d63031'; errorMsg.style.display = 'block'; });
     };
 
     window.registerUser = () => { 
-        errorMsg.style.color = '#d63031'; // Vždy vrátíme na červenou pro případné chyby
+        errorMsg.style.color = '#d63031';
         const email = document.getElementById('email-input').value.trim(); 
         const password = document.getElementById('password-input').value.trim(); 
-        
-        if(!email || !password) {
-            errorMsg.textContent = "Prosím, vyplň e-mail i heslo.";
-            errorMsg.style.display = 'block';
-            return;
-        }
-        if(!email.includes('@')) {
-            errorMsg.textContent = "Zadej prosím platnou e-mailovou adresu (např. se zavináčem @).";
-            errorMsg.style.display = 'block';
-            return;
-        }
-        if(password.length < 6) {
-            errorMsg.textContent = "Heslo musí mít alespoň 6 znaků.";
-            errorMsg.style.display = 'block';
-            return;
-        }
+        if(!email || !password) { errorMsg.textContent = "Prosím, vyplň e-mail i heslo."; errorMsg.style.display = 'block'; return; }
+        if(!email.includes('@')) { errorMsg.textContent = "Zadej prosím platnou e-mailovou adresu."; errorMsg.style.display = 'block'; return; }
+        if(password.length < 6) { errorMsg.textContent = "Heslo musí mít alespoň 6 znaků."; errorMsg.style.display = 'block'; return; }
         errorMsg.style.display = 'none'; 
-        createUserWithEmailAndPassword(auth, email, password).catch((e) => { 
-            errorMsg.textContent = "Chyba registrace: E-mail je už nejspíš zabraný."; 
-            errorMsg.style.display = 'block'; 
-        }); 
+        createUserWithEmailAndPassword(auth, email, password).catch((e) => { errorMsg.textContent = "Chyba registrace: E-mail je už nejspíš zabraný."; errorMsg.style.display = 'block'; }); 
     };
     
     window.loginUser = () => { 
         errorMsg.style.color = '#d63031'; 
         const email = document.getElementById('email-input').value.trim(); 
         const password = document.getElementById('password-input').value.trim(); 
-        
-        if(!email || !password) {
-            errorMsg.textContent = "Prosím, vyplň e-mail i heslo.";
-            errorMsg.style.display = 'block';
-            return;
-        }
-        if(!email.includes('@')) {
-            errorMsg.textContent = "Zadej prosím platnou e-mailovou adresu.";
-            errorMsg.style.display = 'block';
-            return;
-        }
+        if(!email || !password) { errorMsg.textContent = "Prosím, vyplň e-mail i heslo."; errorMsg.style.display = 'block'; return; }
+        if(!email.includes('@')) { errorMsg.textContent = "Zadej prosím platnou e-mailovou adresu."; errorMsg.style.display = 'block'; return; }
         errorMsg.style.display = 'none'; 
-        signInWithEmailAndPassword(auth, email, password).catch((e) => { 
-            errorMsg.textContent = "Chybný e-mail nebo heslo."; 
-            errorMsg.style.display = 'block'; 
-        }); 
+        signInWithEmailAndPassword(auth, email, password).catch((e) => { errorMsg.textContent = "Chybný e-mail nebo heslo."; errorMsg.style.display = 'block'; }); 
     };
     
     window.loginWithGoogle = () => { errorMsg.style.display = 'none'; signInWithPopup(auth, googleProvider).catch((e) => { errorMsg.textContent = "Chyba Google přihlášení."; errorMsg.style.display = 'block'; }); };
