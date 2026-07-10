@@ -140,10 +140,18 @@
     .challenge-members-dropdown { background-color: var(--bg-color); border-radius: 12px; padding: 10px 15px; margin-top: 10px; font-size: 0.9em; border: 1px solid var(--gray-border); }
     .challenge-member-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); color: var(--text-dark); }
     .challenge-member-row:last-child { border-bottom: none; }
+    
+    /* Vzhled auth formuláře */
+    .auth-form { background-color: var(--white); padding: 25px; border-radius: 24px; margin-top: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: left; }
+    .auth-input { width: 100%; padding: 15px; margin-bottom: 12px; border: 1px solid var(--gray-border); border-radius: 12px; font-size: 1em; }
+    .btn-login { background-color: var(--primary-orange); color: var(--white); border: none; padding: 15px; font-size: 1.1em; font-weight: 600; border-radius: 12px; cursor: pointer; width: 100%; margin-bottom: 10px; }
+    .btn-register { background-color: var(--primary-dark); color: var(--white); border: none; padding: 15px; font-size: 1em; font-weight: 600; border-radius: 12px; cursor: pointer; width: 100%; margin-bottom: 15px;}
+    .btn-google { background-color: var(--white); color: var(--text-dark); border: 1px solid var(--gray-border); padding: 15px; font-size: 1em; font-weight: 600; border-radius: 12px; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
   </style>
 </head>
 <body>
 
+  <!-- VEŘEJNÁ ČÁST (PŘIHLÁŠENÍ) -->
   <div id="public-view">
     <h1 class="page-title" style="justify-content: center; font-size: 2em; margin-top: 40px;">Lech lecha!</h1>
     <p style="color: var(--text-gray);">Přidej se k naší společné výzvě.</p>
@@ -167,8 +175,10 @@
     </div>
   </div>
 
+  <!-- SOUKROMÁ ČÁST -->
   <div id="private-view" class="hidden">
     
+    <!-- ZÁLOŽKA 1: PŘEHLED -->
     <div id="tab-dashboard">
       <div class="page-title">Lech lecha!</div>
       
@@ -206,6 +216,7 @@
       </div>
     </div> 
 
+    <!-- ZÁLOŽKA 2: STATISTIKA A VÝZVY -->
     <div id="tab-statistics" class="hidden">
       <div class="page-title">Statistika</div>
       
@@ -214,6 +225,7 @@
         <p style="color: var(--text-gray); font-size: 0.9em; margin-top: 5px;">Přehled výsledků všech účastníků</p>
       </div>
 
+      <!-- TÝDENNÍ PŘEHLED (KAŽDÝ TÝDEN STARTUJE SÁM OD NULY) -->
       <div class="leaderboard-section">
         <div class="card">
           <h3 style="font-size: 1.05em; font-weight: 700; color: var(--text-dark); margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
@@ -226,19 +238,21 @@
         </div>
       </div>
 
+      <!-- HISTORIE PO TÝDNECH -->
       <div class="leaderboard-section">
         <div class="card">
           <h3 style="font-size: 1.05em; font-weight: 700; color: var(--text-dark); margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
               <svg viewBox="0 0 24 24" width="20" height="20" fill="var(--text-gray)"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2zm3-4H7V7h13v2z"/></svg>
               Historie po týdnech
           </h3>
-          <p style="font-size: 0.8em; color: var(--text-gray); margin-bottom: 15px;">Celkový týdenní nájezd celé komunity dohromady v čase</p>
+          <p style="font-size: 0.8em; color: var(--text-gray); margin-bottom: 15px;">Celkový týdenní nájezd komunity</p>
           <div class="bar-chart-scroll-wrapper">
              <div id="weekly-bar-chart-graphics" style="min-width: 100%;"></div>
           </div>
         </div>
       </div>
 
+      <!-- CELKOVÝ HISTORICKÝ ŽEBŘÍČEK -->
       <div class="leaderboard-section">
         <div class="card">
           <h3 style="font-size: 1.05em; font-weight: 700; color: var(--text-dark); margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
@@ -253,6 +267,7 @@
         </div>
       </div>
       
+      <!-- CÍL JERUZALÉM BANNER -->
       <div class="jerusalem-banner">
         <h4>
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
@@ -272,6 +287,7 @@
       </div>
     </div> 
 
+    <!-- ZÁLOŽKA 3: MAPA -->
     <div id="tab-map" class="hidden">
       <div class="page-title">Mapa <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--text-dark)"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg></div>
       <div style="background-color: #E5E5F7; height: 400px; margin: 0 20px 20px 20px; border-radius: 20px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
@@ -279,6 +295,7 @@
       </div>
     </div>
 
+    <!-- ZÁLOŽKA 4: PROFIL -->
     <div id="tab-profile" class="hidden">
       <div class="page-title">Můj profil <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--text-dark)"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg></div>
 
@@ -315,6 +332,7 @@
       </div>
     </div> 
 
+    <!-- SPODNÍ NAVIGAČNÍ LIŠTA -->
     <div class="bottom-nav">
       <div class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
         <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Přehled
@@ -331,6 +349,7 @@
     </div>
   </div>
 
+  <!-- MODALY -->
   <div id="activity-modal" class="modal-overlay" onclick="if(event.target===this) closeModal()">
     <div class="modal-content">
       <h3>Nová aktivita</h3>
@@ -494,7 +513,7 @@
     let unsubscribeActivities = null; let unsubscribeChallengesList = null; let unsubscribeAllActivitiesGlobal = null;
     let isSaving = false;
     
-    // Globální cache dat pro spolehlivější křížové propojování žebříčků
+    // Globální cache dat
     let cachedUsersMap = {};
     let currentWeeklyKms = {};
 
@@ -537,40 +556,36 @@
           if (data.avatarUrl) { pAvatarNode.innerHTML = `<img src="${data.avatarUrl}">`; } else { pAvatarNode.innerHTML = (data.name || 'N').charAt(0).toUpperCase(); }
         });
 
+        const globalRef = doc(db, "global", "stats");
+        if (!(await getDoc(globalRef)).exists()) { await setDoc(globalRef, { totalKm: 0 }); }
+        unsubscribeGlobal = onSnapshot(globalRef, (docSnap) => {
+          if (!docSnap.exists()) return;
+          const totalKm = Math.max(0, docSnap.data().totalKm || 0);
+          const targetKm = 3240; const missing = Math.max(0, targetKm - totalKm);
+          document.getElementById('jerusalem-missing-text').innerText = `Zbývá ${missing.toLocaleString('cs-CZ', {minimumFractionDigits: 1, maximumFractionDigits: 1})} km`;
+        });
+
         // JEDINÝ RYCHLÝ GLOBÁLNÍ POSLUCHAČ PRO KRUHOVÝ I NOVÝ SLOUPCOVÝ GRAF HISTORIE
         unsubscribeAllActivitiesGlobal = onSnapshot(collection(db, "activities"), (snapshot) => {
             let pieSums = { "Chůze": 0, "Běh": 0, "Kolo": 0, "Plavání": 0, "Běžky": 0 };
-            let barWeeklyTotals = {}; // Drží součty celé komunity rozdělené podle "2026-28" atd.
+            let barWeeklyTotals = {}; 
             let totalKmAllTime = 0;
-            
-            // Vyčištění aktuálních týdenních dat před novým výpočtem
             currentWeeklyKms = {};
             const thisWeekStr = getWeekNumber(new Date());
 
             snapshot.forEach(docSnap => {
-                const d = docSnap.data();
-                const km = d.km || 0;
-                
+                const d = docSnap.data(); const km = d.km || 0;
                 if (km > 0) {
-                    // 1. Agregace pro kruhový graf (pie)
                     if (pieSums[d.type] !== undefined) { pieSums[d.type] += km; totalKmAllTime += km; }
-                    
-                    // 2. Agregace pro sloupcový graf týdenní historie
                     if (d.weekStr) { barWeeklyTotals[d.weekStr] = (barWeeklyTotals[d.weekStr] || 0) + km; }
-                    
-                    // 3. Agregace pro Týdenní izolovaný žebříček (pokud aktivita patří do aktuálního týdne)
-                    if (d.weekStr === thisWeekStr && d.uid) {
-                        currentWeeklyKms[d.uid] = (currentWeeklyKms[d.uid] || 0) + km;
-                    }
+                    if (d.weekStr === thisWeekStr && d.uid) { currentWeeklyKms[d.uid] = (currentWeeklyKms[d.uid] || 0) + km; }
                 }
             });
-            
             renderActivityChart(pieSums, totalKmAllTime);
             renderWeeklyBarChart(barWeeklyTotals);
-            renderWeeklyLeaderboard(); // Přepočítá týdenní přehled lidí
+            renderWeeklyLeaderboard();
         });
 
-        // OSOBNÍ DENÍČEK AKTIVIT
         unsubscribeActivities = onSnapshot(query(collection(db, "activities"), where("uid", "==", user.uid), orderBy("timestamp", "desc")), (snapshot) => {
            const listContainer = document.getElementById('profile-activity-list'); listContainer.innerHTML = '';
            document.getElementById('profile-total-activities').innerText = snapshot.size;
@@ -588,10 +603,12 @@
            });
         });
 
-        // POLOŽKY KOMUNITNÍCH VÝZEV
         unsubscribeChallengesList = onSnapshot(query(collection(db, "challenges"), orderBy("createdAt", "desc")), async (snap) => {
             const statsList = document.getElementById('stats-custom-challenges'); const dashList = document.getElementById('dash-joined-challenges'); const profList = document.getElementById('profile-my-challenges');
             statsList.innerHTML = ''; dashList.innerHTML = ''; profList.innerHTML = '';
+            
+            const allUsersSnap = await getDocs(collection(db, "users")); let userMap = {};
+            allUsersSnap.forEach(uDoc => { const ud = uDoc.data(); userMap[uDoc.id] = { name: ud.name || "Neznámý", avatarUrl: ud.avatarUrl || "" }; });
 
             snap.forEach(docSnap => {
                 const d = docSnap.data(); const cid = docSnap.id;
@@ -600,13 +617,12 @@
                 let pct = d.targetKm > 0 ? (safeCurrentKm / d.targetKm) * 100 : 0; if(pct > 100) pct = 100;
                 const memberCount = d.members ? d.members.length : 0;
                 
-                // Mapování jmen členů z naší globální cache
                 let memberData = [];
                 if(d.members) {
                     d.members.forEach(mUid => {
-                        if(cachedUsersMap[mUid]) {
+                        if(userMap[mUid]) {
                             const mKm = (d.memberKm && d.memberKm[mUid]) ? d.memberKm[mUid] : 0;
-                            memberData.push({ name: cachedUsersMap[mUid].name, avatar: cachedUsersMap[mUid].avatarUrl, km: Math.max(0, mKm) });
+                            memberData.push({ name: userMap[mUid].name, avatar: userMap[mUid].avatarUrl, km: Math.max(0, mKm) });
                         }
                     });
                 }
@@ -672,33 +688,26 @@
             if(profList.innerHTML === '') profList.innerHTML = '<div style="text-align: center; color: var(--text-gray); font-size:0.9em; padding: 10px;">Zatím jsi nevytvořil žádnou výzvu.</div>';
         });
 
-        // HLAVNÍ ŽEBŘÍČEK UŽIVATELŮ (CELKOVÝ)
         unsubscribeLeaderboard = onSnapshot(query(collection(db, "users"), orderBy("personalKm", "desc")), (querySnapshot) => {
           const dashList = document.getElementById('dashboard-leaderboard-list');
           const statsOverallList = document.getElementById('stats-overall-list');
           dashList.innerHTML = ''; statsOverallList.innerHTML = '';
-          
-          cachedUsersMap = {}; // Aktualizace naší lokální cache
+          cachedUsersMap = {}; 
           let rank = 1;
           
           querySnapshot.forEach((docSnap) => {
             const data = docSnap.data(); const userId = docSnap.id;
-            cachedUsersMap[userId] = data; // Uložíme profil do cache pro ostatní pohledy
-
+            cachedUsersMap[userId] = data; 
             const km = Math.max(0, data.personalKm || 0);
             const avatarHtml = data.avatarUrl ? `<img src="${data.avatarUrl}">` : (data.name || 'N').charAt(0).toUpperCase();
-            
             const htmlItem = `<div class="leaderboard-item" onclick="openPublicProfile('${userId}')">
                 <div class="lb-rank">${rank}</div><div class="lb-avatar">${avatarHtml}</div>
                 <div class="lb-name">${data.name || 'Neznámý'}</div><div class="lb-score">${km.toLocaleString('cs-CZ')} km</div>
               </div>`;
-              
             if(rank <= 3) dashList.innerHTML += htmlItem;
             statsOverallList.innerHTML += htmlItem; 
             rank++;
           });
-          
-          // Jakmile se stáhnou profily, pro jistotu překreslíme i týdenní přehled
           renderWeeklyLeaderboard();
         });
 
@@ -710,125 +719,54 @@
       }
     });
 
-    // REPREZENTACE DYNAMICKÉHO TÝDENNÍHO ŽEBŘÍČKU (IZOLOVANÝ CYKLUS OD 0 KM)
     function renderWeeklyLeaderboard() {
         const targetList = document.getElementById('stats-weekly-list');
-        if (!targetList) return;
-        targetList.innerHTML = '';
-
-        // Seřadíme lidi, kteří v tomto týdnu něco ušli
+        if (!targetList) return; targetList.innerHTML = '';
         let sortedWeekly = [];
-        for (let uid in currentWeeklyKms) {
-            if (cachedUsersMap[uid]) {
-                sortedWeekly.push({ uid: uid, name: cachedUsersMap[uid].name, avatar: cachedUsersMap[uid].avatarUrl, km: currentWeeklyKms[uid] });
-            }
-        }
-        
-        // Přidáme na konec seznamu i lidi, kteří tento týden mají 0 km, ať jsou v tabulce vidět všichni
-        for (let uid in cachedUsersMap) {
-            if (!currentWeeklyKms[uid]) {
-                sortedWeekly.push({ uid: uid, name: cachedUsersMap[uid].name, avatar: cachedUsersMap[uid].avatarUrl, km: 0 });
-            }
-        }
-
-        // Seřadíme od nejvyšších km dolů
+        for (let uid in currentWeeklyKms) { if (cachedUsersMap[uid]) { sortedWeekly.push({ uid: uid, name: cachedUsersMap[uid].name, avatar: cachedUsersMap[uid].avatarUrl, km: currentWeeklyKms[uid] }); } }
+        for (let uid in cachedUsersMap) { if (!currentWeeklyKms[uid]) { sortedWeekly.push({ uid: uid, name: cachedUsersMap[uid].name, avatar: cachedUsersMap[uid].avatarUrl, km: 0 }); } }
         sortedWeekly.sort((a, b) => b.km - a.km);
-
-        if (sortedWeekly.length === 0) {
-            targetList.innerHTML = '<div style="text-align: center; color: var(--text-gray); padding: 10px; font-size:0.9em;">V tomto týdnu zatím nikdo nezapsal žádnou aktivitu.</div>';
-            return;
-        }
-
+        if (sortedWeekly.length === 0) { targetList.innerHTML = '<div style="text-align: center; color: var(--text-gray); padding: 10px; font-size:0.9em;">V tomto týdnu zatím nikdo nezapsal žádnou aktivitu.</div>'; return; }
         let rank = 1;
         sortedWeekly.forEach(user => {
             const avatarHtml = user.avatar ? `<img src="${user.avatar}">` : user.name.charAt(0).toUpperCase();
-            targetList.innerHTML += `
-              <div class="leaderboard-item" onclick="openPublicProfile('${user.uid}')">
-                <div class="lb-rank">${rank}</div>
-                <div class="lb-avatar">${avatarHtml}</div>
-                <div class="lb-name">${user.name}</div>
-                <div class="lb-score">${user.km.toLocaleString('cs-CZ')} km</div>
-              </div>
-            `;
+            targetList.innerHTML += `<div class="leaderboard-item" onclick="openPublicProfile('${user.uid}')">
+                <div class="lb-rank">${rank}</div><div class="lb-avatar">${avatarHtml}</div>
+                <div class="lb-name">${user.name}</div><div class="lb-score">${user.km.toLocaleString('cs-CZ')} km</div>
+              </div>`;
             rank++;
         });
     }
 
-    // VYREKREOVÁNÍ MODERNÍHO SLOUPCOVÉHO GRAFU HISTORIE TÝDNŮ (SVG V ROLOVACÍM DIVU)
     function renderWeeklyBarChart(weeklyTotals) {
-        const container = document.getElementById('weekly-bar-chart-graphics');
-        if (!container) return;
-        container.innerHTML = '';
-
-        // Seřadíme klíče týdnů (např. "2026-26", "2026-27", "2026-28") chronologicky
+        const container = document.getElementById('weekly-bar-chart-graphics'); if (!container) return; container.innerHTML = '';
         let weeks = Object.keys(weeklyTotals).sort();
-        
-        if (weeks.length === 0) {
-            container.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:0.9em; padding:15px;">Zatím nemáme historii uzavřených týdnů.</div>';
-            return;
-        }
-
-        // Zjistíme nejvyšší týdenní hodnotu, abychom podle ní správně nastavili měřítko výšky sloupců
-        let maxKm = 0;
-        weeks.forEach(w => { if (weeklyTotals[w] > maxKm) maxKm = weeklyTotals[w]; });
-        if(maxKm === 0) maxKm = 10;
-
-        // Výpočty rozměrů pro graf
-        const barWidth = 35;
-        const barGap = 20;
-        const chartHeight = 120;
-        const paddingBottom = 25;
-        const paddingTop = 20;
+        if (weeks.length === 0) { container.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:0.9em; padding:15px;">Zatím nemáme historii uzavřených týdnů.</div>'; return; }
+        let maxKm = 0; weeks.forEach(w => { if (weeklyTotals[w] > maxKm) maxKm = weeklyTotals[w]; }); if(maxKm === 0) maxKm = 10;
+        const barWidth = 35; const barGap = 20; const chartHeight = 120; const paddingBottom = 25; const paddingTop = 20;
         const totalWidth = weeks.length * (barWidth + barGap) + barGap;
-
         let svgContent = '';
-
         weeks.forEach((weekKey, index) => {
-            let km = weeklyTotals[weekKey];
-            let pct = km / maxKm;
-            let barHeight = Math.max(4, pct * (chartHeight - paddingTop - paddingBottom)); // Minimální výška sloupce 4px
-            
-            let x = barGap + index * (barWidth + barGap);
-            let y = chartHeight - paddingBottom - barHeight;
-
-            // Formátování názvu týdne (z "2026-28" uděláme zkrácené "T28")
+            let km = weeklyTotals[weekKey]; let pct = km / maxKm; let barHeight = Math.max(4, pct * (chartHeight - paddingTop - paddingBottom)); 
+            let x = barGap + index * (barWidth + barGap); let y = chartHeight - paddingBottom - barHeight;
             let weekLabel = 'T' + weekKey.split('-')[1];
-
-            // Vložíme sloupec (zaoblený obdélník z návrhu)
             svgContent += `<rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="6" fill="#1E1B4B" />`;
-            
-            // Text s kilometry nad sloupcem
             svgContent += `<text x="${x + barWidth/2}" y="${y - 6}" text-anchor="middle" font-size="9" font-weight="700" fill="#111827">${Math.round(km)}k</text>`;
-            
-            // Popisek týdne pod sloupcem
             svgContent += `<text x="${x + barWidth/2}" y="${chartHeight - 8}" text-anchor="middle" font-size="10" font-weight="600" fill="#6B7280">${weekLabel}</text>`;
         });
-
-        // Vygenerujeme výsledné vektorové SVG a vložíme ho do okna
         container.innerHTML = `<svg width="${totalWidth}" height="${chartHeight}" style="display:block; margin:0 auto;">${svgContent}</svg>`;
-        
-        // Automaticky odroluje kontejner na konec doprava, aby uživatel hned viděl nejnovější aktuální týdny
-        setTimeout(() => {
-            const scrollBox = container.parentElement;
-            if(scrollBox) scrollBox.scrollLeft = totalWidth;
-        }, 100);
+        setTimeout(() => { const scrollBox = container.parentElement; if(scrollBox) scrollBox.scrollLeft = totalWidth; }, 100);
     }
 
-    // DYNAMICKÝ KRUHOVÝ GRAF POMĚRU SPORTŮ
     function renderActivityChart(sums, total) {
-        const chartBox = document.getElementById('chart-graphics-container');
-        const legendBox = document.getElementById('chart-legend-container');
-        if(!chartBox || !legendBox) return;
-        chartBox.innerHTML = ''; legendBox.innerHTML = '';
-
+        const chartBox = document.getElementById('chart-graphics-container'); const legendBox = document.getElementById('chart-legend-container');
+        if(!chartBox || !legendBox) return; chartBox.innerHTML = ''; legendBox.innerHTML = '';
         if(total === 0) {
             chartBox.innerHTML = `<svg width="120" height="120" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.915" fill="transparent" stroke="var(--gray-light)" stroke-width="4"></circle><text x="50%" y="55%" text-anchor="middle" font-size="5" font-weight="600" fill="var(--text-gray)">0%</text></svg>`;
             legendBox.innerHTML = `<div style="color:var(--text-gray); font-size:0.85em;">Zatím žádné zapsané aktivity.</div>`; return;
         }
-
         const colors = { "Chůze": "#1E1B4B", "Běh": "#FF5E00", "Kolo": "#10B981", "Plavání": "#3B82F6", "Běžky": "#8B5CF6" };
         let offset = 100; let svgContent = ''; let legendHtml = "";
-
         for(let key in sums) {
             let km = sums[key];
             if(km > 0) {
@@ -845,104 +783,72 @@
         legendBox.innerHTML = legendHtml;
     }
 
-    // ZÁPIS NOVÉ AKTIVITY (ZABEZPEČENO PROTI DVOJKLIKU)
     window.saveActivity = async () => {
-      if(isSaving) return;
-      let rawInput = document.getElementById('km-input').value.replace(',', '.'); const km = parseFloat(rawInput);
+      if(isSaving) return; let rawInput = document.getElementById('km-input').value.replace(',', '.'); const km = parseFloat(rawInput);
       if(km > 0 && currentUser) {
-        isSaving = true;
-        const btn = document.getElementById('btn-save-activity');
-        btn.innerText = "Ukládám..."; btn.disabled = true;
-        
+        isSaving = true; const btn = document.getElementById('btn-save-activity'); btn.innerText = "Ukládám..."; btn.disabled = true;
         try {
             await addDoc(collection(db, "activities"), { uid: currentUser.uid, km: km, type: currentActivityType, timestamp: new Date(), weekStr: getWeekNumber(new Date()) });
-            await updateDoc(doc(db, "users", currentUser.uid), { personalKm: increment(km) });
-            await updateDoc(doc(db, "global", "stats"), { totalKm: increment(km) });
-            
+            await updateDoc(doc(db, "users", currentUser.uid), { personalKm: increment(km) }); await updateDoc(doc(db, "global", "stats"), { totalKm: increment(km) });
             const chalSnap = await getDocs(query(collection(db, "challenges"), where("members", "array-contains", currentUser.uid)));
-            const actDate = new Date();
-            const updatePromises = [];
+            const actDate = new Date(); const updatePromises = [];
             chalSnap.forEach(dSnap => {
                 const cData = dSnap.data(); const s = new Date(cData.start); const e = new Date(cData.end); e.setHours(23,59,59);
                 let allowedLower = cData.allowedActivities.map(act => act.trim().toLowerCase());
                 if(actDate >= s && actDate <= e && allowedLower.includes(currentActivityType.toLowerCase())) {
-                    updatePromises.push(updateDoc(doc(db, "challenges", dSnap.id), { 
-                        currentKm: increment(km),
-                        [`memberKm.${currentUser.uid}`]: increment(km)
-                    }));
+                    updatePromises.push(updateDoc(doc(db, "challenges", dSnap.id), { currentKm: increment(km), [`memberKm.${currentUser.uid}`]: increment(km) }));
                 }
             });
-            await Promise.all(updatePromises);
-            window.closeModal();
-        } catch (error) { alert("Chyba při ukládání."); } 
-        finally { isSaving = false; btn.innerText = "Uložit"; btn.disabled = false; }
+            await Promise.all(updatePromises); window.closeModal();
+        } catch (error) { alert("Chyba při ukládání."); } finally { isSaving = false; btn.innerText = "Uložit"; btn.disabled = false; }
       } else { alert("Zadej platný počet kilometrů."); }
     };
 
     window.saveEditActivity = async () => {
-        if(isSaving) return;
-        let rawInput = document.getElementById('edit-km-input').value.replace(',', '.'); const newKm = parseFloat(rawInput);
+        if(isSaving) return; let rawInput = document.getElementById('edit-km-input').value.replace(',', '.'); const newKm = parseFloat(rawInput);
         const newDateVal = document.getElementById('edit-date-input').value;
         if(newKm > 0 && selectedActivityId && currentUser) {
-            isSaving = true;
-            const btn = document.getElementById('btn-edit-activity'); btn.innerText = "Ukládám..."; btn.disabled = true;
+            isSaving = true; const btn = document.getElementById('btn-edit-activity'); btn.innerText = "Ukládám..."; btn.disabled = true;
             const diffKm = newKm - selectedActivityOldKm; const newDate = newDateVal ? new Date(newDateVal) : new Date();
             try {
                 await updateDoc(doc(db, "activities", selectedActivityId), { km: newKm, type: editActivityType, timestamp: newDate, weekStr: getWeekNumber(newDate) });
-                await updateDoc(doc(db, "users", currentUser.uid), { personalKm: increment(diffKm) });
-                await updateDoc(doc(db, "global", "stats"), { totalKm: increment(diffKm) });
-                
+                await updateDoc(doc(db, "users", currentUser.uid), { personalKm: increment(diffKm) }); await updateDoc(doc(db, "global", "stats"), { totalKm: increment(diffKm) });
                 const chalSnap = await getDocs(query(collection(db, "challenges"), where("members", "array-contains", currentUser.uid)));
                 const updatePromises = [];
                 chalSnap.forEach(dSnap => {
                     const cData = dSnap.data(); const s = new Date(cData.start); const e = new Date(cData.end); e.setHours(23,59,59);
                     let allowedLower = cData.allowedActivities.map(act => act.trim().toLowerCase());
                     if(newDate >= s && newDate <= e && allowedLower.includes(editActivityType.toLowerCase())) {
-                        updatePromises.push(updateDoc(doc(db, "challenges", dSnap.id), { 
-                            currentKm: increment(diffKm),
-                            [`memberKm.${currentUser.uid}`]: increment(diffKm)
-                        }));
+                        updatePromises.push(updateDoc(doc(db, "challenges", dSnap.id), { currentKm: increment(diffKm), [`memberKm.${currentUser.uid}`]: increment(diffKm) }));
                     }
                 });
-                await Promise.all(updatePromises);
-                window.closeEditModal();
-            } catch (error) { alert("Chyba."); }
-            finally { isSaving = false; btn.innerText = "Uložit změny"; btn.disabled = false; }
+                await Promise.all(updatePromises); window.closeEditModal();
+            } catch (error) { alert("Chyba."); } finally { isSaving = false; btn.innerText = "Uložit změny"; btn.disabled = false; }
         } else { alert("Zadej platné hodnoty."); }
     };
 
     window.deleteActivity = async () => {
         if(isSaving) return;
         if(selectedActivityId && currentUser && confirm("Opravdu smazat aktivitu?")) {
-            isSaving = true;
-            const btn = document.getElementById('btn-delete-activity'); btn.innerText = "Mažu..."; btn.disabled = true;
+            isSaving = true; const btn = document.getElementById('btn-delete-activity'); btn.innerText = "Mažu..."; btn.disabled = true;
             const minusKm = -selectedActivityOldKm;
             try {
                 await deleteDoc(doc(db, "activities", selectedActivityId));
-                await updateDoc(doc(db, "users", currentUser.uid), { personalKm: increment(minusKm) });
-                await updateDoc(doc(db, "global", "stats"), { totalKm: increment(minusKm) });
-                
+                await updateDoc(doc(db, "users", currentUser.uid), { personalKm: increment(minusKm) }); await updateDoc(doc(db, "global", "stats"), { totalKm: increment(minusKm) });
                 const chalSnap = await getDocs(query(collection(db, "challenges"), where("members", "array-contains", currentUser.uid)));
-                const actDate = selectedActivityDate ? new Date(selectedActivityDate) : new Date();
-                const updatePromises = [];
+                const actDate = selectedActivityDate ? new Date(selectedActivityDate) : new Date(); const updatePromises = [];
                 chalSnap.forEach(dSnap => {
                     const cData = dSnap.data(); const s = new Date(cData.start); const e = new Date(cData.end); e.setHours(23,59,59);
                     let allowedLower = cData.allowedActivities.map(act => act.trim().toLowerCase());
                     if(actDate >= s && actDate <= e && allowedLower.includes(editActivityType.toLowerCase())) {
-                        updatePromises.push(updateDoc(doc(db, "challenges", dSnap.id), { 
-                            currentKm: increment(minusKm),
-                            [`memberKm.${currentUser.uid}`]: increment(minusKm)
-                        }));
+                        updatePromises.push(updateDoc(doc(db, "challenges", dSnap.id), { currentKm: increment(minusKm), [`memberKm.${currentUser.uid}`]: increment(minusKm) }));
                     }
                 });
-                await Promise.all(updatePromises);
-                window.closeEditModal();
-            } catch (error) { alert("Chyba."); }
-            finally { isSaving = false; btn.innerText = "Smazat aktivitu"; btn.disabled = false; }
+                await Promise.all(updatePromises); window.closeEditModal();
+            } catch (error) { alert("Chyba."); } finally { isSaving = false; btn.innerText = "Smazat aktivitu"; btn.disabled = false; }
         }
     };
 
-    // SYSTEM OVLÁDÁNÍ MODALŮ A NAVIGACE
     window.toggleMembersList = (cid) => { document.getElementById(`members-list-${cid}`).classList.toggle('hidden'); };
     window.joinChallenge = async (chalId) => { try { await updateDoc(doc(db, "challenges", chalId), { members: arrayUnion(currentUser.uid), [`memberKm.${currentUser.uid}`]: 0 }); } catch(e) { alert("Chyba."); } };
 
@@ -953,8 +859,7 @@
             if(data.avatarUrl) { deleteBtn.style.display = "block"; } else { deleteBtn.style.display = "none"; }
         }
         document.getElementById('profile-file-input').value = ""; document.getElementById('cropper-wrapper').style.display = "none";
-        if(cropper) { cropper.destroy(); cropper = null; }
-        document.getElementById('profile-edit-modal').classList.add('active');
+        if(cropper) { cropper.destroy(); cropper = null; } document.getElementById('profile-edit-modal').classList.add('active');
     };
     window.closeProfileEditModal = () => { document.getElementById('profile-edit-modal').classList.remove('active'); if(cropper) { cropper.destroy(); cropper = null; } };
     window.deleteProfilePhoto = async () => { if(confirm("Smazat fotku?")) { await updateDoc(doc(db, "users", currentUser.uid), { avatarUrl: "" }); window.closeProfileEditModal(); } };
@@ -1034,10 +939,9 @@
         try {
             await addDoc(collection(db, "challenges"), { name, targetKm, start, end, allowedActivities, creatorId: currentUser.uid, members: [currentUser.uid], currentKm: 0, memberKm: { [currentUser.uid]: 0 }, createdAt: new Date() });
             window.closeCreateChallengeModal(); document.getElementById('new-chal-name').value = ''; document.getElementById('new-chal-km').value = '';
-        } catch (e) { alert("Chyba."); } fill { isSaving = false; btn.innerText = "Vytvořit"; btn.disabled = false; }
+        } catch (e) { alert("Chyba."); } finally { isSaving = false; btn.innerText = "Vytvořit"; btn.disabled = false; }
     };
 
-    let selectedChallengeId = null;
     window.openEditChallengeModal = async (id) => {
         selectedChallengeId = id; const snap = await getDoc(doc(db, "challenges", id));
         if(snap.exists()) {
