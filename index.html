@@ -73,6 +73,7 @@
     /* LEADERBOARD */
     .leaderboard-list { display: flex; flex-direction: column; }
     .leaderboard-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-border); cursor: pointer; }
+    .leaderboard-item:first-child { padding-top: 0; }
     .leaderboard-item:last-child { border-bottom: none; padding-bottom: 0; }
     .lb-rank { width: 28px; height: 28px; background-color: var(--gray-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; color: var(--text-gray); font-size: 0.85em; margin-right: 12px; flex-shrink: 0; }
     .lb-avatar { width: 36px; height: 36px; background-color: var(--primary-dark); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 15px; font-size: 0.9em; overflow: hidden; flex-shrink: 0; }
@@ -222,7 +223,7 @@
       </div>
 
       <div class="section-title" style="margin: 20px 20px 10px 20px;">Top 3 (Celkově)</div>
-      <div class="card" style="padding: 10px 20px;">
+      <div class="card" style="padding: 20px;">
         <div id="dashboard-leaderboard-list" class="leaderboard-list">
           <div style="text-align: center; color: var(--text-gray); padding: 10px; font-size:0.9em;">Načítám data...</div>
         </div>
@@ -277,14 +278,23 @@
             <button class="btn-logout-prof" onclick="logoutUser()">Odhlásit</button>
         </div>
       </div>
+      
+      <!-- Aktivní výzvy s možností odpojení -->
+      <div id="profile-active-challenges-wrapper" style="display:none;">
+          <div class="section-title" style="margin: 0 20px 10px 20px;">Moje aktivní výzvy</div>
+          <div style="padding: 0 20px;">
+            <div id="profile-active-challenges"></div>
+          </div>
+      </div>
 
       <div class="section-title" style="margin: 20px 20px 10px 20px;">Přehled mých aktivit <span onclick="toggleEditMode()" id="btn-toggle-edit-mode" style="display:flex; align-items:center; gap:4px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> Upravit</span></div>
-      <div class="card" style="padding: 10px 20px;">
+      <div class="card" style="padding: 20px;">
         <div id="profile-activity-list" class="leaderboard-list"></div>
       </div>
       
+      <!-- Karta pro autory výzev -->
       <div id="profile-my-challenges-wrapper" style="display:none;">
-          <div class="section-title" style="margin: 0 20px 10px 20px;">Moje vytvořené výzvy</div>
+          <div class="section-title" style="margin: 0 20px 10px 20px;">Výzvy, které jsem vytvořil</div>
           <div style="padding: 0 20px;">
             <div id="profile-my-challenges"></div>
           </div>
@@ -500,7 +510,7 @@
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, increment, onSnapshot, collection, query, orderBy, addDoc, where, getDocs, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, increment, onSnapshot, collection, query, orderBy, addDoc, where, getDocs, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDI_7D0jyBM2LbU4hpoumGp3VPdcBn2jEY",
@@ -551,7 +561,7 @@
       "Běh": `<svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-1.98 8.15 1.1-1.18c.43-.44.92-.73 1.48-.82l2.3-.35-1.01 4.5 2.11 2z"/></svg>`,
       "Kolo": `<svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm5.8-10l2.4-2.4.8.8c1.3 1.3 3 2.1 5.1 2.1V9c-1.5 0-2.7-.6-3.6-1.5l-1.9-1.9c-.5-.4-1-.7-1.6-.7s-1.1.2-1.4.6L8.5 8.4c-.3.4-.5.8-.5 1.4v5h2v-4.1l1.8-1.8zM19 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z"/></svg>`,
       "Chůze": `<svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>`,
-      "Plavání": `<svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M20.54 5.4c-1.36 0-2.22.53-2.75.83-.46.26-1.17.65-2.02.65-.85 0-1.56-.39-2.02-.65-.53-.3-1.39-.83-2.75-.83s-2.22.53-2.75.83c-.46.26-1.17.65-2.02.65-.85 0-1.56-.39-2.02-.65-.53-.3-1.39-.83-2.75-.83-1.4 0-2.29.56-2.85.88l1.01 1.74c.43-.25.99-.54 1.84-.54s1.56.39 2.02.65c.53.3 1.39.83 2.75.83s2.22-.53 2.75-.83c.46-.26 1.17-.65 2.02-.65s1.56.39 2.02.65c.53.3 1.39.83 2.75.83 1.35 0 2.21-.52 2.74-.82.47-.27 1.18-.66 2.03-.66v-2c-1.35 0-2.21.52-2.74.82-.47.27-1.18.66-2.03.66-.86 0-1.57-.39-2.03-.66zM20.54 10.4c-1.36 0-2.22.53-2.75.83-.46.26-1.17.65-2.02.65-.85 0-1.56-.39-2.02-.65-.53-.3-1.39-.83-2.75-.83s-2.22.53-2.75.83c-.46.26-1.17.65-2.02.65-.85 0-1.56-.39-2.02-.65-.53-.3-1.39-.83-2.75-.83-1.4 0-2.29.56-2.85.88l1.01 1.74c.43-.25.99-.54 1.84-.54s1.56.39 2.02.65c.53.3 1.39.83 2.75.83s2.22-.53 2.75-.83c.46-.26 1.17-.65 2.02-.65s1.56.39 2.02.65c.53.3 1.39.83 2.75.83 1.35 0 2.21-.52 2.74-.82.47-.27 1.18-.66 2.03-.66v-2c-1.35 0-2.21.52-2.74.82-.47.27-1.18.66-2.03.66-.86 0-1.57-.39-2.03-.66zM20.54 15.4c-1.36 0-2.22.53-2.75.83-.46.26-1.17.65-2.02.65-.85 0-1.56-.39-2.02-.65-.53-.3-1.39-.83-2.75-.83s-2.22.53-2.75.83c-.46.26-1.17.65-2.02.65-.85 0-1.56-.39-2.02-.65-.53-.3-1.39-.83-2.75-.83-1.4 0-2.29.56-2.85.88l1.01 1.74c.43-.25.99-.54 1.84-.54s1.56.39 2.02.65c.53.3 1.39.83 2.75.83s2.22-.53 2.75-.83c.46-.26 1.17-.65 2.02-.65s1.56.39 2.02.65c.53.3 1.39.83 2.75.83 1.35 0 2.21-.52 2.74-.82.47-.27 1.18-.66 2.03-.66v-2c-1.35 0-2.21.52-2.74.82-.47.27-1.18.66-2.03.66-.86 0-1.57-.39-2.03-.66zM15 5.54c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z"/></svg>`,
+      "Plavání": `<svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M20.54 5.4c-1.36 0-2.22.53-2.75.83-.46.26-1.17.65-2.02.65-.85 0-1.56-.39-2.02-.65-.53-.3-1.39-.83-2.75-.83s-2.22.53-2.75.83c-.46.26-1.17.65-2.02.65-.85 0-1.56-.39-2.02-.65-.53-.3-1.39-.83-2.75-.83-1.4 0-2.29.56-2.85.88l1.01 1.74c.43-.25.99-.54 1.84-.54s1.56.39 2.02.65c.53.3 1.39.83 2.75.83s2.22-.53 2.75-.83c.46-.26 1.17-.65 2.02-.65s1.56.39 2.02.65c.53.3 1.39.83 2.75.83s2.22-.53 2.75-.83c.46-.26 1.17-.65 2.02-.65s1.56.39 2.02.65c.53.3 1.39.83 2.75.83 1.35 0 2.21-.52 2.74-.82.47-.27 1.18-.66 2.03-.66v-2c-1.35 0-2.21.52-2.74.82-.47.27-1.18.66-2.03.66-.86 0-1.57-.39-2.03-.66zM20.54 10.4c-1.36 0-2.22.53-2.75.83-.46.26-1.17.65-2.02.65-.85 0-1.56-.39-2.02-.65-.53-.3-1.39-.83-2.75-.83s-2.22.53-2.75.83c-.46.26-1.17.65-2.02.65-.85 0-1.56-.39-2.02-.65-.53-.3-1.39-.83-2.75-.83-1.4 0-2.29.56-2.85.88l1.01 1.74c.43-.25.99-.54 1.84-.54s1.56.39 2.02.65c.53.3 1.39.83 2.75.83s2.22-.53 2.75-.83c.46-.26 1.17-.65 2.02-.65s1.56.39 2.02.65c.53.3 1.39.83 2.75.83s2.22-.53 2.75-.83c.46-.26 1.17-.65 2.02-.65s1.56.39 2.02.65c.53.3 1.39.83 2.75.83 1.35 0 2.21-.52 2.74-.82.47-.27 1.18-.66 2.03-.66v-2c-1.35 0-2.21.52-2.74.82-.47.27-1.18.66-2.03.66-.86 0-1.57-.39-2.03-.66zM20.54 15.4c-1.36 0-2.22.53-2.75.83-.46.26-1.17.65-2.02.65-.85 0-1.56-.39-2.02-.65-.53-.3-1.39-.83-2.75-.83s-2.22.53-2.75.83c-.46.26-1.17.65-2.02.65-.85 0-1.56-.39-2.02-.65-.53-.3-1.39-.83-2.75-.83-1.4 0-2.29.56-2.85.88l1.01 1.74c.43-.25.99-.54 1.84-.54s1.56.39 2.02.65c.53.3 1.39.83 2.75.83s2.22-.53 2.75-.83c.46-.26 1.17-.65 2.02-.65s1.56.39 2.02.65c.53.3 1.39.83 2.75.83s2.22-.53 2.75-.83c.46-.26 1.17-.65 2.02-.65s1.56.39 2.02.65c.53.3 1.39.83 2.75.83 1.35 0 2.21-.52 2.74-.82.47-.27 1.18-.66 2.03-.66v-2c-1.35 0-2.21.52-2.74.82-.47.27-1.18.66-2.03.66-.86 0-1.57-.39-2.03-.66zM15 5.54c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z"/></svg>`,
       "Běžky": `<svg class="activity-list-icon" viewBox="0 0 24 24"><path d="M20.5 17c-2.43 0-4.63-1.18-6-3l-2.08-2.71c-.72-.94-1.83-1.52-3.03-1.52-.77 0-1.52.22-2.16.63L2.4 13.5l1.6 2.44L8 13.53V20h2v-5l2-2 1.48 1.93c1.61 2.09 4.14 3.4 6.92 3.4L22 18.25l-1.5-2.25zM12 4.5c0 1.38 1.12 2.5 2.5 2.5S17 5.88 17 4.5 15.88 2 14.5 2 12 3.12 12 4.5zM2 20h20v2H2z"/></svg>`
     };
 
@@ -663,6 +673,7 @@
         const personalStatsContainer = document.getElementById('stats-personal-container'); personalStatsContainer.innerHTML = '';
         const statsOtherList = document.getElementById('stats-other-challenges'); statsOtherList.innerHTML = '';
         const profileMyChal = document.getElementById('profile-my-challenges'); profileMyChal.innerHTML = '';
+        const profileActiveChal = document.getElementById('profile-active-challenges'); profileActiveChal.innerHTML = '';
         
         const mapListModal = document.getElementById('map-challenge-list');
         mapListModal.innerHTML = '';
@@ -723,6 +734,20 @@
                 let myCurrentKm = overallKm[currentUser.uid] || 0;
                 let pct = c.targetKm > 0 ? (myCurrentKm / c.targetKm) * 100 : 0; if(pct > 100) pct = 100;
                 let memberCount = c.members ? c.members.length : 0;
+
+                // KARTA AKTIVNÍ VÝZVY V PROFILU S MOŽNOSTÍ ODPOJIT SE
+                const profileActiveCard = document.createElement('div');
+                profileActiveCard.style.cssText = "border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;";
+                profileActiveCard.innerHTML = `
+                    <div>
+                        <div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div>
+                        <div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Můj postup: ${myCurrentKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} km</div>
+                    </div>
+                    <button style="background:#FEE2E2; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; font-size:0.85em; font-weight:600; color:#EF4444;" onclick="leaveChallenge('${c.id}')">
+                        Odpojit
+                    </button>
+                `;
+                profileActiveChal.appendChild(profileActiveCard);
 
                 // MAP SELECT POPULATE (Modal list)
                 if(c.mapUrl) {
@@ -898,6 +923,9 @@
 
         document.getElementById('dash-joined-wrapper').style.display = joinedCount > 0 ? 'block' : 'none';
         if(joinedCount === 0) statsContainer.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:0.9em; padding:20px;">Zatím nejsi v žádné výzvě.</div>';
+        
+        document.getElementById('profile-active-challenges-wrapper').style.display = joinedCount > 0 ? 'block' : 'none';
+        
         if(statsOtherList.innerHTML === '') statsOtherList.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:0.9em; padding:10px;">Žádné další výzvy zatím nejsou.</div>';
         document.getElementById('profile-my-challenges-wrapper').style.display = myAuthoredCount > 0 ? 'block' : 'none';
         
@@ -905,7 +933,6 @@
             mapListModal.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:0.9em; padding:10px;">Žádná výzva zatím neobsahuje mapu.</div>';
         }
 
-        // Refresh mapy pokud je zrovna otevřená záložka
         if(!document.getElementById('tab-map').classList.contains('hidden') && currentSelectedChallengeIdForMap){
             window.handleMapSelect(currentSelectedChallengeIdForMap);
         }
@@ -931,8 +958,6 @@
 
             let latlngsFlat = [];
             
-            // Pro výpočet potřebujeme Leaflet metodu distanceTo.
-            // GeoJSON coords vrací [lng, lat], Leaflet L.latLng očekává (lat, lng)[cite: 1].
             if(geojson.features && geojson.features.length > 0) {
                 geojson.features.forEach(feature => {
                     if (feature.geometry && feature.geometry.type === 'LineString') {
@@ -1092,12 +1117,21 @@
             mapLayers.push(baseLine);
             leafletMap.fitBounds(baseLine.getBounds());
 
-            // 2. VÝPOČET UJETÝCH KM
-            let currentKm = window.challengeStatsMap[challengeId] || 0;
-            let targetMeters = currentKm * 1000;
-            let totalMetersChallenge = c.targetKm * 1000 || 1; 
+            // 2. VÝPOČET CELKOVÉ DÉLKY GPX TRASY V METRECH
+            let physicalMeters = 0;
+            for(let i=1; i<latlngsFlat.length; i++) {
+                physicalMeters += latlngsFlat[i-1].distanceTo(latlngsFlat[i]);
+            }
 
-            // 3. VYKRESLENÍ GRADIENTU PO SEGMENTECH
+            // 3. VÝPOČET POMĚRU UJETÝCH KM A METRŮ K UJETÍ PO TRASE
+            let currentKm = window.challengeStatsMap[challengeId] || 0;
+            let progressPct = c.targetKm > 0 ? (currentKm / c.targetKm) : 0;
+            if(progressPct > 1) progressPct = 1; // Zastropování na 100%
+            
+            // Kolik metrů reálně po trase nakreslit podle toho, na kolika procentech výzvy jsme
+            let trackMetersToTravel = physicalMeters * progressPct;
+
+            // 4. VYKRESLENÍ GRADIENTU PO SEGMENTECH
             let traveled = 0;
             let lastPos = latlngsFlat[0];
 
@@ -1110,13 +1144,13 @@
                 let p2 = latlngsFlat[i];
                 let segmentDist = p1.distanceTo(p2);
 
-                if (traveled + segmentDist >= targetMeters) {
-                    let ratio = (targetMeters - traveled) / segmentDist;
+                if (traveled + segmentDist >= trackMetersToTravel) {
+                    let ratio = segmentDist > 0 ? (trackMetersToTravel - traveled) / segmentDist : 0;
                     let lat = p1.lat + (p2.lat - p1.lat) * ratio;
                     let lng = p1.lng + (p2.lng - p1.lng) * ratio;
                     lastPos = L.latLng(lat, lng);
                     
-                    let factor = traveled / totalMetersChallenge; if(factor > 1) factor = 1;
+                    let factor = physicalMeters > 0 ? (traveled / physicalMeters) : 0;
                     let r = Math.round(cStart[0] + (cEnd[0]-cStart[0])*factor);
                     let g = Math.round(cStart[1] + (cEnd[1]-cStart[1])*factor);
                     let b = Math.round(cStart[2] + (cEnd[2]-cStart[2])*factor);
@@ -1125,7 +1159,7 @@
                     mapLayers.push(segLine);
                     break;
                 } else {
-                    let factor = traveled / totalMetersChallenge; if(factor > 1) factor = 1;
+                    let factor = physicalMeters > 0 ? (traveled / physicalMeters) : 0;
                     let r = Math.round(cStart[0] + (cEnd[0]-cStart[0])*factor);
                     let g = Math.round(cStart[1] + (cEnd[1]-cStart[1])*factor);
                     let b = Math.round(cStart[2] + (cEnd[2]-cStart[2])*factor);
@@ -1136,12 +1170,12 @@
                 traveled += segmentDist;
             }
 
-            if(traveled < targetMeters) lastPos = latlngsFlat[latlngsFlat.length-1];
+            if(traveled < trackMetersToTravel) lastPos = latlngsFlat[latlngsFlat.length-1];
 
-            // 4. MARKER
+            // 5. MARKER (Stravácká oranžová #FC4C02 s bílým okrajem a stínem)
             const customIcon = L.divIcon({
                 className: 'custom-map-marker',
-                html: `<div style="background:var(--primary-orange); width:18px; height:18px; border-radius:50%; border:3px solid white; box-shadow:0 2px 8px rgba(0,0,0,0.4);"></div>`,
+                html: `<div style="background:#FC4C02; width:18px; height:18px; border-radius:50%; border:3px solid white; box-shadow:0 2px 8px rgba(0,0,0,0.5);"></div>`,
                 iconSize: [24, 24],
                 iconAnchor: [12, 12]
             });
@@ -1236,6 +1270,16 @@
     window.selectEditChip = (element) => { document.querySelectorAll('#edit-modal .chip').forEach(c => c.classList.remove('active')); element.classList.add('active'); editActivityType = element.getAttribute('data-type'); };
 
     window.joinChallenge = async (chalId) => { try { await updateDoc(doc(db, "challenges", chalId), { members: arrayUnion(currentUser.uid) }); } catch(e) { alert("Chyba."); } };
+    
+    // Nová funkce pro odpojení se z výzvy
+    window.leaveChallenge = async (chalId) => { 
+        if(confirm("Opravdu se chceš odpojit od této výzvy? Tvé kilometry se do ní přestanou počítat.")) {
+            try { 
+                await updateDoc(doc(db, "challenges", chalId), { members: arrayRemove(currentUser.uid) }); 
+            } catch(e) { alert("Chyba při odpojování."); } 
+        }
+    };
+    
     window.openCreateChallengeModal = () => { document.getElementById('create-challenge-modal').classList.add('active'); };
     window.closeCreateChallengeModal = () => { document.getElementById('create-challenge-modal').classList.remove('active'); };
     window.toggleChallengeChip = (element) => { element.classList.toggle('active'); };
