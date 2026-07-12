@@ -709,7 +709,7 @@
         });
         
         legendHtml += `<div class="chart-legend-row" style="margin-top:10px; padding-top:10px; border-top:1px solid var(--gray-border); color:var(--text-gray);">
-            <div style="display:flex; align-items:center; gap:8px;"><span style="width:10px; height:10px; background-color:var(--text-gray); border-radius:50%; display:inline-block;"></span><span>počet platných aktivit</span></div>
+            <div style="display:flex; align-items:center; gap:8px;"><span style="width:10px; height:10px; background-color:var(--text-gray); border-radius:50%; display:inline-block;"></span><span>počet aktivit</span></div>
             <span style="color:var(--text-dark);">${totalActs}</span>
           </div>`;
         
@@ -737,7 +737,7 @@
             });
             await Promise.all(updatePromises); window.closeModal();
         } catch (error) { alert("Chyba."); } finally { isSaving = false; btn.innerText = "Uložit"; btn.disabled = false; }
-      } else { alert("Zadej platný počet kilometrů."); }
+      } else { alert("Zadej počet kilometrů."); }
     };
 
     window.saveEditActivity = async () => {
