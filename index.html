@@ -33,7 +33,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
     body { background-color: var(--bg-color); color: var(--text-dark); -webkit-font-smoothing: antialiased; }
     .hidden { display: none !important; }
-    .admin-only { display: none !important; } 
 
     button, a, .nav-item, .chip, .leaderboard-item { -webkit-tap-highlight-color: transparent; outline: none; }
 
@@ -222,7 +221,8 @@
       <div class="section-title" style="margin: 30px 20px 10px 20px;">Další komunitní výzvy</div>
       <div class="card">
         <div id="stats-other-challenges" style="display:flex; flex-direction:column; gap:10px;"></div>
-        <button class="btn-outline admin-only" style="width: 100%; border: 1px dashed var(--gray-border); background: var(--gray-light); padding: 12px; border-radius: 12px; font-weight: 600; color: var(--text-dark); margin-top: 15px; cursor:pointer;" onclick="openCreateChallengeModal()">+ Vytvořit novou výzvu</button>
+        <!-- ZDE JE TLAČÍTKO PRO ADMINA -->
+        <button id="btn-create-challenge-admin" class="btn-outline" style="display:none; width: 100%; border: 1px dashed var(--gray-border); background: var(--gray-light); padding: 12px; border-radius: 12px; font-weight: 600; color: var(--text-dark); margin-top: 15px; cursor:pointer;" onclick="openCreateChallengeModal()">+ Vytvořit novou výzvu</button>
       </div>
     </div> 
 
@@ -259,8 +259,8 @@
       
       <div id="profile-my-challenges-wrapper" style="display:none;">
           <div class="section-title" style="margin: 0 20px 10px 20px;">Moje vytvořené výzvy</div>
-          <div class="card" style="padding: 10px 20px;">
-            <div id="profile-my-challenges" class="leaderboard-list"></div>
+          <div style="padding: 0 20px;">
+            <div id="profile-my-challenges"></div>
           </div>
       </div>
     </div> 
@@ -436,7 +436,10 @@
     // ==========================================
     // NASTAVENÍ ADMINISTRÁTORA
     // ==========================================
-    const ADMIN_EMAILS = ["ter_ka@centrum.cz"];
+    // ZDE DOPLŇ SVŮJ E-MAIL (nebo více e-mailů oddělených čárkou)
+    // Bez přidání e-mailu se ti tlačítko "Vytvořit novou výzvu" neukáže!
+    const ADMIN_EMAILS = ["tvuj@email.cz"];
+    // ==========================================
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -491,8 +494,10 @@
         currentUser = user;
         publicView.classList.add('hidden'); privateView.classList.remove('hidden');
         
+        // Zobrazení tlačítka Vytvořit výzvu pouze pro povolené administrátory
         const isAdmin = user.email && ADMIN_EMAILS.map(e => e.toLowerCase()).includes(user.email.toLowerCase());
-        if(isAdmin) { document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('admin-only')); }
+        const adminBtn = document.getElementById('btn-create-challenge-admin');
+        if(adminBtn) adminBtn.style.display = isAdmin ? 'block' : 'none';
 
         const userRef = doc(db, "users", user.uid);
         if (!(await getDoc(userRef)).exists()) { await setDoc(userRef, { personalKm: 0, name: user.displayName || user.email.split('@')[0], avatarUrl: "" }); }
@@ -745,16 +750,20 @@
                 statsOtherList.appendChild(oCard);
             }
 
+            // KARTA PRO TVŮRCE VÝZVY V PROFILU S HEZKÝM DESIGNEM
             if (isCreator) {
                 myAuthoredCount++;
-                const profCard = document.createElement('div'); profCard.className = 'leaderboard-item'; profCard.style.cursor = 'default';
+                const profCard = document.createElement('div');
+                profCard.style.cssText = "border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;";
                 profCard.innerHTML = `
-                    <div class="lb-name" style="font-weight:700;">${c.name} <span style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">(${c.targetKm} km)</span></div>
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <button class="btn-inline-edit" style="display:flex;" onclick="openEditChallengeModal('${c.id}')">
-                          <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                        </button>
+                    <div>
+                        <div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div>
+                        <div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Cíl: ${c.targetKm} km</div>
                     </div>
+                    <button style="background:var(--gray-light); border:none; padding:8px 12px; border-radius:10px; display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.85em; font-weight:600; color:var(--text-dark);" onclick="openEditChallengeModal('${c.id}')">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                        Upravit
+                    </button>
                 `;
                 profileMyChal.appendChild(profCard);
             }
