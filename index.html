@@ -60,8 +60,25 @@
     /* ACTION ROW */
     .action-row { display: flex; gap: 15px; margin: 0 20px 25px 20px; }
     .btn-add-activity { flex: 1; background-color: var(--white); border-radius: 20px; padding: 15px; display: flex; align-items: center; justify-content: center; gap: 15px; box-shadow: 0 6px 24px rgba(0,0,0,0.06); border: none; cursor: pointer; text-align: left; }
-    .btn-add-icon { width: 50px; height: 50px; background-color: var(--primary-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 3em; font-weight: 400; flex-shrink: 0; }
-    .btn-add-text h4 { color: var(--primary-dark); font-size: 1.2em; font-weight: 700; margin: 0; }
+    .btn-add-icon { 
+      padding: 5px 12px; 
+      min-width: 45px; 
+      min-height: 45px; 
+      
+      background-color: var(--primary-dark); 
+      border-radius: 50%; 
+      
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      
+      color: var(--white); 
+      font-size: 2em; 
+      font-weight: 300; /* ZDE: 100 je nejtenčí, 300 tenké, 400 normální, 700 tučné */
+      line-height: 1; 
+      
+      flex-shrink: 0; 
+    }
     
     .btn-strava { width: 70px; height: 70px; border: none; cursor: pointer; flex-shrink: 0; background: transparent; padding: 0; display: block; border-radius: 20px; overflow: hidden; }
     .btn-strava img { width: 100%; height: 100%; object-fit: cover; }
