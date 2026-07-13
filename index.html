@@ -516,7 +516,6 @@
     // ==========================================
     // NASTAVENÍ ADMINISTRÁTORA
     // ==========================================
-    // ZDE DOPLŇ SVŮJ E-MAIL (nebo více e-mailů oddělených čárkou)
     const ADMIN_EMAILS = ["ter_ka@centrum.cz"];
     // ==========================================
 
@@ -694,6 +693,8 @@
         let sortedChallenges = [...globalChallenges].sort((a, b) => a.name.localeCompare(b.name, 'cs'));
         window.challengeStatsMap = {};
 
+        let firstMapChallengeId = null;
+
         // VYKRESLENÍ VÝZEV
         sortedChallenges.forEach(c => {
             const isMember = c.members && c.members.includes(currentUser.uid);
@@ -744,8 +745,13 @@
             if (isMember) {
                 joinedCount++;
                 let myCurrentKm = overallKm[currentUser.uid] || 0;
-                let pct = c.targetKm > 0 ? (myCurrentKm / c.targetKm) * 100 : 0; if(pct > 100) pct = 100;
+                let totalPct = c.targetKm > 0 ? (totalChallengeKm / c.targetKm) * 100 : 0; 
+                if(totalPct > 100) totalPct = 100;
                 let memberCount = c.members ? c.members.length : 0;
+
+                if (c.mapUrl && !firstMapChallengeId) {
+                    firstMapChallengeId = c.id;
+                }
 
                 // KARTA AKTIVNÍ VÝZVY V PROFILU S MOŽNOSTÍ ODPOJIT SE
                 const profileActiveCard = document.createElement('div');
@@ -786,9 +792,9 @@
                          <div style="color: var(--text-gray); font-size: 0.85em; font-weight: 500; background:var(--gray-light); padding:5px 10px; border-radius:12px;">${daysText}</div>
                       </div>
                       <div style="color: var(--text-dark); font-size: 1.15em; font-weight: 800; margin-bottom: 8px;">
-                          ${myCurrentKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} / ${c.targetKm} <span style="font-size:0.7em; font-weight:700; color:var(--text-gray);">km</span>
+                          ${totalChallengeKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} / ${c.targetKm} <span style="font-size:0.7em; font-weight:700; color:var(--text-gray);">km</span>
                       </div>
-                      <div class="chal-progress-bg"><div class="chal-progress-fill" style="width: ${pct}%;"></div></div>
+                      <div class="chal-progress-bg"><div class="chal-progress-fill" style="width: ${totalPct}%;"></div></div>
                     </div>
                 `;
 
@@ -834,7 +840,7 @@
                 let htmlWeekly = generateLeaderboardHtml(weeklyUserKm);
                 let htmlOverall = generateLeaderboardHtml(overallKm);
                 let htmlBar = generateBarChartHtml(weeklyTotalKm);
-                let pieObj = generatePieChartHtml(pieData);
+                let pieObj = generatePieChartHtml(pieData, validActivities.length);
 
                 statsCard.innerHTML = `
                     ${statsHeaderHTML}
@@ -927,7 +933,7 @@
 
         if (myActivities.length > 0) {
             let htmlBarPersonal = generateBarChartHtml(myWeeklyKm);
-            let pieObjPersonal = generatePieChartHtml(myPieData);
+            let pieObjPersonal = generatePieChartHtml(myPieData, myActivities.length);
 
             let personalCard = document.createElement('div');
             personalCard.className = 'card-no-padding';
@@ -960,6 +966,10 @@
         
         if(mapListModal.innerHTML === '') {
             mapListModal.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:0.9em; padding:10px;">Žádná výzva zatím neobsahuje mapu.</div>';
+        }
+
+        if(!currentSelectedChallengeIdForMap && firstMapChallengeId) {
+            currentSelectedChallengeIdForMap = firstMapChallengeId;
         }
 
         if(!document.getElementById('tab-map').classList.contains('hidden') && currentSelectedChallengeIdForMap){
@@ -1057,7 +1067,7 @@
         return `<div class="bar-chart-container">${barsHtml}</div>`;
     }
 
-    function generatePieChartHtml(sums) {
+    function generatePieChartHtml(sums, actCount) {
         let total = Object.values(sums).reduce((a,b) => a+b, 0);
         if(total === 0) {
             return { svg: `<svg width="120" height="120" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.915" fill="transparent" stroke="var(--gray-border)" stroke-width="4"></circle><text x="50%" y="55%" text-anchor="middle" font-size="5" font-weight="600" fill="var(--text-gray)">0%</text></svg>`, legend: `<div style="color:var(--text-gray); font-size:0.85em; text-align:center;">Žádná data</div>` };
@@ -1065,7 +1075,8 @@
         const palette = ["#4F46E5", "#818CF8", "#A5B4FC", "#C7D2FE", "#E0E7FF"];
         let sortedTypes = Object.keys(sums).filter(k => sums[k] > 0).sort((a, b) => sums[b] - sums[a]);
         let gap = sortedTypes.length > 1 ? 1.5 : 0;
-        let offset = 100; let svgContent = ''; let legendHtml = "";
+        let offset = 100; let svgContent = ''; 
+        let legendHtml = `<div style="font-size:0.9em; font-weight:700; color:var(--text-dark); margin-bottom:12px;">Počet aktivit: ${actCount}</div>`;
 
         sortedTypes.forEach((key, index) => {
             let km = sums[key]; let color = palette[index % palette.length]; let pct = (km / total) * 100;
