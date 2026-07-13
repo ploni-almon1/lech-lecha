@@ -71,19 +71,15 @@
     .chal-progress-fill { background: linear-gradient(90deg, #1E1B4B 0%, #6366F1 100%); width: 0%; height: 100%; border-radius: 10px; transition: width 0.5s ease; }
 
     /* LEADERBOARD */
-    .leaderboard-list { display: flex; flex-direction: column; padding: 0; margin: 0; }
-    .leaderboard-item { 
-      display: flex; 
-      align-items: center; 
-      height: 55px; /* Pevná výška pro všechny */
-      min-height: 55px;
-      padding: 0; 
-      margin: 0;
-      border-bottom: 1px solid var(--gray-border); 
-      cursor: pointer; 
-      box-sizing: border-box;
-    }
-    .leaderboard-item:last-child { border-bottom: none; }
+    .leaderboard-list { display: flex; flex-direction: column; }
+    .leaderboard-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-border); cursor: pointer; }
+    .leaderboard-item:first-child { padding-top: 0; }
+    .leaderboard-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .lb-rank { width: 28px; height: 28px; background-color: var(--gray-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; color: var(--text-gray); font-size: 0.85em; margin-right: 12px; flex-shrink: 0; }
+    .lb-avatar { width: 36px; height: 36px; background-color: var(--primary-dark); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 15px; font-size: 0.9em; overflow: hidden; flex-shrink: 0; }
+    .lb-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .lb-name { flex: 1; font-weight: 600; color: var(--text-dark); font-size: 0.95em; }
+    .lb-score { font-weight: 700; color: var(--text-dark); font-size: 0.95em; text-align: right; }
 
     /* BAR CHART */
     .bar-chart-container { display: flex; align-items: flex-end; gap: 10px; height: 145px; padding-top: 20px; padding-bottom: 8px; overflow-x: auto; }
