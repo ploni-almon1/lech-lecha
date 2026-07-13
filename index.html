@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
@@ -60,23 +60,7 @@
     /* ACTION ROW */
     .action-row { display: flex; gap: 15px; margin: 0 20px 25px 20px; }
     .btn-add-activity { flex: 1; background-color: var(--white); border-radius: 20px; padding: 15px; display: flex; align-items: center; justify-content: center; gap: 15px; box-shadow: 0 6px 24px rgba(0,0,0,0.06); border: none; cursor: pointer; text-align: left; }
-    .btn-add-icon { 
-      width: 45px; 
-      height: 45px; 
-      background-color: var(--primary-dark); 
-      border-radius: 50%; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; /* Toto zarovná obrázek na střed */
-      flex-shrink: 0;
-    }
-
-    /* Pokud by obrázek nechtěl spolupracovat, přidáme toto: */
-    .btn-add-icon img {
-      display: block;
-      width: 20px; /* Zde upravuješ velikost ikony */
-      height: 20px;
-    }
+    .btn-add-icon { width: 45px; height: 45px; background-color: var(--primary-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 2em; font-weight: 400; flex-shrink: 0; }
     .btn-add-text h4 { color: var(--primary-dark); font-size: 1.2em; font-weight: 700; margin: 0; }
     
     .btn-strava { width: 70px; height: 70px; border: none; cursor: pointer; flex-shrink: 0; background: transparent; padding: 0; display: block; border-radius: 20px; overflow: hidden; }
@@ -89,7 +73,8 @@
     /* LEADERBOARD */
     .leaderboard-list { display: flex; flex-direction: column; }
     .leaderboard-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-border); cursor: pointer; }
-    .leaderboard-item:last-child { border-bottom: none; } /* OPRAVA VÝŠKY ŘÁDKŮ */
+    .leaderboard-item:first-child { padding-top: 0; }
+    .leaderboard-item:last-child { border-bottom: none; padding-bottom: 0; }
     .lb-rank { width: 28px; height: 28px; background-color: var(--gray-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; color: var(--text-gray); font-size: 0.85em; margin-right: 12px; flex-shrink: 0; }
     .lb-avatar { width: 36px; height: 36px; background-color: var(--primary-dark); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 15px; font-size: 0.9em; overflow: hidden; flex-shrink: 0; }
     .lb-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -224,9 +209,7 @@
       
       <div class="action-row">
         <button class="btn-add-activity" onclick="openModal()">
-            <div class="btn-add-icon">
-    <img src="assets/plus.svg" alt="Přidat" style="width: 25px; height: 25px;">
-</div>
+            <div class="btn-add-icon">+</div>
             <div class="btn-add-text"><h4>Zapsat novou aktivitu</h4></div>
         </button>
         <a href="https://www.strava.com" target="_blank" class="btn-strava">
@@ -355,7 +338,7 @@
         <span style="font-size: 1.2em; font-weight: 600;"> km</span>
       </div>
 
-      <!-- NOVÁ SEKCE: Editovatelná Kalkulačka -->
+      <!-- NOVÁ SEKCE: Kalkulačka -->
       <div style="margin: 15px 0 25px 0; border-top: 1px solid var(--gray-border); padding-top: 15px; text-align: left;">
           <div style="font-size: 0.85em; font-weight: 600; margin-bottom: 10px; cursor:pointer; color: var(--primary-dark); display: flex; align-items: center; justify-content: center; gap: 5px;" onclick="toggleCalculator()">
               <svg id="calc-chevron" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="transition: transform 0.2s;"><path d="M7 10l5 5 5-5z"/></svg>
@@ -363,18 +346,11 @@
           </div>
           <div id="calc-fields" class="hidden" style="background: var(--gray-light); padding: 15px; border-radius: 16px;">
               <div style="display:flex; gap:10px; margin-bottom:10px;">
-                  <div style="flex:1;">
-                      <label style="font-size:0.75em; color:var(--text-gray); font-weight:600; display:block; margin-bottom:4px;">Minuty:</label>
-                      <input type="number" id="calc-minutes" class="date-input" placeholder="0" oninput="calculateKm()" style="background: var(--white); padding: 10px;">
-                  </div>
-                  <div style="flex:1;">
-                      <label style="font-size:0.75em; color:var(--text-gray); font-weight:600; display:block; margin-bottom:4px;">Rychlost (km/h):</label>
-                      <input type="number" id="calc-speed" class="date-input" value="4.5" step="0.1" oninput="calculateKm()" style="background: var(--white); padding: 10px;">
-                  </div>
-              </div>
-              <div style="display:flex; gap:10px; margin-bottom: 15px;">
-                  <button type="button" style="flex:1; padding:8px; border-radius:10px; font-size:0.8em; font-weight:600; border:1px solid var(--gray-border); background:var(--white); color:var(--text-dark); cursor:pointer;" onclick="setCalcSpeed(4.5)">🚶 Chůze (4,5)</button>
-                  <button type="button" style="flex:1; padding:8px; border-radius:10px; font-size:0.8em; font-weight:600; border:1px solid var(--gray-border); background:var(--white); color:var(--text-dark); cursor:pointer;" onclick="setCalcSpeed(8.5)">🏃 Běh (8,5)</button>
+                  <input type="number" id="calc-minutes" class="date-input" placeholder="Minuty" oninput="calculateKm()" style="background: var(--white);">
+                  <select id="calc-type" class="date-input" onchange="calculateKm()" style="background: var(--white);">
+                      <option value="4.5">Chůze (4,5 km/h)</option>
+                      <option value="8.5">Běh (8,5 km/h)</option>
+                  </select>
               </div>
               <div style="font-size: 0.85em; color: var(--text-gray); text-align: center;">Výpočet: <strong style="color:var(--text-dark); font-size: 1.1em;" id="calc-result">0</strong> km</div>
           </div>
@@ -799,7 +775,7 @@
 
                 // KARTA AKTIVNÍ VÝZVY V PROFILU S MOŽNOSTÍ ODPOJIT SE
                 const profileActiveCard = document.createElement('div');
-                profileActiveCard.style.cssText = "border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;";
+                profileActiveCard.style.cssText = "background-color: #FFFFFF; border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;";
                 profileActiveCard.innerHTML = `
                     <div>
                         <div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div>
@@ -831,9 +807,9 @@
 
                 let dashHeaderHTML = `
                     <div style="padding: 20px;">
-                      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
-                         <h3 style="color: var(--text-dark); font-size: 1.3em; font-weight: 800; margin:0; line-height: 1;">${c.name}</h3>
-                         <div style="color: var(--text-gray); font-size: 0.85em; font-weight: 500; background:var(--gray-light); padding:4px 10px; border-radius:12px;">${daysText}</div>
+                      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                         <h3 style="color: var(--text-dark); font-size: 1.3em; font-weight: 800; margin:0;">${c.name}</h3>
+                         <div style="color: var(--text-gray); font-size: 0.85em; font-weight: 500; background:var(--gray-light); padding:5px 10px; border-radius:12px;">${daysText}</div>
                       </div>
                       <div style="color: var(--text-dark); font-size: 1.15em; font-weight: 800; margin-bottom: 8px;">
                           ${totalChallengeKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} / ${c.targetKm} <span style="font-size:0.7em; font-weight:700; color:var(--text-gray);">km</span>
@@ -897,7 +873,7 @@
                        ${htmlOverall}
                     </div>
                     <div style="border-top: 1px solid var(--gray-border); padding: 20px;">
-                       <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 5px;">Rozpad podle týdnů</h4>
+                       <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 5px;">Součet podle týdnů</h4>
                        <div style="font-size: 0.8em; color:var(--text-gray); margin-bottom:15px;">Součet km všech účastníků</div>
                        ${htmlBar}
                     </div>
@@ -1497,7 +1473,6 @@
         modal.classList.add('active'); 
         document.getElementById('km-input').value = ''; 
         document.getElementById('calc-minutes').value = ''; 
-        document.getElementById('calc-speed').value = '4.5'; 
         document.getElementById('calc-result').innerText = '0';
         currentActivityType = "Chůze"; 
         document.querySelectorAll('#activity-modal .chip').forEach(c => c.classList.remove('active')); 
@@ -1519,14 +1494,9 @@
         }
     };
 
-    window.setCalcSpeed = (speed) => {
-        document.getElementById('calc-speed').value = speed;
-        window.calculateKm();
-    };
-
     window.calculateKm = () => {
         const mins = parseFloat(document.getElementById('calc-minutes').value) || 0;
-        const speed = parseFloat(document.getElementById('calc-speed').value) || 0;
+        const speed = parseFloat(document.getElementById('calc-type').value);
         const km = (mins / 60) * speed;
         document.getElementById('calc-result').innerText = km.toFixed(1);
         document.getElementById('km-input').value = km.toFixed(1);
