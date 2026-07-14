@@ -44,7 +44,7 @@
     .section-title { font-size: 1.05em; font-weight: 700; color: var(--text-dark); margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
     .section-title span { font-size: 0.8em; font-weight: 500; color: var(--text-gray); cursor: pointer; }
     
-    .card { background-color: var(--white); border-radius: 20px; padding: 15px; box-shadow: 0 6px 24px rgba(0,0,0,0.06); margin: 0 20px 20px 20px; }
+    .card { background-color: var(--white); border-radius: 20px; padding: 20px; box-shadow: 0 6px 24px rgba(0,0,0,0.06); margin: 0 20px 20px 20px; }
     .card-no-padding { background-color: var(--white); border-radius: 20px; box-shadow: 0 6px 24px rgba(0,0,0,0.06); margin: 0 20px 20px 20px; overflow: hidden; }
 
     /* DASHBOARD MAIN CARD */
@@ -61,7 +61,7 @@
     .action-row { display: flex; gap: 15px; margin: 0 20px 25px 20px; }
     .btn-add-activity { flex: 1; background-color: var(--white); border-radius: 20px; padding: 15px; display: flex; align-items: center; justify-content: center; gap: 15px; box-shadow: 0 6px 24px rgba(0,0,0,0.06); border: none; cursor: pointer; text-align: left; }
     .btn-add-icon { width: 40px; height: 40px; background-color: var(--primary-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 1.5em; font-weight: 400; flex-shrink: 0; }
-    .btn-add-text h4 { color: var(--primary-dark); font-size: 1.05em; font-weight: 700; margin: 0; }
+    .btn-add-text h4 { color: var(--primary-dark); font-size: 1.2em; font-weight: 700; margin: 0; }
     
     .btn-strava { width: 70px; height: 70px; border: none; cursor: pointer; flex-shrink: 0; background: transparent; padding: 0; display: block; border-radius: 20px; overflow: hidden; }
     .btn-strava img { width: 100%; height: 100%; object-fit: cover; }
@@ -73,8 +73,8 @@
     /* LEADERBOARD */
     .leaderboard-list { display: flex; flex-direction: column; }
     .leaderboard-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-border); cursor: pointer; }
-    .leaderboard-item:first-child { padding-top: 0; }
-    .leaderboard-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .leaderboard-item:first-child { }
+    .leaderboard-item:last-child { border-bottom: none; }
     .lb-rank { width: 28px; height: 28px; background-color: var(--gray-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; color: var(--text-gray); font-size: 0.85em; margin-right: 12px; flex-shrink: 0; }
     .lb-avatar { width: 36px; height: 36px; background-color: var(--primary-dark); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 15px; font-size: 0.9em; overflow: hidden; flex-shrink: 0; }
     .lb-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -209,7 +209,9 @@
       
       <div class="action-row">
         <button class="btn-add-activity" onclick="openModal()">
-            <div class="btn-add-icon">+</div>
+            <div class="btn-add-icon">
+                <img src="assets/plus.svg" alt="Plus" style="width: 20px; height: 20px; object-fit: contain;">
+            </div>
             <div class="btn-add-text"><h4>Zapsat novou aktivitu</h4></div>
         </button>
         <a href="https://www.strava.com" target="_blank" class="btn-strava">
@@ -775,7 +777,7 @@
 
                 // KARTA AKTIVNÍ VÝZVY V PROFILU S MOŽNOSTÍ ODPOJIT SE
                 const profileActiveCard = document.createElement('div');
-                profileActiveCard.style.cssText = "background-color: #FFFFFF; "border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;";
+                profileActiveCard.style.cssText = "background-color: #FFFFFF; border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;";
                 profileActiveCard.innerHTML = `
                     <div>
                         <div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div>
@@ -806,7 +808,7 @@
                 }
 
                 let dashHeaderHTML = `
-                    <div style="padding: 15px;">
+                    <div style="padding: 20px;">
                       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                          <h3 style="color: var(--text-dark); font-size: 1.3em; font-weight: 800; margin:0;">${c.name}</h3>
                          <div style="color: var(--text-gray); font-size: 0.85em; font-weight: 500; background:var(--gray-light); padding:5px 10px; border-radius:12px;">${daysText}</div>
@@ -873,7 +875,7 @@
                        ${htmlOverall}
                     </div>
                     <div style="border-top: 1px solid var(--gray-border); padding: 20px;">
-                       <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 5px;">Rozpad podle týdnů</h4>
+                       <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 5px;">Součet podle týdnů</h4>
                        <div style="font-size: 0.8em; color:var(--text-gray); margin-bottom:15px;">Součet km všech účastníků</div>
                        ${htmlBar}
                     </div>
