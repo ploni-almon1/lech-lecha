@@ -544,7 +544,7 @@
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, increment, onSnapshot, collection, query, orderBy, addDoc, where, getDocs, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { initializeFirestore, persistentLocalCache, persistentSingleTabManager, doc, setDoc, getDoc, updateDoc, deleteDoc, increment, onSnapshot, collection, query, orderBy, addDoc, where, getDocs, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDI_7D0jyBM2LbU4hpoumGp3VPdcBn2jEY",
@@ -555,7 +555,18 @@
       appId: "1:544542961045:web:a44a5cd694760302be5a9c"
     };
 
-    const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app); const googleProvider = new GoogleAuthProvider();
+    const app = initializeApp(firebaseConfig); 
+    const auth = getAuth(app); 
+    const db = initializeFirestore(app, { localCache: persistentLocalCache({tabManager: persistentSingleTabManager()}) }); 
+    const googleProvider = new GoogleAuthProvider();
+
+    // Registrace Service Workeru pro to, aby aplikace fungovala i bez internetu
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registrace selhala:', err));
+      });
+    }
+
     const publicView = document.getElementById('public-view'); const privateView = document.getElementById('private-view'); 
 
     let currentUser = null; 
