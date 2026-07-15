@@ -1395,7 +1395,7 @@
         const name = document.getElementById('new-chal-name').value.trim(); 
         const targetKm = parseFloat(document.getElementById('new-chal-km').value);
         const mapUrl = document.getElementById('new-chal-map').value.trim();
-        const bgUrl = document.getElementById('new-chal-bg').value.trim(); // Nové políčko pro pozadí
+        const bgUrl = document.getElementById('new-chal-bg').value.trim(); // Uložení pozadí
         const start = document.getElementById('new-chal-start').value; 
         const end = document.getElementById('new-chal-end').value;
         const startDay = parseInt(document.querySelector('#new-chal-start-day .chip.active').getAttribute('data-val'));
@@ -1420,7 +1420,7 @@
             document.getElementById('edit-chal-name').value = data.name; 
             document.getElementById('edit-chal-km').value = data.targetKm;
             document.getElementById('edit-chal-map').value = data.mapUrl || '';
-            document.getElementById('edit-chal-bg').value = data.bgUrl || ''; // Zobrazení pozadí v úpravě
+            document.getElementById('edit-chal-bg').value = data.bgUrl || ''; // Zobrazení pozadí
             document.getElementById('edit-chal-start').value = data.start; 
             document.getElementById('edit-chal-end').value = data.end;
             document.querySelectorAll('#edit-chal-chips .chip').forEach(c => { if(data.allowedActivities && data.allowedActivities.includes(c.getAttribute('data-type'))) { c.classList.add('active'); } else { c.classList.remove('active'); } });
