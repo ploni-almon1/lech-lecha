@@ -136,19 +136,18 @@
     .modal-content { background-color: var(--white); padding: 25px; border-radius: 24px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; text-align: center; position: relative; }
     .modal-content h3 { margin-bottom: 20px; color: var(--primary-dark); }
     
-    /* DETAIL VÝZVY "STRAVA" STYL - ÚPRAVA SCROLLOVÁNÍ */
-    .chal-detail-fullscreen { 
-        position: fixed; top: 0; left: 0; width: 100%; height: 100vh; 
-        z-index: 3000; background: var(--bg-color); 
-        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(100%); 
-        overflow-y: auto; -webkit-overflow-scrolling: touch; 
-    }
+    /* DETAIL VÝZVY "STRAVA" STYL - FIXNÍ OBRÁZEK, JEZDÍCÍ KARTA */
+    .chal-detail-fullscreen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 3000; background: var(--bg-color); display: flex; flex-direction: column; transition: transform 0.3s ease; transform: translateY(100%); }
     .chal-detail-fullscreen.active { transform: translateY(0); }
     
-    .chal-detail-bg-image { width: 100%; height: 45vh; background-size: cover; background-position: center; background-color: var(--primary-dark); position: relative; }
-    .chal-detail-close-btn { position: absolute; top: 20px; left: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; cursor: pointer; border: none; color: var(--text-dark); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    /* Obrázek zafixovaný na pozadí */
+    .chal-detail-bg-image { position: absolute; top: 0; left: 0; width: 100%; height: 40vh; background-size: cover; background-position: center; z-index: 1; background-color: var(--primary-dark); }
     
-    .chal-detail-sheet { background: var(--white); border-radius: 24px 24px 0 0; padding: 20px 20px 120px 20px; margin-top: -24px; position: relative; z-index: 2; min-height: 60vh; max-width: 600px; margin-left: auto; margin-right: auto; }
+    /* Tlačítko zpět pevně nahoře nad vším, takže neujíždí */
+    .chal-detail-close-btn { position: absolute; top: 20px; left: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; cursor: pointer; border: none; font-weight: bold; color: var(--text-dark); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    
+    /* Přejíždějící bílá roletka */
+    .chal-detail-sheet { position: relative; margin-top: 35vh; background: var(--white); flex: 1; border-radius: 24px 24px 0 0; padding: 25px 20px 100px 20px; z-index: 5; overflow-y: auto; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); max-width: 600px; margin-left: auto; margin-right: auto; width: 100%; }
     .drag-handle { width: 40px; height: 5px; background: #D1D5DB; border-radius: 3px; margin: 0 auto 20px auto; }
     
     .chal-author-box { display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid var(--gray-border); border-radius: 16px; margin-bottom: 25px; }
@@ -156,7 +155,8 @@
     .chal-author-avatar img { width: 100%; height: 100%; object-fit: cover; }
     
     .chal-floating-action { position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(255,255,255,1) 70%, rgba(255,255,255,0)); padding: 30px 20px 20px 20px; z-index: 10; display: flex; justify-content: center; pointer-events: none;}
-    /* Tlačítku jsme odstranili stín */
+    
+    /* Hlavní tlačítko ZBAVENÉ STÍNU */
     .chal-btn-main { background: var(--primary-orange); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 700; font-size: 1.05em; width: 100%; max-width: 560px; cursor: pointer; transition: 0.2s; pointer-events: auto;}
     .chal-btn-main:active { transform: scale(0.98); }
     .chal-btn-main.joined { background: var(--white); color: #EF4444; border: 2px solid #FECACA; }
@@ -275,7 +275,6 @@
     <div id="tab-statistics" class="hidden">
       <div class="page-title">Statistika</div>
       
-      <!-- Kontejner pro dynamické načítání výzev a závodů s nadpisy -->
       <div id="stats-challenges-container"></div>
       
       <div id="stats-personal-container"></div>
@@ -295,7 +294,7 @@
       <!-- FAB Ovládání -->
       <div class="map-fab-container">
           <button class="map-fab" onclick="openMapListModal()">
-              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2-2 2 2 .9-2 2 .9 2 2 2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
           </button>
           <button class="map-fab" onclick="toggleMapLayer()">
               <svg viewBox="0 0 24 24" width="24" height="24"><path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z"/></svg>
@@ -358,15 +357,13 @@
   <!-- STRAVA-STYLE DETAIL VÝZVY -->
   <div id="chal-detail-fullscreen" class="chal-detail-fullscreen">
       
-      <!-- Přebal obrázku, který se pohybuje při scrollu společně se zbytkem -->
-      <div id="chal-detail-bg" class="chal-detail-bg-image">
-          <!-- Zpětná šipka (kruh s SVG ikonou namísto znaku menší než) -->
-          <button class="chal-detail-close-btn" onclick="closeChallengeDetail()">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
-          </button>
-      </div>
+      <button id="chal-detail-close-btn" class="chal-detail-close-btn" onclick="closeChallengeDetail()">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
+      </button>
       
-      <!-- Spodní překrývající karta -->
+      <div id="chal-detail-bg" class="chal-detail-bg-image"></div>
+      
+      <!-- Karta se roluje uvnitř svého prostoru, obrázek stojí -->
       <div class="chal-detail-sheet">
           <div class="drag-handle"></div>
           
@@ -410,14 +407,13 @@
 
       </div>
 
-      <!-- Plovoucí patička s tlačítkem - ukotvená dole přes obrazovku -->
       <div class="chal-floating-action">
           <button id="chal-action-btn" class="chal-btn-main"></button>
       </div>
   </div>
 
 
-  <!-- MODALY -->
+  <!-- MODALY A FORMULÁŘE -->
   <div id="connections-modal" class="modal-overlay" onclick="if(event.target===this) closeConnections()">
       <div class="modal-content">
           <h3 id="connections-title" style="margin-bottom:15px;">Sledující</h3>
@@ -745,6 +741,64 @@
 
     let leafletMap = null; let mapLayers = []; let layerOsm = null; let layerSat = null; let currentMapLayerType = 'osm'; let currentSelectedChallengeIdForMap = null;
 
+    // --- SPRÁVA HISTORIE A MODALŮ (TLAČÍTKO ZPĚT) ---
+    let activeModalsStack = [];
+
+    window.openModalElement = (modalId) => {
+        const el = document.getElementById(modalId);
+        if (!el) return;
+        el.classList.add('active');
+        activeModalsStack.push(modalId);
+        history.pushState({ modalId: modalId }, '');
+    };
+
+    window.closeModalElement = (modalId) => {
+        const index = activeModalsStack.lastIndexOf(modalId);
+        if (index > -1) {
+            // Pokud je modal na vrcholu zásobníku, stačí zavolat history.back(), 
+            // což spustí popstate a postará se o zavření a úklid
+            if (index === activeModalsStack.length - 1) {
+                history.back(); 
+            } else {
+                document.getElementById(modalId).classList.remove('active');
+                activeModalsStack.splice(index, 1);
+                runCleanupForModal(modalId);
+            }
+        } else {
+            const el = document.getElementById(modalId);
+            if (el) el.classList.remove('active');
+            runCleanupForModal(modalId);
+        }
+    };
+
+    window.addEventListener('popstate', (e) => {
+        if (activeModalsStack.length > 0) {
+            const modalId = activeModalsStack.pop();
+            const el = document.getElementById(modalId);
+            if (el) el.classList.remove('active');
+            runCleanupForModal(modalId);
+        }
+    });
+
+    function runCleanupForModal(modalId) {
+        if (modalId === 'profile-edit-modal') {
+            if(cropper) { cropper.destroy(); cropper = null; }
+            document.getElementById('cropper-wrapper').style.display = 'none';
+            document.getElementById('profile-file-input').value = '';
+        }
+        if (modalId === 'create-challenge-modal' || modalId === 'edit-challenge-modal') {
+            if(chalCropper) { chalCropper.destroy(); chalCropper = null; }
+            const crWrap = document.getElementById(modalId === 'create-challenge-modal' ? 'new-chal-cropper-wrapper' : 'edit-chal-cropper-wrapper');
+            if(crWrap) crWrap.style.display = 'none';
+            const fileInput = document.getElementById(modalId === 'create-challenge-modal' ? 'new-chal-file-input' : 'edit-chal-file-input');
+            if(fileInput) fileInput.value = '';
+        }
+        if (modalId === 'edit-challenge-modal') selectedChallengeId = null;
+        if (modalId === 'edit-modal') selectedActivityId = null;
+    }
+    // ----------------------------------------------
+
+
     function getCustomWeekString(date, startDay) {
         let d = new Date(date); d.setHours(0,0,0,0); let day = d.getDay(); let diff = (day - startDay + 7) % 7; d.setDate(d.getDate() - diff); return d.toLocaleDateString('cs-CZ'); 
     }
@@ -866,9 +920,9 @@
                 container.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(0,0,0,0.05);"><div style="display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="openPublicProfile('${uid}')"><div class="lb-avatar" style="width:36px;height:36px;margin:0;">${avatar}</div><span style="font-weight:600; font-size:0.95em; color:var(--text-dark);">${u.name}</span></div><div>${actions}</div></div>`;
             });
         }
-        document.getElementById('connections-modal').classList.add('active');
+        openModalElement('connections-modal');
     }
-    window.closeConnections = () => { document.getElementById('connections-modal').classList.remove('active'); }
+    window.closeConnections = () => closeModalElement('connections-modal');
 
     window.requestFollow = async (targetUid) => {
         const btnContainer = document.getElementById('public-profile-action-btn');
@@ -919,14 +973,13 @@
     window.acceptRequest = async (reqUid) => {
         await updateDoc(doc(db, "users", currentUser.uid), { followRequests: arrayRemove(reqUid), followers: arrayUnion(reqUid) });
         await updateDoc(doc(db, "users", reqUid), { sentRequests: arrayRemove(currentUser.uid), following: arrayUnion(currentUser.uid) });
-        window.openConnections('requests'); 
+        openConnections('requests'); 
     };
     window.rejectRequest = async (reqUid) => {
         await updateDoc(doc(db, "users", currentUser.uid), { followRequests: arrayRemove(reqUid) });
         await updateDoc(doc(db, "users", reqUid), { sentRequests: arrayRemove(currentUser.uid) });
-        window.openConnections('requests');
+        openConnections('requests');
     };
-
 
     function renderDynamicContent() {
         if(!currentUser || Object.keys(globalUsersMap).length === 0) return;
@@ -988,8 +1041,9 @@
                 if (c.mapUrl && !firstMapChallengeId) { firstMapChallengeId = c.id; }
 
                 const profileActiveCard = document.createElement('div');
-                profileActiveCard.style.cssText = `background-color: #FFFFFF; border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; ${bgStyle}`;
-                profileActiveCard.innerHTML = `<div><div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div><div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Můj postup: ${myCurrentKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} km</div></div><button style="background:#FEE2E2; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; font-size:0.85em; font-weight:600; color:#EF4444;" onclick="leaveChallenge('${c.id}')">Odpojit</button>`;
+                profileActiveCard.style.cssText = `background-color: #FFFFFF; border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; ${bgStyle}`;
+                profileActiveCard.onclick = () => { openChallengeDetail(c.id); };
+                profileActiveCard.innerHTML = `<div><div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div><div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Můj postup: ${myCurrentKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} km</div></div><button style="background:#FEE2E2; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; font-size:0.85em; font-weight:600; color:#EF4444;" onclick="event.stopPropagation(); leaveChallenge('${c.id}')">Odpojit</button>`;
                 profileActiveChal.appendChild(profileActiveCard);
 
                 if(c.mapUrl) {
@@ -998,7 +1052,7 @@
                     mapBtn.onclick = () => { closeMapListModal(); handleMapSelect(c.id); }; mapListModal.appendChild(mapBtn);
                 }
 
-                let dashHeaderHTML = `<div style="padding: 20px; ${bgStyle}"><div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;"><div><h3 style="color: var(--text-dark); font-size: 1.3em; font-weight: 800; margin:0; cursor:pointer;" onclick="openChallengeDetail('${c.id}')">${c.name}</h3></div><div style="color: var(--text-gray); font-size: 0.85em; font-weight: 500; background:var(--gray-light); padding:5px 10px; border-radius:12px;">${daysText}</div></div><div style="color: var(--text-dark); font-size: 1.15em; font-weight: 800; margin-bottom: 8px;">${displayKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} / ${c.targetKm} <span style="font-size:0.7em; font-weight:700; color:var(--text-gray);">km</span></div><div class="chal-progress-bg"><div class="chal-progress-fill" style="width: ${totalPct}%;"></div></div></div>`;
+                let dashHeaderHTML = `<div style="padding: 20px; ${bgStyle}"><div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;"><div><h3 style="color: var(--text-dark); font-size: 1.3em; font-weight: 800; margin:0;">${c.name}</h3></div><div style="color: var(--text-gray); font-size: 0.85em; font-weight: 500; background:var(--gray-light); padding:5px 10px; border-radius:12px;">${daysText}</div></div><div style="color: var(--text-dark); font-size: 1.15em; font-weight: 800; margin-bottom: 8px;">${displayKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} / ${c.targetKm} <span style="font-size:0.7em; font-weight:700; color:var(--text-gray);">km</span></div><div class="chal-progress-bg"><div class="chal-progress-fill" style="width: ${totalPct}%;"></div></div></div>`;
 
                 let memberDataArray = [];
                 if (c.members) { c.members.forEach(mUid => { let mKm = overallKm[mUid] || 0; let userObj = globalUsersMap[mUid] || {name: 'Neznámý', avatarUrl: ''}; memberDataArray.push({ uid: mUid, name: userObj.name, avatar: userObj.avatarUrl, km: mKm }); }); }
@@ -1011,19 +1065,18 @@
                 });
                 membersHtmlList += `</div>`;
 
-                let statsHeaderHTML = dashHeaderHTML + `<div style="padding: 0 20px 20px 20px;"><div style="display:inline-flex; align-items:center; gap:6px; font-size:0.9em; font-weight:600; color:var(--text-dark); cursor:pointer; user-select:none;" onclick="toggleMembersList('${c.id}')"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>${memberCount} účastníků</div>${membersHtmlList}</div>`;
+                let statsHeaderHTML = dashHeaderHTML + `<div style="padding: 0 20px 20px 20px;"><div style="display:inline-flex; align-items:center; gap:6px; font-size:0.9em; font-weight:600; color:var(--text-dark); cursor:pointer; user-select:none;" onclick="event.stopPropagation(); toggleMembersList('${c.id}')"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>${memberCount} účastníků</div>${membersHtmlList}</div>`;
 
-                const dashCard = document.createElement('div'); dashCard.className = 'card-no-padding'; dashCard.innerHTML = dashHeaderHTML; dashJoinedList.appendChild(dashCard);
-                const statsCard = document.createElement('div'); statsCard.className = 'card-no-padding';
+                const dashCard = document.createElement('div'); dashCard.className = 'card-no-padding'; dashCard.style.cursor = 'pointer';
+                dashCard.innerHTML = dashHeaderHTML; 
+                dashCard.onclick = () => { openChallengeDetail(c.id); };
+                dashJoinedList.appendChild(dashCard);
                 
+                const statsCard = document.createElement('div'); statsCard.className = 'card-no-padding';
                 let htmlWeekly = generateLeaderboardHtml(weeklyUserKm); let htmlOverall = generateLeaderboardHtml(overallKm); let htmlBar = generateBarChartHtml(weeklyTotalKm); let pieObj = generatePieChartHtml(pieData, validActivities.length);
                 statsCard.innerHTML = `${statsHeaderHTML}<div style="border-top: 1px solid var(--gray-border); padding: 20px;"><h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 15px;">Aktuální týdenní přehled</h4>${htmlWeekly}</div><div style="border-top: 1px solid var(--gray-border); padding: 20px;"><h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 15px;">Celkový přehled</h4>${htmlOverall}</div><div style="border-top: 1px solid var(--gray-border); padding: 20px;"><h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 5px;">Součet podle týdnů</h4><div style="font-size: 0.8em; color:var(--text-gray); margin-bottom:15px;">Součet km všech účastníků</div>${htmlBar}</div><div style="border-top: 1px solid var(--gray-border); padding: 20px;"><h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 15px;">Podíl aktivit</h4><div style="display:flex; align-items:center; gap:20px;"><div style="flex:0 0 120px;">${pieObj.svg}</div><div style="flex:1;">${pieObj.legend}</div></div></div>`;
                 
-                if (isRace) {
-                    statsRaceDiv.appendChild(statsCard);
-                } else {
-                    statsCollabDiv.appendChild(statsCard);
-                }
+                if (isRace) { statsRaceDiv.appendChild(statsCard); } else { statsCollabDiv.appendChild(statsCard); }
             } else {
                 let memberCount = c.members ? c.members.length : 0; let d1 = new Date(c.start); d1.setHours(0,0,0,0); let d2 = new Date(c.end); d2.setHours(0,0,0,0); let tDays = Math.round(Math.abs(d2 - d1) / (1000 * 60 * 60 * 24)) + 1;
                 let actsHtml = (c.allowedActivities || []).map(a => { let iconHtml = icons[a] || icons["Chůze"]; return iconHtml.replace('class="activity-list-icon"', 'style="width: 18px; height: 18px; object-fit: contain;"'); }).join(' ');
@@ -1035,8 +1088,9 @@
             }
 
             if (isCreator) {
-                myAuthoredCount++; const profCard = document.createElement('div'); profCard.style.cssText = `background-color: #FFFFFF; border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; ${bgStyle}`;
-                profCard.innerHTML = `<div><div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div><div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Cíl: ${c.targetKm} km</div></div><button style="background:var(--gray-light); border:none; padding:8px 12px; border-radius:10px; display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.85em; font-weight:600; color:var(--text-dark);" onclick="openEditChallengeModal('${c.id}')"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Upravit</button>`;
+                myAuthoredCount++; const profCard = document.createElement('div'); profCard.style.cssText = `background-color: #FFFFFF; border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; ${bgStyle}`;
+                profCard.onclick = () => { openChallengeDetail(c.id); };
+                profCard.innerHTML = `<div><div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div><div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Cíl: ${c.targetKm} km</div></div><button style="background:var(--gray-light); border:none; padding:8px 12px; border-radius:10px; display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.85em; font-weight:600; color:var(--text-dark);" onclick="event.stopPropagation(); openEditChallengeModal('${c.id}')"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Upravit</button>`;
                 profileMyChal.appendChild(profCard);
             }
         });
@@ -1157,14 +1211,12 @@
             btn.className = "chal-btn-main";
         }
 
-        const modal = document.getElementById('chal-detail-fullscreen');
-        modal.classList.add('active');
-        modal.scrollTop = 0; // Vždy resetujeme posun nahoru při otevření
+        openModalElement('chal-detail-fullscreen');
+        const sheet = document.querySelector('#chal-detail-fullscreen .chal-detail-sheet');
+        if (sheet) sheet.scrollTop = 0;
     };
     
-    window.closeChallengeDetail = () => {
-        document.getElementById('chal-detail-fullscreen').classList.remove('active');
-    };
+    window.closeChallengeDetail = () => closeModalElement('chal-detail-fullscreen');
 
     window.handleChalFileSelect = (input, mode) => {
         const file = input.files[0]; if(!file) return;
@@ -1176,7 +1228,8 @@
             imageNode.src = e.target.result;
             document.getElementById(wrapperId).style.display = "block";
             if(chalCropper) chalCropper.destroy();
-            chalCropper = new Cropper(imageNode, { aspectRatio: 16/9, viewMode: 1, autoCropArea: 1, background: false });
+            // Poměr stran upraven na 4:3 pro hezčí fotku
+            chalCropper = new Cropper(imageNode, { aspectRatio: 4/3, viewMode: 1, autoCropArea: 1, background: false });
         }; 
         reader.readAsDataURL(file);
     };
@@ -1230,8 +1283,8 @@
         return { svg: `<svg width="120" height="120" viewBox="0 0 36 36" style="transform: rotate(-90deg); border-radius:50%;">${svgContent}</svg>`, legend: legendHtml };
     }
 
-    window.openMapListModal = () => { document.getElementById('map-list-modal').classList.add('active'); };
-    window.closeMapListModal = () => { document.getElementById('map-list-modal').classList.remove('active'); };
+    window.openMapListModal = () => openModalElement('map-list-modal');
+    window.closeMapListModal = () => closeModalElement('map-list-modal');
     
     window.toggleMapLayer = () => {
         if (!leafletMap) return;
@@ -1337,7 +1390,7 @@
       if(isSaving) return; let rawInput = document.getElementById('km-input').value.replace(',', '.'); const km = parseFloat(rawInput);
       if(km > 0 && currentUser) {
         isSaving = true; const btn = document.getElementById('btn-save-activity'); btn.innerText = "Ukládám..."; btn.disabled = true;
-        try { await addDoc(collection(db, "activities"), { uid: currentUser.uid, km: km, type: currentActivityType, timestamp: new Date() }); await updateDoc(doc(db, "users", currentUser.uid), { personalKm: increment(km) }); window.closeModal(); } 
+        try { await addDoc(collection(db, "activities"), { uid: currentUser.uid, km: km, type: currentActivityType, timestamp: new Date() }); await updateDoc(doc(db, "users", currentUser.uid), { personalKm: increment(km) }); closeModalElement('activity-modal'); } 
         catch (error) { alert("Chyba."); } finally { isSaving = false; btn.innerText = "Uložit"; btn.disabled = false; }
       } else { alert("Zadej počet kilometrů."); }
     };
@@ -1347,7 +1400,7 @@
         if(newKm > 0 && selectedActivityId && currentUser) {
             isSaving = true; const btn = document.getElementById('btn-edit-activity'); btn.innerText = "Ukládám..."; btn.disabled = true;
             const diffKm = newKm - selectedActivityOldKm; const newDate = newDateVal ? new Date(newDateVal) : new Date();
-            try { await updateDoc(doc(db, "activities", selectedActivityId), { km: newKm, type: editActivityType, timestamp: newDate }); await updateDoc(doc(db, "users", currentUser.uid), { personalKm: increment(diffKm) }); window.closeEditModal(); } 
+            try { await updateDoc(doc(db, "activities", selectedActivityId), { km: newKm, type: editActivityType, timestamp: newDate }); await updateDoc(doc(db, "users", currentUser.uid), { personalKm: increment(diffKm) }); closeModalElement('edit-modal'); } 
             catch (error) { alert("Chyba."); } finally { isSaving = false; btn.innerText = "Uložit změny"; btn.disabled = false; }
         } else { alert("Zadej platné hodnoty."); }
     };
@@ -1356,7 +1409,7 @@
         if(isSaving) return;
         if(selectedActivityId && currentUser && confirm("Opravdu smazat aktivitu?")) {
             isSaving = true; const btn = document.getElementById('btn-delete-activity'); btn.innerText = "Mažu..."; btn.disabled = true; const minusKm = -selectedActivityOldKm;
-            try { await deleteDoc(doc(db, "activities", selectedActivityId)); await updateDoc(doc(db, "users", currentUser.uid), { personalKm: increment(minusKm) }); window.closeEditModal(); } 
+            try { await deleteDoc(doc(db, "activities", selectedActivityId)); await updateDoc(doc(db, "users", currentUser.uid), { personalKm: increment(minusKm) }); closeModalElement('edit-modal'); } 
             catch (error) { alert("Chyba."); } finally { isSaving = false; btn.innerText = "Smazat aktivitu"; btn.disabled = false; }
         }
     };
@@ -1365,11 +1418,13 @@
         if(!currentUser) return; const userSnap = await getDoc(doc(db, "users", currentUser.uid)); const deleteBtn = document.getElementById('btn-delete-avatar');
         if(userSnap.exists()){ const data = userSnap.data(); document.getElementById('profile-edit-name-input').value = data.name || ""; if(data.avatarUrl) { deleteBtn.style.display = "block"; } else { deleteBtn.style.display = "none"; } }
         document.getElementById('profile-file-input').value = ""; document.getElementById('cropper-wrapper').style.display = "none";
-        if(cropper) { cropper.destroy(); cropper = null; } document.getElementById('profile-edit-modal').classList.add('active');
+        if(cropper) { cropper.destroy(); cropper = null; } openModalElement('profile-edit-modal');
     };
-    window.closeProfileEditModal = () => { document.getElementById('profile-edit-modal').classList.remove('active'); if(cropper) { cropper.destroy(); cropper = null; } };
-    window.deleteProfilePhoto = async () => { if(confirm("Smazat fotku?")) { await updateDoc(doc(db, "users", currentUser.uid), { avatarUrl: "" }); window.closeProfileEditModal(); } };
-    window.deleteUserAccount = async () => { if(confirm("⚠️ OPRAVDU smazat celý profil a data?")) { try { await deleteDoc(doc(db, "users", currentUser.uid)); await deleteUser(currentUser); window.closeProfileEditModal(); } catch (e) { alert("Chyba. Možná je nutné se odhlásit a znovu přihlásit."); } } };
+    window.closeProfileEditModal = () => closeModalElement('profile-edit-modal');
+    
+    window.deleteProfilePhoto = async () => { if(confirm("Smazat fotku?")) { await updateDoc(doc(db, "users", currentUser.uid), { avatarUrl: "" }); closeModalElement('profile-edit-modal'); } };
+    window.deleteUserAccount = async () => { if(confirm("⚠️ OPRAVDU smazat celý profil a data?")) { try { await deleteDoc(doc(db, "users", currentUser.uid)); await deleteUser(currentUser); closeModalElement('profile-edit-modal'); } catch (e) { alert("Chyba. Možná je nutné se odhlásit a znovu přihlásit."); } } };
+    
     window.handleProfileFileSelect = (input) => {
         const file = input.files[0]; if(!file) return; document.getElementById('btn-delete-avatar').style.display = "none";
         const reader = new FileReader(); reader.onload = function(e) {
@@ -1381,7 +1436,7 @@
     window.saveProfileEdit = async () => {
         const newName = document.getElementById('profile-edit-name-input').value.trim(); if(!newName) return; let updateData = { name: newName };
         if(cropper) { const canvas = cropper.getCroppedCanvas({ width: 150, height: 150 }); updateData.avatarUrl = canvas.toDataURL('image/jpeg', 0.75); }
-        await updateDoc(doc(db, "users", currentUser.uid), updateData); window.closeProfileEditModal();
+        await updateDoc(doc(db, "users", currentUser.uid), updateData); closeModalElement('profile-edit-modal');
     };
 
     window.toggleEditMode = () => { document.getElementById('profile-activity-list').classList.toggle('edit-mode-active'); };
@@ -1389,35 +1444,14 @@
         selectedActivityId = id; selectedActivityOldKm = km; editActivityType = type; selectedActivityDate = isoDate;
         document.getElementById('edit-km-input').value = km; document.getElementById('edit-date-input').value = isoDate;
         document.querySelectorAll('#edit-modal .chip').forEach(c => c.classList.remove('active')); const targetChip = document.querySelector(`#edit-modal .chip[data-type="${type}"]`); if(targetChip) targetChip.classList.add('active');
-        document.getElementById('edit-modal').classList.add('active');
+        openModalElement('edit-modal');
     };
-    window.closeEditModal = () => { document.getElementById('edit-modal').classList.remove('active'); selectedActivityId = null; };
+    window.closeEditModal = () => closeModalElement('edit-modal');
     window.selectEditChip = (element) => { document.querySelectorAll('#edit-modal .chip').forEach(c => c.classList.remove('active')); element.classList.add('active'); editActivityType = element.getAttribute('data-type'); };
 
-    window.joinChallenge = async (chalId) => { 
-        try { 
-            await updateDoc(doc(db, "challenges", chalId), { members: arrayUnion(currentUser.uid) }); 
-            const btn = document.getElementById('chal-action-btn');
-            btn.innerText = "Odpojit se od akce"; btn.className = "chal-btn-main joined";
-        } catch(e) { alert("Chyba."); } 
-    };
-    window.leaveChallenge = async (chalId) => { 
-        if(confirm("Opravdu se chceš odpojit od této akce? Tvé kilometry se do ní přestanou počítat.")) { 
-            try { 
-                await updateDoc(doc(db, "challenges", chalId), { members: arrayRemove(currentUser.uid) }); 
-                const btn = document.getElementById('chal-action-btn');
-                btn.innerText = "Připojit se k akci"; btn.className = "chal-btn-main";
-            } catch(e) { alert("Chyba při odpojování."); } 
-        } 
-    };
-
-    window.openCreateChallengeModal = () => { document.getElementById('create-challenge-modal').classList.add('active'); };
-    window.closeCreateChallengeModal = () => { 
-        document.getElementById('create-challenge-modal').classList.remove('active'); 
-        if(chalCropper) { chalCropper.destroy(); chalCropper = null; }
-        document.getElementById('new-chal-cropper-wrapper').style.display = 'none';
-        document.getElementById('new-chal-file-input').value = '';
-    };
+    window.openCreateChallengeModal = () => openModalElement('create-challenge-modal');
+    window.closeCreateChallengeModal = () => closeModalElement('create-challenge-modal');
+    
     window.toggleChallengeChip = (element) => { element.classList.toggle('active'); };
     window.toggleMembersList = (cid) => { document.getElementById(`members-dropdown-${cid}`).classList.toggle('hidden'); };
     window.selectSingleChip = (element, containerId) => { document.querySelectorAll(`#${containerId} .chip`).forEach(c => c.classList.remove('active')); element.classList.add('active'); };
@@ -1430,7 +1464,8 @@
         
         let finalBgUrl = "";
         if (chalCropper) {
-            finalBgUrl = chalCropper.getCroppedCanvas({ width: 800, height: 450 }).toDataURL('image/jpeg', 0.7);
+            // Ořezáno na 4:3
+            finalBgUrl = chalCropper.getCroppedCanvas({ width: 800, height: 600 }).toDataURL('image/jpeg', 0.7);
         }
         
         const desc = document.getElementById('new-chal-desc').value.trim();
@@ -1445,13 +1480,12 @@
         isSaving = true; const btn = document.getElementById('btn-create-chal'); btn.innerText = "Vytvářím..."; btn.disabled = true;
         try { 
             await addDoc(collection(db, "challenges"), { name, targetKm, challengeType, mapUrl, bgUrl: finalBgUrl, description: desc, rules: rules, authorDisplay: authorDisplay, start, end, startDay, allowedActivities, creatorId: currentUser.uid, members: [currentUser.uid], createdAt: new Date() }); 
-            window.closeCreateChallengeModal(); 
+            closeModalElement('create-challenge-modal'); 
             document.getElementById('new-chal-name').value = ''; document.getElementById('new-chal-km').value = ''; document.getElementById('new-chal-map').value = ''; document.getElementById('new-chal-desc').value = ''; document.getElementById('new-chal-rules').value = '';
         } 
         catch (e) { alert("Chyba."); } finally { isSaving = false; btn.innerText = "Vytvořit"; btn.disabled = false; }
     };
 
-    let selectedChallengeId = null;
     window.openEditChallengeModal = async (id) => {
         selectedChallengeId = id; const snap = await getDoc(doc(db, "challenges", id));
         if(snap.exists()) {
@@ -1471,15 +1505,11 @@
             
             let storedType = data.challengeType || 'collab'; document.querySelectorAll('#edit-chal-type .chip').forEach(c => { c.classList.remove('active'); if(c.getAttribute('data-val') === storedType) c.classList.add('active'); });
             let storedDay = data.startDay !== undefined ? data.startDay : 1; document.querySelectorAll('#edit-chal-start-day .chip').forEach(c => { c.classList.remove('active'); if(parseInt(c.getAttribute('data-val')) === storedDay) c.classList.add('active'); });
-            document.getElementById('edit-challenge-modal').classList.add('active');
+            openModalElement('edit-challenge-modal');
         }
     };
-    window.closeEditChallengeModal = () => { 
-        document.getElementById('edit-challenge-modal').classList.remove('active'); selectedChallengeId = null; 
-        if(chalCropper) { chalCropper.destroy(); chalCropper = null; }
-        document.getElementById('edit-chal-cropper-wrapper').style.display = 'none';
-        document.getElementById('edit-chal-file-input').value = '';
-    };
+    window.closeEditChallengeModal = () => closeModalElement('edit-challenge-modal');
+    
     window.saveEditedChallenge = async () => {
         if(isSaving) return;
         const name = document.getElementById('edit-chal-name').value.trim(); const targetKm = parseFloat(document.getElementById('edit-chal-km').value);
@@ -1488,7 +1518,8 @@
         
         let finalBgUrl = currentEditChalBgUrl;
         if(chalCropper) {
-            finalBgUrl = chalCropper.getCroppedCanvas({ width: 800, height: 450 }).toDataURL('image/jpeg', 0.7);
+            // Ořezáno na 4:3
+            finalBgUrl = chalCropper.getCroppedCanvas({ width: 800, height: 600 }).toDataURL('image/jpeg', 0.7);
         }
         
         const desc = document.getElementById('edit-chal-desc').value.trim();
@@ -1501,11 +1532,11 @@
 
         if(selectedChallengeId) { 
             isSaving = true; const btn = document.getElementById('btn-edit-chal'); btn.innerText = "Ukládám..."; btn.disabled = true;
-            try { await updateDoc(doc(db, "challenges", selectedChallengeId), { name, targetKm, challengeType, mapUrl, bgUrl: finalBgUrl, description: desc, rules: rules, authorDisplay: authorDisplay, start, end, startDay, allowedActivities }); window.closeEditChallengeModal(); } 
+            try { await updateDoc(doc(db, "challenges", selectedChallengeId), { name, targetKm, challengeType, mapUrl, bgUrl: finalBgUrl, description: desc, rules: rules, authorDisplay: authorDisplay, start, end, startDay, allowedActivities }); closeModalElement('edit-challenge-modal'); } 
             catch (e) { alert("Chyba."); } finally { isSaving = false; btn.innerText = "Uložit"; btn.disabled = false; }
         }
     };
-    window.deleteChallenge = async () => { if(selectedChallengeId && confirm("Smazat akci pro všechny?")) { await deleteDoc(doc(db, "challenges", selectedChallengeId)); window.closeEditChallengeModal(); } };
+    window.deleteChallenge = async () => { if(selectedChallengeId && confirm("Smazat akci pro všechny?")) { await deleteDoc(doc(db, "challenges", selectedChallengeId)); closeModalElement('edit-challenge-modal'); } };
 
     window.switchTab = (tabId) => {
       window.scrollTo({ top: 0, behavior: 'instant' }); 
@@ -1517,7 +1548,7 @@
 
     window.openPublicProfile = async (uid) => {
         if(uid === currentUser?.uid) { window.switchTab('profile'); return; }
-        document.getElementById('public-profile-modal').classList.add('active');
+        openModalElement('public-profile-modal');
         
         try {
             const userSnap = await getDoc(doc(db, "users", uid));
@@ -1569,7 +1600,7 @@
             }
         } catch (e) { }
     };
-    window.closePublicProfile = () => { document.getElementById('public-profile-modal').classList.remove('active'); };
+    window.closePublicProfile = () => closeModalElement('public-profile-modal');
 
     window.resetPassword = (event) => { event.preventDefault(); const email = document.getElementById('email-input').value.trim(); if(!email) return; sendPasswordResetEmail(auth, email); };
     window.registerUser = () => { const email = document.getElementById('email-input').value.trim(); const password = document.getElementById('password-input').value.trim(); createUserWithEmailAndPassword(auth, email, password); };
@@ -1579,10 +1610,11 @@
 
     const modal = document.getElementById('activity-modal');
     window.openModal = () => { 
-        modal.classList.add('active'); document.getElementById('km-input').value = ''; document.getElementById('calc-minutes').value = ''; document.getElementById('calc-speed').value = '4.5'; document.getElementById('calc-result').innerText = '0';
+        document.getElementById('km-input').value = ''; document.getElementById('calc-minutes').value = ''; document.getElementById('calc-speed').value = '4.5'; document.getElementById('calc-result').innerText = '0';
         currentActivityType = "Chůze"; document.querySelectorAll('#activity-modal .chip').forEach(c => c.classList.remove('active')); document.querySelector('#activity-modal .chip[data-type="Chůze"]').classList.add('active'); 
+        openModalElement('activity-modal');
     };
-    window.closeModal = () => { modal.classList.remove('active'); };
+    window.closeModal = () => closeModalElement('activity-modal');
     window.selectChip = (element) => { document.querySelectorAll('#activity-modal .chip').forEach(c => c.classList.remove('active')); element.classList.add('active'); currentActivityType = element.getAttribute('data-type'); };
     
     window.toggleCalculator = () => {
