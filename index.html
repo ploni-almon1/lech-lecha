@@ -136,25 +136,61 @@
     .modal-content { background-color: var(--white); padding: 25px; border-radius: 24px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; text-align: center; position: relative; }
     .modal-content h3 { margin-bottom: 20px; color: var(--primary-dark); }
     
-    /* DETAIL VÝZVY "STRAVA" STYL - FIXNÍ OBRÁZEK, JEZDÍCÍ KARTA */
-    .chal-detail-fullscreen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 3000; background: var(--bg-color); display: flex; flex-direction: column; transition: transform 0.3s ease; transform: translateY(100%); }
+    /* DETAIL VÝZVY "STRAVA" STYL - FIXNÍ OBRÁZEK S POMĚREM 4:3 */
+    .chal-detail-fullscreen { 
+        position: fixed; top: 0; left: 0; width: 100%; height: 100vh; 
+        z-index: 3000; background: var(--bg-color); display: flex; flex-direction: column; 
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(100%); 
+    }
     .chal-detail-fullscreen.active { transform: translateY(0); }
     
-    /* Obrázek zafixovaný na pozadí */
-    .chal-detail-bg-image { position: absolute; top: 0; left: 0; width: 100%; height: 40vh; background-size: cover; background-position: center; z-index: 1; background-color: var(--primary-dark); }
+    /* Obrázek drží vzadu přesně v poměru 4:3 */
+    .chal-detail-bg-image { 
+        position: absolute; top: 0; left: 0; width: 100%; 
+        aspect-ratio: 4/3; max-height: 45vh; /* Ochrana pro širokoúhlé telefony */
+        background-size: cover; background-position: center; 
+        background-color: var(--primary-dark); z-index: 1; 
+    }
     
-    /* Tlačítko zpět pevně nahoře nad vším, takže neujíždí */
-    .chal-detail-close-btn { position: absolute; top: 20px; left: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; cursor: pointer; border: none; font-weight: bold; color: var(--text-dark); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    /* Zpět pevně nahoře nad vším, takže neujíždí */
+    .chal-detail-close-btn { 
+        position: fixed; top: 20px; left: 20px; width: 40px; height: 40px; 
+        background: rgba(255,255,255,0.9); border-radius: 50%; 
+        display: flex; align-items: center; justify-content: center; 
+        z-index: 3010; cursor: pointer; border: none; font-weight: bold; 
+        color: var(--text-dark); box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        transition: background 0.2s, box-shadow 0.2s;
+    }
     
-    /* Přejíždějící bílá roletka */
-    .chal-detail-sheet { position: relative; margin-top: 35vh; background: var(--white); flex: 1; border-radius: 24px 24px 0 0; padding: 25px 20px 100px 20px; z-index: 5; overflow-y: auto; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); max-width: 600px; margin-left: auto; margin-right: auto; width: 100%; }
+    /* Přejíždějící bílá roletka je teď to hlavní, co se roluje */
+    .chal-detail-sheet-wrapper {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
+        overflow-y: auto; -webkit-overflow-scrolling: touch; z-index: 5;
+    }
+    /* Posunuto tak, aby byl vidět ten 4:3 obrázek na pozadí, a pak karta vyjela nahoru přes něj */
+    .chal-detail-sheet { 
+        position: relative; margin-top: calc(100vw * 0.75 - 20px); /* Odpovídá zhruba 4:3 obrázku */
+        background: var(--white); border-radius: 24px 24px 0 0; 
+        padding: 25px 20px 100px 20px; min-height: 100vh; 
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.1); 
+        max-width: 600px; margin-left: auto; margin-right: auto; width: 100%; 
+    }
+    
+    /* Na menších šířkách obrazovky držíme margin bezpečně a omezíme to maximálně */
+    @media (max-width: 600px) {
+        .chal-detail-sheet { margin-top: calc(100vw * 0.75 - 20px); }
+    }
+    @media (min-width: 601px) {
+        .chal-detail-sheet { margin-top: 400px; }
+    }
+
     .drag-handle { width: 40px; height: 5px; background: #D1D5DB; border-radius: 3px; margin: 0 auto 20px auto; }
     
     .chal-author-box { display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid var(--gray-border); border-radius: 16px; margin-bottom: 25px; }
     .chal-author-avatar { width: 48px; height: 48px; background: var(--primary-dark); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; overflow: hidden; font-size: 1.2em; flex-shrink: 0; transition: border-radius 0.2s;}
     .chal-author-avatar img { width: 100%; height: 100%; object-fit: cover; }
     
-    .chal-floating-action { position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(255,255,255,1) 70%, rgba(255,255,255,0)); padding: 30px 20px 20px 20px; z-index: 10; display: flex; justify-content: center; pointer-events: none;}
+    .chal-floating-action { position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(255,255,255,1) 70%, rgba(255,255,255,0)); padding: 30px 20px 20px 20px; z-index: 3005; display: flex; justify-content: center; pointer-events: none;}
     
     /* Hlavní tlačítko ZBAVENÉ STÍNU */
     .chal-btn-main { background: var(--primary-orange); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 700; font-size: 1.05em; width: 100%; max-width: 560px; cursor: pointer; transition: 0.2s; pointer-events: auto;}
@@ -247,7 +283,7 @@
       </div>
       
       <div class="action-row">
-        <button class="btn-add-activity" onclick="openModal()">
+        <button class="btn-add-activity" onclick="openModalElement('activity-modal')">
             <div class="btn-add-icon">
                 <img src="assets/plus.svg" alt="Plus" style="width: 20px; height: 20px; object-fit: contain;">
             </div>
@@ -282,7 +318,7 @@
       <div class="section-title" style="margin: 30px 20px 10px 20px;">Další komunitní akce</div>
       <div class="card">
         <div id="stats-other-challenges" style="display:flex; flex-direction:column; gap:10px;"></div>
-        <button id="btn-create-challenge-admin" class="btn-outline" style="display:none; width: 100%; border: 1px dashed var(--gray-border); background: var(--gray-light); padding: 12px; border-radius: 12px; font-weight: 600; color: var(--text-dark); margin-top: 15px; cursor:pointer;" onclick="openCreateChallengeModal()">+ Vytvořit novou akci</button>
+        <button id="btn-create-challenge-admin" class="btn-outline" style="display:none; width: 100%; border: 1px dashed var(--gray-border); background: var(--gray-light); padding: 12px; border-radius: 12px; font-weight: 600; color: var(--text-dark); margin-top: 15px; cursor:pointer;" onclick="openModalElement('create-challenge-modal')">+ Vytvořit novou akci</button>
       </div>
     </div> 
 
@@ -293,7 +329,7 @@
       
       <!-- FAB Ovládání -->
       <div class="map-fab-container">
-          <button class="map-fab" onclick="openMapListModal()">
+          <button class="map-fab" onclick="openModalElement('map-list-modal')">
               <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
           </button>
           <button class="map-fab" onclick="toggleMapLayer()">
@@ -354,57 +390,62 @@
     </div>
   </div>
 
-  <!-- STRAVA-STYLE DETAIL VÝZVY -->
+  <!-- STRAVA-STYLE DETAIL VÝZVY (SCROLL S FUNKCÍ SPY) -->
   <div id="chal-detail-fullscreen" class="chal-detail-fullscreen">
       
+      <!-- Tlačítko zpět (fixed, takže neutíká z obrazovky) -->
       <button id="chal-detail-close-btn" class="chal-detail-close-btn" onclick="closeChallengeDetail()">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
       </button>
       
+      <!-- Sticky obrázek (zůstane nahoře dokud ho bílá karta nepřejede) -->
       <div id="chal-detail-bg" class="chal-detail-bg-image"></div>
       
-      <!-- Karta se roluje uvnitř svého prostoru, obrázek stojí -->
-      <div class="chal-detail-sheet">
-          <div class="drag-handle"></div>
+      <!-- Obal pro rolování bílé karty -->
+      <div class="chal-detail-sheet-wrapper" onscroll="handleDetailScroll(this)">
           
-          <div id="chal-detail-type-badge" style="font-size: 0.8em; font-weight:700; color:var(--primary-orange); text-transform:uppercase; margin-bottom: 5px;">Typ akce</div>
-          <h2 id="chal-detail-title" style="font-size: 1.8em; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; line-height: 1.2;">Název výzvy</h2>
-          <div id="chal-detail-subtitle" style="font-size: 1em; color: var(--text-gray); margin-bottom: 30px; line-height: 1.5;">Podtitul výzvy...</div>
+          <!-- Samotná bílá karta, odsazená tak, aby byl vidět poměr 4:3 obrázku zespodu -->
+          <div class="chal-detail-sheet">
+              <div class="drag-handle"></div>
+              
+              <div id="chal-detail-type-badge" style="font-size: 0.8em; font-weight:700; color:var(--primary-orange); text-transform:uppercase; margin-bottom: 5px;">Typ akce</div>
+              <h2 id="chal-detail-title" style="font-size: 1.8em; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; line-height: 1.2;">Název výzvy</h2>
+              <div id="chal-detail-subtitle" style="font-size: 1em; color: var(--text-gray); margin-bottom: 30px; line-height: 1.5;">Podtitul výzvy...</div>
 
-          <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 10px;">Pořádající klub / autor</h4>
-          <div class="chal-author-box">
-              <div id="chal-detail-author-avatar" class="chal-author-avatar"></div>
-              <div>
-                  <div id="chal-detail-author-name" style="font-weight: 700; color: var(--text-dark); font-size: 1.05em;">Jméno autora</div>
-                  <div id="chal-detail-author-stats" style="font-size: 0.85em; color: var(--text-gray); margin-top: 2px;">Organizátor</div>
+              <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 10px;">Pořádající klub / autor</h4>
+              <div class="chal-author-box">
+                  <div id="chal-detail-author-avatar" class="chal-author-avatar"></div>
+                  <div>
+                      <div id="chal-detail-author-name" style="font-weight: 700; color: var(--text-dark); font-size: 1.05em;">Jméno autora</div>
+                      <div id="chal-detail-author-stats" style="font-size: 0.85em; color: var(--text-gray); margin-top: 2px;">Organizátor</div>
+                  </div>
+              </div>
+
+              <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 15px;">Podrobnosti akce</h4>
+              
+              <div style="display:flex; align-items:center; gap:15px; margin-bottom: 20px;">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--text-gray)"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
+                  <div id="chal-detail-dates" style="font-size: 0.95em; color: var(--text-dark); font-weight: 500;">Datum od do</div>
+              </div>
+              
+              <div style="display:flex; align-items:center; gap:15px; margin-bottom: 20px;">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--text-gray)"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>
+                  <div>
+                      <div style="font-size: 0.95em; color: var(--text-dark); font-weight: 500;">Kvalifikační aktivity</div>
+                      <div id="chal-detail-activities" style="font-size: 0.85em; color: var(--text-gray); margin-top: 4px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;"></div>
+                  </div>
+              </div>
+
+              <div id="chal-desc-wrapper" style="margin-top: 30px; display:none;">
+                  <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 10px;">Přehled a popis</h4>
+                  <div id="chal-detail-desc" style="font-size: 0.95em; color: var(--text-dark); line-height: 1.6; white-space: pre-wrap;"></div>
+              </div>
+
+              <div id="chal-rules-wrapper" style="margin-top: 30px; display:none;">
+                  <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 10px;">Pravidla</h4>
+                  <div id="chal-detail-rules" style="font-size: 0.9em; color: var(--text-gray); line-height: 1.6; white-space: pre-wrap; background: var(--gray-light); padding: 15px; border-radius: 16px;"></div>
               </div>
           </div>
-
-          <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 15px;">Podrobnosti akce</h4>
-          
-          <div style="display:flex; align-items:center; gap:15px; margin-bottom: 20px;">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--text-gray)"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
-              <div id="chal-detail-dates" style="font-size: 0.95em; color: var(--text-dark); font-weight: 500;">Datum od do</div>
-          </div>
-          
-          <div style="display:flex; align-items:center; gap:15px; margin-bottom: 20px;">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--text-gray)"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>
-              <div>
-                  <div style="font-size: 0.95em; color: var(--text-dark); font-weight: 500;">Kvalifikační aktivity</div>
-                  <div id="chal-detail-activities" style="font-size: 0.85em; color: var(--text-gray); margin-top: 4px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;"></div>
-              </div>
-          </div>
-
-          <div id="chal-desc-wrapper" style="margin-top: 30px; display:none;">
-              <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 10px;">Přehled a popis</h4>
-              <div id="chal-detail-desc" style="font-size: 0.95em; color: var(--text-dark); line-height: 1.6; white-space: pre-wrap;"></div>
-          </div>
-
-          <div id="chal-rules-wrapper" style="margin-top: 30px; display:none;">
-              <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 10px;">Pravidla</h4>
-              <div id="chal-detail-rules" style="font-size: 0.9em; color: var(--text-gray); line-height: 1.6; white-space: pre-wrap; background: var(--gray-light); padding: 15px; border-radius: 16px;"></div>
-          </div>
-
       </div>
 
       <div class="chal-floating-action">
@@ -414,27 +455,27 @@
 
 
   <!-- MODALY A FORMULÁŘE -->
-  <div id="connections-modal" class="modal-overlay" onclick="if(event.target===this) closeConnections()">
+  <div id="connections-modal" class="modal-overlay" onclick="if(event.target===this) closeModalElement('connections-modal')">
       <div class="modal-content">
           <h3 id="connections-title" style="margin-bottom:15px;">Sledující</h3>
           <div id="connections-list" style="display:flex; flex-direction:column;"></div>
           <div class="modal-buttons-row">
-              <button class="btn-cancel" onclick="closeConnections()">Zavřít</button>
+              <button class="btn-cancel" onclick="closeModalElement('connections-modal')">Zavřít</button>
           </div>
       </div>
   </div>
 
-  <div id="map-list-modal" class="modal-overlay" onclick="if(event.target===this) closeMapListModal()">
+  <div id="map-list-modal" class="modal-overlay" onclick="if(event.target===this) closeModalElement('map-list-modal')">
       <div class="modal-content">
           <h3>Vyber výzvu nebo závod s mapou</h3>
           <div id="map-challenge-list" style="display:flex; flex-direction:column; gap:10px;"></div>
           <div class="modal-buttons-row">
-              <button class="btn-cancel" onclick="closeMapListModal()">Zavřít</button>
+              <button class="btn-cancel" onclick="closeModalElement('map-list-modal')">Zavřít</button>
           </div>
       </div>
   </div>
 
-  <div id="activity-modal" class="modal-overlay" onclick="if(event.target===this) closeModal()">
+  <div id="activity-modal" class="modal-overlay" onclick="if(event.target===this) closeModalElement('activity-modal')">
     <div class="modal-content">
       <h3>Nová aktivita</h3>
       <div class="activity-chips">
@@ -449,7 +490,6 @@
         <span style="font-size: 1.2em; font-weight: 600;"> km</span>
       </div>
 
-      <!-- Kalkulačka -->
       <div style="margin: 15px 0 25px 0; border-top: 1px solid var(--gray-border); padding-top: 15px; text-align: left;">
           <div style="font-size: 0.85em; font-weight: 600; margin-bottom: 10px; cursor:pointer; color: var(--primary-dark); display: flex; align-items: center; justify-content: center; gap: 5px;" onclick="toggleCalculator()">
               <svg id="calc-chevron" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="transition: transform 0.2s;"><path d="M7 10l5 5 5-5z"/></svg>
@@ -470,13 +510,13 @@
       </div>
 
       <div class="modal-buttons-row">
-        <button class="btn-cancel" onclick="closeModal()">Zrušit</button>
+        <button class="btn-cancel" onclick="closeModalElement('activity-modal')">Zrušit</button>
         <button class="btn-save" id="btn-save-activity" onclick="saveActivity()">Uložit</button>
       </div>
     </div>
   </div>
 
-  <div id="edit-modal" class="modal-overlay" onclick="if(event.target===this) closeEditModal()">
+  <div id="edit-modal" class="modal-overlay" onclick="if(event.target===this) closeModalElement('edit-modal')">
     <div class="modal-content">
       <h3>Upravit aktivitu</h3>
       <div class="activity-chips">
@@ -492,14 +532,14 @@
       </div>
       <div class="date-input-wrapper"><label>Datum aktivity:</label><input type="date" id="edit-date-input" class="date-input"></div>
       <div class="modal-buttons-row">
-        <button class="btn-cancel" onclick="closeEditModal()">Zrušit</button>
+        <button class="btn-cancel" onclick="closeModalElement('edit-modal')">Zrušit</button>
         <button class="btn-save" id="btn-edit-activity" onclick="saveEditActivity()">Uložit změny</button>
       </div>
       <button class="btn-delete" id="btn-delete-activity" onclick="deleteActivity()">Smazat aktivitu</button>
     </div>
   </div>
 
-  <div id="profile-edit-modal" class="modal-overlay" onclick="if(event.target===this) closeProfileEditModal()">
+  <div id="profile-edit-modal" class="modal-overlay" onclick="if(event.target===this) closeModalElement('profile-edit-modal')">
     <div class="modal-content">
       <h3>Upravit profil</h3>
       <div class="date-input-wrapper"><label>Tvoje jméno / Přezdívka:</label><input type="text" id="profile-edit-name-input" class="date-input" placeholder="Jméno"></div>
@@ -508,14 +548,14 @@
       </div>
       <div class="cropper-container-wrapper" id="cropper-wrapper"><img id="cropper-image" src=""></div>
       <div class="modal-buttons-row">
-        <button class="btn-cancel" onclick="closeProfileEditModal()">Zrušit</button>
+        <button class="btn-cancel" onclick="closeModalElement('profile-edit-modal')">Zrušit</button>
         <button class="btn-save" onclick="saveProfileEdit()">Uložit profil</button>
       </div>
       <button class="btn-delete" style="background:#FEE2E2; color:#EF4444;" onclick="deleteUserAccount()">Odstranit celý můj profil</button>
     </div>
   </div>
   
-  <div id="create-challenge-modal" class="modal-overlay" onclick="if(event.target===this) closeCreateChallengeModal()">
+  <div id="create-challenge-modal" class="modal-overlay" onclick="if(event.target===this) closeModalElement('create-challenge-modal')">
     <div class="modal-content">
       <h3>Nová výzva / závod</h3>
       <div class="date-input-wrapper"><label>Název akce:</label><input type="text" id="new-chal-name" class="date-input" placeholder="Např. Křížem krážem"></div>
@@ -591,13 +631,13 @@
         </div>
       </div>
       <div class="modal-buttons-row">
-        <button class="btn-cancel" onclick="closeCreateChallengeModal()">Zrušit</button>
+        <button class="btn-cancel" onclick="closeModalElement('create-challenge-modal')">Zrušit</button>
         <button class="btn-save" id="btn-create-chal" onclick="saveNewChallenge()">Vytvořit</button>
       </div>
     </div>
   </div>
   
-  <div id="edit-challenge-modal" class="modal-overlay" onclick="if(event.target===this) closeEditChallengeModal()">
+  <div id="edit-challenge-modal" class="modal-overlay" onclick="if(event.target===this) closeModalElement('edit-challenge-modal')">
     <div class="modal-content">
       <h3>Upravit akci</h3>
       <div class="date-input-wrapper"><label>Název akce:</label><input type="text" id="edit-chal-name" class="date-input"></div>
@@ -670,17 +710,17 @@
         </div>
       </div>
       <div class="modal-buttons-row">
-        <button class="btn-cancel" onclick="closeEditChallengeModal()">Zrušit</button>
+        <button class="btn-cancel" onclick="closeModalElement('edit-challenge-modal')">Zrušit</button>
         <button class="btn-save" id="btn-edit-chal" onclick="saveEditedChallenge()">Uložit</button>
       </div>
       <button class="btn-delete" onclick="deleteChallenge()">Smazat akci</button>
     </div>
   </div>
   
-  <div id="public-profile-modal" class="modal-overlay" onclick="if(event.target===this) closePublicProfile()">
+  <div id="public-profile-modal" class="modal-overlay" onclick="if(event.target===this) closeModalElement('public-profile-modal')">
     <div class="modal-content" style="padding:0; overflow:hidden;">
       <div class="page-title" style="padding:15px; border-bottom:1px solid var(--gray-border);">
-        <span>Profil</span><button style="background:transparent; border:none; color:var(--text-gray); font-size:1.2em; cursor:pointer;" onclick="closePublicProfile()">✕</button>
+        <span>Profil</span><button style="background:transparent; border:none; color:var(--text-gray); font-size:1.2em; cursor:pointer;" onclick="closeModalElement('public-profile-modal')">✕</button>
       </div>
       <div style="padding: 20px; overflow-y: auto; max-height: calc(90vh - 70px);">
           <div class="profile-header-new" style="padding: 0 0 10px 0;">
@@ -755,8 +795,6 @@
     window.closeModalElement = (modalId) => {
         const index = activeModalsStack.lastIndexOf(modalId);
         if (index > -1) {
-            // Pokud je modal na vrcholu zásobníku, stačí zavolat history.back(), 
-            // což spustí popstate a postará se o zavření a úklid
             if (index === activeModalsStack.length - 1) {
                 history.back(); 
             } else {
@@ -798,6 +836,18 @@
     }
     // ----------------------------------------------
 
+    window.handleDetailScroll = (wrapperEl) => {
+        const btn = document.getElementById('chal-detail-close-btn');
+        // Když začne uživatel scrollovat roletku, a bílá plocha se blíží k okraji (zhruba od výšky 100px),
+        // změníme stín tlačítka, jakoby se slilo s pozadím.
+        if (wrapperEl.scrollTop > 100) {
+            btn.style.boxShadow = 'none';
+            btn.style.background = 'transparent';
+        } else {
+            btn.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+            btn.style.background = 'rgba(255,255,255,0.9)';
+        }
+    };
 
     function getCustomWeekString(date, startDay) {
         let d = new Date(date); d.setHours(0,0,0,0); let day = d.getDay(); let diff = (day - startDay + 7) % 7; d.setDate(d.getDate() - diff); return d.toLocaleDateString('cs-CZ'); 
@@ -981,6 +1031,7 @@
         openConnections('requests');
     };
 
+
     function renderDynamicContent() {
         if(!currentUser || Object.keys(globalUsersMap).length === 0) return;
         const dashJoinedList = document.getElementById('dash-joined-challenges'); dashJoinedList.innerHTML = '';
@@ -1026,7 +1077,8 @@
             const diffTime = endDate - today; const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
             let daysText = diffDays > 0 ? `zbývá ${diffDays} dní` : "Skončilo";
             
-            let bgStyle = c.bgUrl ? `background-image: url('${c.bgUrl}'); background-position: right bottom; background-repeat: no-repeat; background-size: contain;` : '';
+            // OBRÁZKY NA KARTÁCH JSOU ODSTRANĚNÉ (bgStyle = '')
+            let bgStyle = '';
             
             let isRace = c.challengeType === 'race';
 
@@ -1052,7 +1104,7 @@
                     mapBtn.onclick = () => { closeMapListModal(); handleMapSelect(c.id); }; mapListModal.appendChild(mapBtn);
                 }
 
-                let dashHeaderHTML = `<div style="padding: 20px; ${bgStyle}"><div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;"><div><h3 style="color: var(--text-dark); font-size: 1.3em; font-weight: 800; margin:0;">${c.name}</h3></div><div style="color: var(--text-gray); font-size: 0.85em; font-weight: 500; background:var(--gray-light); padding:5px 10px; border-radius:12px;">${daysText}</div></div><div style="color: var(--text-dark); font-size: 1.15em; font-weight: 800; margin-bottom: 8px;">${displayKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} / ${c.targetKm} <span style="font-size:0.7em; font-weight:700; color:var(--text-gray);">km</span></div><div class="chal-progress-bg"><div class="chal-progress-fill" style="width: ${totalPct}%;"></div></div></div>`;
+                let dashHeaderHTML = `<div style="padding: 20px; ${bgStyle}"><div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;"><div><h3 style="color: var(--text-dark); font-size: 1.3em; font-weight: 800; margin:0; cursor:pointer;" onclick="openChallengeDetail('${c.id}')">${c.name}</h3></div><div style="color: var(--text-gray); font-size: 0.85em; font-weight: 500; background:var(--gray-light); padding:5px 10px; border-radius:12px;">${daysText}</div></div><div style="color: var(--text-dark); font-size: 1.15em; font-weight: 800; margin-bottom: 8px;">${displayKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} / ${c.targetKm} <span style="font-size:0.7em; font-weight:700; color:var(--text-gray);">km</span></div><div class="chal-progress-bg"><div class="chal-progress-fill" style="width: ${totalPct}%;"></div></div></div>`;
 
                 let memberDataArray = [];
                 if (c.members) { c.members.forEach(mUid => { let mKm = overallKm[mUid] || 0; let userObj = globalUsersMap[mUid] || {name: 'Neznámý', avatarUrl: ''}; memberDataArray.push({ uid: mUid, name: userObj.name, avatar: userObj.avatarUrl, km: mKm }); }); }
@@ -1161,7 +1213,7 @@
         if (c.authorDisplay === 'admin') {
             authorBoxAvatar.innerHTML = `<img src="icon.png" style="width:100%; height:100%; object-fit:cover; background:white;">`;
             authorBoxName.innerText = "Správce (Lech Lecha)";
-            authorBoxAvatar.style.borderRadius = "14px"; // Tvar zaoblené ikony aplikace
+            authorBoxAvatar.style.borderRadius = "14px"; 
         } else {
             const authorData = globalUsersMap[c.creatorId];
             if (authorData) {
@@ -1171,7 +1223,7 @@
                 authorBoxAvatar.innerHTML = "N";
                 authorBoxName.innerText = "Neznámý";
             }
-            authorBoxAvatar.style.borderRadius = "50%"; // Kruh pro normální uživatele
+            authorBoxAvatar.style.borderRadius = "50%"; 
         }
 
         document.getElementById('chal-detail-dates').innerText = `${new Date(c.start).toLocaleDateString('cs-CZ')} až ${new Date(c.end).toLocaleDateString('cs-CZ')}`;
@@ -1212,26 +1264,13 @@
         }
 
         openModalElement('chal-detail-fullscreen');
-        const sheet = document.querySelector('#chal-detail-fullscreen .chal-detail-sheet');
-        if (sheet) sheet.scrollTop = 0;
-    };
-    
-    window.closeChallengeDetail = () => closeModalElement('chal-detail-fullscreen');
-
-    window.handleChalFileSelect = (input, mode) => {
-        const file = input.files[0]; if(!file) return;
-        const reader = new FileReader(); 
-        reader.onload = function(e) {
-            const wrapperId = mode === 'new' ? 'new-chal-cropper-wrapper' : 'edit-chal-cropper-wrapper';
-            const imageId = mode === 'new' ? 'new-chal-cropper-image' : 'edit-chal-cropper-image';
-            const imageNode = document.getElementById(imageId);
-            imageNode.src = e.target.result;
-            document.getElementById(wrapperId).style.display = "block";
-            if(chalCropper) chalCropper.destroy();
-            // Poměr stran upraven na 4:3 pro hezčí fotku
-            chalCropper = new Cropper(imageNode, { aspectRatio: 4/3, viewMode: 1, autoCropArea: 1, background: false });
-        }; 
-        reader.readAsDataURL(file);
+        
+        // Resetujeme scroll a zrušíme průhlednost tlačítka zpět
+        const sheetWrapper = document.querySelector('.chal-detail-sheet-wrapper');
+        if (sheetWrapper) {
+            sheetWrapper.scrollTop = 0;
+            window.handleDetailScroll(sheetWrapper);
+        }
     };
 
     window.calculateGpxDistance = async (urlInputId, targetKmId) => {
@@ -1464,7 +1503,7 @@
         
         let finalBgUrl = "";
         if (chalCropper) {
-            // Ořezáno na 4:3
+            // Ořezáno na 4:3 (800x600 px)
             finalBgUrl = chalCropper.getCroppedCanvas({ width: 800, height: 600 }).toDataURL('image/jpeg', 0.7);
         }
         
@@ -1486,6 +1525,7 @@
         catch (e) { alert("Chyba."); } finally { isSaving = false; btn.innerText = "Vytvořit"; btn.disabled = false; }
     };
 
+    let selectedChallengeId = null;
     window.openEditChallengeModal = async (id) => {
         selectedChallengeId = id; const snap = await getDoc(doc(db, "challenges", id));
         if(snap.exists()) {
