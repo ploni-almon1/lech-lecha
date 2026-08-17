@@ -610,11 +610,14 @@
     const db = initializeFirestore(app, { localCache: persistentLocalCache({tabManager: persistentSingleTabManager()}) }); 
     const googleProvider = new GoogleAuthProvider();
 
+    // PRO TESTOVÁNÍ JE SERVICE WORKER ZAKOMENTOVANÝ
+    /*
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').catch(err => console.log('SW selhal:', err));
       });
     }
+    */
 
     const publicView = document.getElementById('public-view'); const privateView = document.getElementById('private-view'); 
     let currentUser = null; let unsubscribeUser = null; let unsubscribeActivities = null; let unsubscribeChallengesList = null; let unsubscribeAllActivities = null; let unsubscribeUsersList = null;
@@ -744,22 +747,61 @@
     window.closeConnections = () => { document.getElementById('connections-modal').classList.remove('active'); }
 
     window.requestFollow = async (targetUid) => {
-        await updateDoc(doc(db, "users", targetUid), { followRequests: arrayUnion(currentUser.uid) });
-        await updateDoc(doc(db, "users", currentUser.uid), { sentRequests: arrayUnion(targetUid) });
-        window.openPublicProfile(targetUid);
-    };
-    window.cancelFollowRequest = async (targetUid) => {
-        await updateDoc(doc(db, "users", targetUid), { followRequests: arrayRemove(currentUser.uid) });
-        await updateDoc(doc(db, "users", currentUser.uid), { sentRequests: arrayRemove(targetUid) });
-        window.openPublicProfile(targetUid);
-    };
-    window.unfollowUser = async (targetUid) => {
-        if(confirm("Opravdu zrušit sledování tohoto uživatele?")) {
-            await updateDoc(doc(db, "users", targetUid), { followers: arrayRemove(currentUser.uid) });
-            await updateDoc(doc(db, "users", currentUser.uid), { following: arrayRemove(targetUid) });
+        const btnContainer = document.getElementById('public-profile-action-btn');
+        btnContainer.innerHTML = `<button class="btn-follow-requested" disabled>Odesílám...</button>`;
+        try {
+            await updateDoc(doc(db, "users", targetUid), { followRequests: arrayUnion(currentUser.uid) });
+            await updateDoc(doc(db, "users", currentUser.uid), { sentRequests: arrayUnion(targetUid) });
+            
+            // Lokální optimistický update (aby se tlačítko hned správně přepnulo)
+            if(globalUsersMap[currentUser.uid]) {
+                if(!globalUsersMap[currentUser.uid].sentRequests) globalUsersMap[currentUser.uid].sentRequests = [];
+                if(!globalUsersMap[currentUser.uid].sentRequests.includes(targetUid)) {
+                    globalUsersMap[currentUser.uid].sentRequests.push(targetUid);
+                }
+            }
+            btnContainer.innerHTML = `<button class="btn-follow-requested" onclick="cancelFollowRequest('${targetUid}')">Žádost odeslána (Zrušit)</button>`;
+        } catch(e) {
+            console.error(e);
             window.openPublicProfile(targetUid);
         }
     };
+    
+    window.cancelFollowRequest = async (targetUid) => {
+        const btnContainer = document.getElementById('public-profile-action-btn');
+        btnContainer.innerHTML = `<button class="btn-follow" disabled>Ruším...</button>`;
+        try {
+            await updateDoc(doc(db, "users", targetUid), { followRequests: arrayRemove(currentUser.uid) });
+            await updateDoc(doc(db, "users", currentUser.uid), { sentRequests: arrayRemove(targetUid) });
+            
+            if(globalUsersMap[currentUser.uid] && globalUsersMap[currentUser.uid].sentRequests) {
+                globalUsersMap[currentUser.uid].sentRequests = globalUsersMap[currentUser.uid].sentRequests.filter(id => id !== targetUid);
+            }
+            btnContainer.innerHTML = `<button class="btn-follow" onclick="requestFollow('${targetUid}')">Sledovat uživatele</button>`;
+        } catch(e) {
+            window.openPublicProfile(targetUid);
+        }
+    };
+    
+    window.unfollowUser = async (targetUid) => {
+        if(confirm("Opravdu zrušit sledování tohoto uživatele?")) {
+            const btnContainer = document.getElementById('public-profile-action-btn');
+            btnContainer.innerHTML = `<button class="btn-follow" disabled>Ruším...</button>`;
+            try {
+                await updateDoc(doc(db, "users", targetUid), { followers: arrayRemove(currentUser.uid) });
+                await updateDoc(doc(db, "users", currentUser.uid), { following: arrayRemove(targetUid) });
+                
+                if(globalUsersMap[currentUser.uid] && globalUsersMap[currentUser.uid].following) {
+                    globalUsersMap[currentUser.uid].following = globalUsersMap[currentUser.uid].following.filter(id => id !== targetUid);
+                }
+                btnContainer.innerHTML = `<button class="btn-follow" onclick="requestFollow('${targetUid}')">Sledovat uživatele</button>`;
+                window.openPublicProfile(targetUid); // Musíme překreslit profil, aby se znovu zamkl
+            } catch(e) {
+                window.openPublicProfile(targetUid);
+            }
+        }
+    };
+
     window.acceptRequest = async (reqUid) => {
         await updateDoc(doc(db, "users", currentUser.uid), { followRequests: arrayRemove(reqUid), followers: arrayUnion(reqUid) });
         await updateDoc(doc(db, "users", reqUid), { sentRequests: arrayRemove(currentUser.uid), following: arrayUnion(currentUser.uid) });
