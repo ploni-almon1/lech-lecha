@@ -136,7 +136,7 @@
     .modal-content { background-color: var(--white); padding: 25px; border-radius: 24px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; text-align: center; position: relative; }
     .modal-content h3 { margin-bottom: 20px; color: var(--primary-dark); }
     
-    /* DETAIL VÝZVY "STRAVA" STYL - ÚPRAVA SCROLLOVÁNÍ S PŘEKRYVEM */
+    /* DETAIL VÝZVY "STRAVA" STYL - ÚPRAVA SCROLLOVÁNÍ */
     .chal-detail-fullscreen { 
         position: fixed; top: 0; left: 0; width: 100%; height: 100vh; 
         z-index: 3000; background: var(--bg-color); 
@@ -145,41 +145,19 @@
     }
     .chal-detail-fullscreen.active { transform: translateY(0); }
     
-    /* Zpětné tlačítko je pevně nahoře, takže neutíká ze stránky */
-    .chal-detail-close-btn { 
-        position: fixed; top: 20px; left: 20px; width: 40px; height: 40px; 
-        background: rgba(255,255,255,0.9); border-radius: 50%; 
-        display: flex; align-items: center; justify-content: center; 
-        z-index: 3010; cursor: pointer; border: none; 
-        color: var(--text-dark); box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
-        transition: background 0.2s, box-shadow 0.2s; 
-    }
+    .chal-detail-bg-image { width: 100%; height: 45vh; background-size: cover; background-position: center; background-color: var(--primary-dark); position: relative; }
+    .chal-detail-close-btn { position: absolute; top: 20px; left: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; cursor: pointer; border: none; color: var(--text-dark); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
     
-    /* Obrázek je "přilepený" pod lištou, dokud přes něj nenajede bílá karta */
-    .chal-detail-bg-image { 
-        position: sticky; top: 0; left: 0; 
-        width: 100%; height: 40vh; /* Poměr blížící se 4:3 na mobilu */
-        background-size: cover; background-position: center; 
-        background-color: var(--primary-dark); z-index: 1; 
-    }
-    
-    /* Samotná překrývající bílá roletka */
-    .chal-detail-sheet { 
-        background: var(--white); border-radius: 24px 24px 0 0; 
-        padding: 20px 20px 120px 20px; 
-        position: relative; z-index: 2; /* Musí být relative, aby přejela sticky obrázek */
-        min-height: 100vh; /* Dostatečně dlouhá */
-        max-width: 600px; margin-left: auto; margin-right: auto; 
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.1); 
-    }
+    .chal-detail-sheet { background: var(--white); border-radius: 24px 24px 0 0; padding: 20px 20px 120px 20px; margin-top: -24px; position: relative; z-index: 2; min-height: 60vh; max-width: 600px; margin-left: auto; margin-right: auto; }
     .drag-handle { width: 40px; height: 5px; background: #D1D5DB; border-radius: 3px; margin: 0 auto 20px auto; }
     
     .chal-author-box { display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid var(--gray-border); border-radius: 16px; margin-bottom: 25px; }
     .chal-author-avatar { width: 48px; height: 48px; background: var(--primary-dark); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; overflow: hidden; font-size: 1.2em; flex-shrink: 0; transition: border-radius 0.2s;}
     .chal-author-avatar img { width: 100%; height: 100%; object-fit: cover; }
     
-    .chal-floating-action { position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(255,255,255,1) 70%, rgba(255,255,255,0)); padding: 30px 20px 20px 20px; z-index: 3005; display: flex; justify-content: center; pointer-events: none;}
-    .chal-btn-main { background: var(--primary-orange); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 700; font-size: 1.05em; width: 100%; max-width: 560px; cursor: pointer; transition: 0.2s; pointer-events: auto; }
+    .chal-floating-action { position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(255,255,255,1) 70%, rgba(255,255,255,0)); padding: 30px 20px 20px 20px; z-index: 10; display: flex; justify-content: center; pointer-events: none;}
+    /* Tlačítku jsme odstranili stín */
+    .chal-btn-main { background: var(--primary-orange); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 700; font-size: 1.05em; width: 100%; max-width: 560px; cursor: pointer; transition: 0.2s; pointer-events: auto;}
     .chal-btn-main:active { transform: scale(0.98); }
     .chal-btn-main.joined { background: var(--white); color: #EF4444; border: 2px solid #FECACA; }
 
@@ -317,7 +295,7 @@
       <!-- FAB Ovládání -->
       <div class="map-fab-container">
           <button class="map-fab" onclick="openMapListModal()">
-              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2-2 2 2 .9-2 2 .9 2 2 2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
           </button>
           <button class="map-fab" onclick="toggleMapLayer()">
               <svg viewBox="0 0 24 24" width="24" height="24"><path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z"/></svg>
@@ -377,18 +355,18 @@
     </div>
   </div>
 
-  <!-- STRAVA-STYLE DETAIL VÝZVY (SCROLL S FUNKCÍ SPY) -->
-  <div id="chal-detail-fullscreen" class="chal-detail-fullscreen" onscroll="handleDetailScroll(this)">
+  <!-- STRAVA-STYLE DETAIL VÝZVY -->
+  <div id="chal-detail-fullscreen" class="chal-detail-fullscreen">
       
-      <!-- Tlačítko zpět (fixed, takže neutíká z obrazovky) -->
-      <button id="chal-detail-close-btn" class="chal-detail-close-btn" onclick="closeChallengeDetail()">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
-      </button>
+      <!-- Přebal obrázku, který se pohybuje při scrollu společně se zbytkem -->
+      <div id="chal-detail-bg" class="chal-detail-bg-image">
+          <!-- Zpětná šipka (kruh s SVG ikonou namísto znaku menší než) -->
+          <button class="chal-detail-close-btn" onclick="closeChallengeDetail()">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
+          </button>
+      </div>
       
-      <!-- Sticky obrázek (zůstane nahoře dokud ho bílá karta nepřejede) -->
-      <div id="chal-detail-bg" class="chal-detail-bg-image"></div>
-      
-      <!-- Bílá karta -->
+      <!-- Spodní překrývající karta -->
       <div class="chal-detail-sheet">
           <div class="drag-handle"></div>
           
@@ -432,6 +410,7 @@
 
       </div>
 
+      <!-- Plovoucí patička s tlačítkem - ukotvená dole přes obrazovku -->
       <div class="chal-floating-action">
           <button id="chal-action-btn" class="chal-btn-main"></button>
       </div>
@@ -474,6 +453,7 @@
         <span style="font-size: 1.2em; font-weight: 600;"> km</span>
       </div>
 
+      <!-- Kalkulačka -->
       <div style="margin: 15px 0 25px 0; border-top: 1px solid var(--gray-border); padding-top: 15px; text-align: left;">
           <div style="font-size: 0.85em; font-weight: 600; margin-bottom: 10px; cursor:pointer; color: var(--primary-dark); display: flex; align-items: center; justify-content: center; gap: 5px;" onclick="toggleCalculator()">
               <svg id="calc-chevron" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="transition: transform 0.2s;"><path d="M7 10l5 5 5-5z"/></svg>
@@ -947,16 +927,6 @@
         window.openConnections('requests');
     };
 
-    window.handleDetailScroll = (el) => {
-        const btn = document.getElementById('chal-detail-close-btn');
-        if (el.scrollTop > 100) {
-            btn.style.boxShadow = 'none';
-            btn.style.background = 'transparent';
-        } else {
-            btn.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
-            btn.style.background = 'rgba(255,255,255,0.9)';
-        }
-    };
 
     function renderDynamicContent() {
         if(!currentUser || Object.keys(globalUsersMap).length === 0) return;
@@ -1018,9 +988,8 @@
                 if (c.mapUrl && !firstMapChallengeId) { firstMapChallengeId = c.id; }
 
                 const profileActiveCard = document.createElement('div');
-                profileActiveCard.style.cssText = `background-color: #FFFFFF; border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; ${bgStyle}`;
-                profileActiveCard.onclick = () => { openChallengeDetail(c.id); };
-                profileActiveCard.innerHTML = `<div><div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div><div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Můj postup: ${myCurrentKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} km</div></div><button style="background:#FEE2E2; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; font-size:0.85em; font-weight:600; color:#EF4444;" onclick="event.stopPropagation(); leaveChallenge('${c.id}')">Odpojit</button>`;
+                profileActiveCard.style.cssText = `background-color: #FFFFFF; border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; ${bgStyle}`;
+                profileActiveCard.innerHTML = `<div><div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div><div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Můj postup: ${myCurrentKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} km</div></div><button style="background:#FEE2E2; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; font-size:0.85em; font-weight:600; color:#EF4444;" onclick="leaveChallenge('${c.id}')">Odpojit</button>`;
                 profileActiveChal.appendChild(profileActiveCard);
 
                 if(c.mapUrl) {
@@ -1190,10 +1159,7 @@
 
         const modal = document.getElementById('chal-detail-fullscreen');
         modal.classList.add('active');
-        
-        // Resetujeme scroll a zrušíme průhlednost tlačítka zpět
-        modal.scrollTop = 0; 
-        window.handleDetailScroll(modal);
+        modal.scrollTop = 0; // Vždy resetujeme posun nahoru při otevření
     };
     
     window.closeChallengeDetail = () => {
@@ -1210,8 +1176,7 @@
             imageNode.src = e.target.result;
             document.getElementById(wrapperId).style.display = "block";
             if(chalCropper) chalCropper.destroy();
-            // Poměr stran upraven na 4:3 pro hezčí fotku
-            chalCropper = new Cropper(imageNode, { aspectRatio: 4/3, viewMode: 1, autoCropArea: 1, background: false });
+            chalCropper = new Cropper(imageNode, { aspectRatio: 16/9, viewMode: 1, autoCropArea: 1, background: false });
         }; 
         reader.readAsDataURL(file);
     };
@@ -1465,8 +1430,7 @@
         
         let finalBgUrl = "";
         if (chalCropper) {
-            // Ořezáno na 4:3
-            finalBgUrl = chalCropper.getCroppedCanvas({ width: 800, height: 600 }).toDataURL('image/jpeg', 0.7);
+            finalBgUrl = chalCropper.getCroppedCanvas({ width: 800, height: 450 }).toDataURL('image/jpeg', 0.7);
         }
         
         const desc = document.getElementById('new-chal-desc').value.trim();
@@ -1524,8 +1488,7 @@
         
         let finalBgUrl = currentEditChalBgUrl;
         if(chalCropper) {
-            // Ořezáno na 4:3
-            finalBgUrl = chalCropper.getCroppedCanvas({ width: 800, height: 600 }).toDataURL('image/jpeg', 0.7);
+            finalBgUrl = chalCropper.getCroppedCanvas({ width: 800, height: 450 }).toDataURL('image/jpeg', 0.7);
         }
         
         const desc = document.getElementById('edit-chal-desc').value.trim();
