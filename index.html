@@ -136,7 +136,7 @@
     .modal-content { background-color: var(--white); padding: 25px; border-radius: 24px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; text-align: center; position: relative; }
     .modal-content h3 { margin-bottom: 20px; color: var(--primary-dark); }
     
-    /* DETAIL VÝZVY "STRAVA" STYL - SPRÁVNÉ SCROLLOVÁNÍ (BOTTOM SHEET OVERYLAY) */
+    /* DETAIL VÝZVY "STRAVA" STYL - OPRAVA 16:9 A SCROLLOVÁNÍ */
     .chal-detail-fullscreen { 
         position: fixed; top: 0; left: 0; width: 100%; height: 100vh; 
         z-index: 3000; background: var(--bg-color); 
@@ -144,31 +144,27 @@
     }
     .chal-detail-fullscreen.active { transform: translateY(0); }
     
-    /* Obrázek na pozadí je fixní, skrolovací plocha ho přejíždí */
-    .chal-detail-bg-image { 
-        position: absolute; top: 0; left: 0; width: 100%; height: 45vh; 
-        background-size: cover; background-position: center; background-color: var(--primary-dark); 
-        z-index: 1; 
-    }
-    
-    /* Zpětná šipka ukotvená nahoře */
     .chal-detail-close-btn { 
         position: absolute; top: 20px; left: 20px; width: 40px; height: 40px; 
         background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-        z-index: 10; cursor: pointer; border: none; color: var(--text-dark); box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        z-index: 20; cursor: pointer; border: none; color: var(--text-dark); box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
     }
     
-    /* Samotná scrollovací oblast, která překrývá vše */
     .chal-detail-scroll-area {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         overflow-y: auto; -webkit-overflow-scrolling: touch; z-index: 2;
     }
 
-    /* Bílá karta, která je odsunutá dolů (margin-top), aby šel vidět obrázek pod ní */
+    .chal-detail-bg-image { 
+        width: 100%; max-width: 600px; margin: 0 auto; 
+        aspect-ratio: 16 / 9; /* GARANCE 16:9 POMĚRU! */
+        background-size: cover; background-position: center; background-color: var(--primary-dark); 
+    }
+    
     .chal-detail-sheet { 
         background: var(--white); border-radius: 24px 24px 0 0; padding: 20px 20px 120px 20px; 
-        margin-top: 40vh; /* Tímto nastavíme, kolik obrázku jde vidět */
-        position: relative; min-height: 100vh; max-width: 600px; margin-left: auto; margin-right: auto; 
+        margin-top: -24px; /* Odsazení nahoru, aby překryla obrázek zaoblenými rohy */
+        position: relative; min-height: 80vh; max-width: 600px; margin-left: auto; margin-right: auto; 
         box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
     }
     .drag-handle { width: 40px; height: 5px; background: #D1D5DB; border-radius: 3px; margin: 0 auto 20px auto; }
@@ -297,9 +293,9 @@
       <div id="stats-personal-container"></div>
 
       <div class="section-title" style="margin: 30px 20px 10px 20px;">Další komunitní akce</div>
-      <div id="stats-other-challenges" style="display:block;"></div>
-      <div style="margin: 0 20px 20px 20px;">
-        <button id="btn-create-challenge-admin" class="btn-outline" style="display:none; width: 100%; border: 1px dashed var(--gray-border); background: var(--gray-light); padding: 12px; border-radius: 12px; font-weight: 600; color: var(--text-dark); cursor:pointer;" onclick="openCreateChallengeModal()">+ Vytvořit novou akci</button>
+      <div class="card">
+        <div id="stats-other-challenges" style="display:flex; flex-direction:column; gap:10px;"></div>
+        <button id="btn-create-challenge-admin" class="btn-outline" style="display:none; width: 100%; border: 1px dashed var(--gray-border); background: var(--gray-light); padding: 12px; border-radius: 12px; font-weight: 600; color: var(--text-dark); margin-top: 15px; cursor:pointer;" onclick="openCreateChallengeModal()">+ Vytvořit novou akci</button>
       </div>
     </div> 
 
@@ -369,12 +365,13 @@
 
   <div id="chal-detail-fullscreen" class="chal-detail-fullscreen">
       
-      <div id="chal-detail-bg" class="chal-detail-bg-image"></div>
       <button class="chal-detail-close-btn" onclick="closeChallengeDetail()">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
       </button>
       
       <div class="chal-detail-scroll-area">
+          
+          <div id="chal-detail-bg" class="chal-detail-bg-image"></div>
           
           <div class="chal-detail-sheet">
               <div class="drag-handle"></div>
@@ -989,6 +986,8 @@
             const diffTime = endDate - today; const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
             let daysText = diffDays > 0 ? `zbývá ${diffDays} dní` : "Skončilo";
             
+            let bgStyle = c.bgUrl ? `background-image: url('${c.bgUrl}'); background-position: right bottom; background-repeat: no-repeat; background-size: contain;` : '';
+            
             let isRace = c.challengeType === 'race';
 
             if (isMember) {
@@ -1002,8 +1001,7 @@
                 if (c.mapUrl && !firstMapChallengeId) { firstMapChallengeId = c.id; }
 
                 const profileActiveCard = document.createElement('div');
-                profileActiveCard.className = 'card';
-                profileActiveCard.style.cssText = `margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; padding: 15px; border-radius: 16px;`;
+                profileActiveCard.style.cssText = `background-color: #FFFFFF; border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; ${bgStyle}`;
                 profileActiveCard.innerHTML = `<div><div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div><div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Můj postup: ${myCurrentKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} km</div></div><button style="background:#FEE2E2; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; font-size:0.85em; font-weight:600; color:#EF4444;" onclick="leaveChallenge('${c.id}')">Odpojit</button>`;
                 profileActiveChal.appendChild(profileActiveCard);
 
@@ -1013,7 +1011,7 @@
                     mapBtn.onclick = () => { closeMapListModal(); handleMapSelect(c.id); }; mapListModal.appendChild(mapBtn);
                 }
 
-                let dashHeaderHTML = `<div style="padding: 20px;"><div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;"><div><h3 style="color: var(--text-dark); font-size: 1.3em; font-weight: 800; margin:0; cursor:pointer;" onclick="openChallengeDetail('${c.id}')">${c.name}</h3></div><div style="color: var(--text-gray); font-size: 0.85em; font-weight: 500; background:var(--gray-light); padding:5px 10px; border-radius:12px;">${daysText}</div></div><div style="color: var(--text-dark); font-size: 1.15em; font-weight: 800; margin-bottom: 8px;">${displayKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} / ${c.targetKm} <span style="font-size:0.7em; font-weight:700; color:var(--text-gray);">km</span></div><div class="chal-progress-bg"><div class="chal-progress-fill" style="width: ${totalPct}%;"></div></div></div>`;
+                let dashHeaderHTML = `<div style="padding: 20px; ${bgStyle}"><div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;"><div><h3 style="color: var(--text-dark); font-size: 1.3em; font-weight: 800; margin:0; cursor:pointer;" onclick="openChallengeDetail('${c.id}')">${c.name}</h3></div><div style="color: var(--text-gray); font-size: 0.85em; font-weight: 500; background:var(--gray-light); padding:5px 10px; border-radius:12px;">${daysText}</div></div><div style="color: var(--text-dark); font-size: 1.15em; font-weight: 800; margin-bottom: 8px;">${displayKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} / ${c.targetKm} <span style="font-size:0.7em; font-weight:700; color:var(--text-gray);">km</span></div><div class="chal-progress-bg"><div class="chal-progress-fill" style="width: ${totalPct}%;"></div></div></div>`;
 
                 let memberDataArray = [];
                 if (c.members) { c.members.forEach(mUid => { let mKm = overallKm[mUid] || 0; let userObj = globalUsersMap[mUid] || {name: 'Neznámý', avatarUrl: ''}; memberDataArray.push({ uid: mUid, name: userObj.name, avatar: userObj.avatarUrl, km: mKm }); }); }
@@ -1043,16 +1041,14 @@
                 let memberCount = c.members ? c.members.length : 0; let d1 = new Date(c.start); d1.setHours(0,0,0,0); let d2 = new Date(c.end); d2.setHours(0,0,0,0); let tDays = Math.round(Math.abs(d2 - d1) / (1000 * 60 * 60 * 24)) + 1;
                 let actsHtml = (c.allowedActivities || []).map(a => { let iconHtml = icons[a] || icons["Chůze"]; return iconHtml.replace('class="activity-list-icon"', 'style="width: 18px; height: 18px; object-fit: contain;"'); }).join(' ');
                 
-                const oCard = document.createElement('div'); 
-                oCard.className = 'card';
-                oCard.style.cssText = `margin-bottom:15px; cursor:pointer; padding: 20px; text-align: left;`;
+                const oCard = document.createElement('div'); oCard.style.cssText = `border: 1px solid var(--gray-border); background-color: var(--white); border-radius: 16px; padding: 15px; text-align:left; margin-bottom:10px; cursor:pointer; ${bgStyle}`;
                 oCard.onclick = () => { openChallengeDetail(c.id); };
                 oCard.innerHTML = `<h4 style="color: var(--primary-dark); margin-bottom: 8px; font-size:1.1em;">${c.name}</h4><div style="font-size: 0.85em; color: var(--text-gray); margin-bottom: 4px;">Cíl: ${c.targetKm} km | ${new Date(c.start).toLocaleDateString('cs-CZ')} - ${new Date(c.end).toLocaleDateString('cs-CZ')}</div><div style="font-size: 0.85em; color: var(--text-gray); margin-bottom: 4px;">Délka trvání: ${tDays} dní</div><div style="display:flex; align-items:center; gap:8px; margin-bottom: 12px;">${actsHtml}</div><div style="display:flex; justify-content:space-between; align-items:center;"><div style="font-size:0.85em; color:var(--text-dark); font-weight:600;">${memberCount} účastníků</div><div style="color:var(--primary-orange); font-size:0.85em; font-weight:700;">Zobrazit detail</div></div>`;
                 statsOtherList.appendChild(oCard);
             }
 
             if (isCreator) {
-                myAuthoredCount++; const profCard = document.createElement('div'); profCard.className = 'card'; profCard.style.cssText = `margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; padding: 15px; border-radius: 16px;`;
+                myAuthoredCount++; const profCard = document.createElement('div'); profCard.style.cssText = `background-color: #FFFFFF; border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; ${bgStyle}`;
                 profCard.innerHTML = `<div><div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div><div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Cíl: ${c.targetKm} km</div></div><button style="background:var(--gray-light); border:none; padding:8px 12px; border-radius:10px; display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.85em; font-weight:600; color:var(--text-dark);" onclick="openEditChallengeModal('${c.id}')"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Upravit</button>`;
                 profileMyChal.appendChild(profCard);
             }
