@@ -144,29 +144,21 @@
     }
     .chal-detail-fullscreen.active { transform: translateY(0); }
     
-    /* Obrázek na pozadí je fixní, skrolovací plocha ho přejíždí */
-.chal-detail-bg-image { 
-    position: absolute; top: 0; left: 0; width: 100%; 
-    height: 56.25vw; /* Změněno: Přesný poměr 16:9 vůči šířce obrazovky */
-    max-height: 340px; /* Pojistka pro tablety a PC (protože max-width aplikace je 600px) */
-    background-size: cover; background-position: center; background-color: var(--primary-dark); 
-    z-index: 1; 
-}
-
-/* ... Zpětná šipka ukotvená nahoře atd. zůstává stejné ... */
-
-/* Bílá karta, která je odsunutá dolů (margin-top), aby šel vidět obrázek pod ní */
-.chal-detail-sheet { 
-    background: var(--white); border-radius: 24px 24px 0 0; padding: 20px 20px 120px 20px; 
-    margin-top: 50vw; /* Změněno: Karta teď překryje spodní okraj 16:9 obrázku */
-    position: relative; min-height: 100vh; max-width: 600px; margin-left: auto; margin-right: auto; 
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-}
-
-/* PŘIDEJTE TOTO ÚPLNĚ NA KONEC STYLŮ: Pojistka pro počítače/široké monitory */
-@media (min-width: 600px) {
-    .chal-detail-sheet { margin-top: 300px; }
-}
+    /* Obrázek na pozadí je fixní, skrolovací plocha ho přejíždí - OPRAVENO NA PŘESNÝ POMĚR 16:9 */
+    .chal-detail-bg-image { 
+        position: absolute; top: 0; left: 0; width: 100%; 
+        height: 56.25vw; /* Výška vypočítaná ze šířky displeje (poměr 16:9) */
+        max-height: 338px; /* Pojistka pro max-šířku 600px aplikaci na pc/tabletech */
+        background-size: cover; background-position: center; background-color: var(--primary-dark); 
+        z-index: 1; 
+    }
+    
+    /* Zpětná šipka ukotvená nahoře - OPRAVENO (výraznější, aby nesplynula s pozadím) */
+    .chal-detail-close-btn { 
+        position: absolute; top: 20px; left: 20px; width: 40px; height: 40px; 
+        background: rgba(255,255,255,0.95); border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+        z-index: 100; cursor: pointer; border: 1px solid var(--gray-border); color: var(--text-dark); box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+    }
     
     /* Samotná scrollovací oblast, která překrývá vše */
     .chal-detail-scroll-area {
@@ -174,13 +166,21 @@
         overflow-y: auto; -webkit-overflow-scrolling: touch; z-index: 2;
     }
 
-    /* Bílá karta, která je odsunutá dolů (margin-top), aby šel vidět obrázek pod ní */
+    /* Bílá karta, která je odsunutá dolů (margin-top), aby šel vidět obrázek pod ní - OPRAVENO NA PŘESNÝ POMĚR */
     .chal-detail-sheet { 
         background: var(--white); border-radius: 24px 24px 0 0; padding: 20px 20px 120px 20px; 
-        margin-top: 40vh; /* Tímto nastavíme, kolik obrázku jde vidět */
+        margin-top: calc(56.25vw - 20px); /* Karta začne těsně pod okrajem obrázku s jemným překryvem 20px */
         position: relative; min-height: 100vh; max-width: 600px; margin-left: auto; margin-right: auto; 
         box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
     }
+    
+    /* Pojistka pro PC/Tablet, aby karta nesjela příliš dolů */
+    @media (min-width: 600px) {
+        .chal-detail-sheet { 
+            margin-top: 318px; 
+        }
+    }
+
     .drag-handle { width: 40px; height: 5px; background: #D1D5DB; border-radius: 3px; margin: 0 auto 20px auto; }
     
     .chal-author-box { display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid var(--gray-border); border-radius: 16px; margin-bottom: 25px; }
@@ -777,6 +777,36 @@
 
     let leafletMap = null; let mapLayers = []; let layerOsm = null; let layerSat = null; let currentMapLayerType = 'osm'; let currentSelectedChallengeIdForMap = null;
 
+    // --- SYSTEM BACK BUTTON LOGIC (History API) ---
+    // Nahlásí prohlížeči, že jsme otevřeli nějaké vyskakovací okno
+    window.pushModalState = () => {
+        history.pushState({ isModal: true }, "");
+    };
+
+    // Co se stane, když uživatel zmáčkne tlačítko Zpět na telefonu
+    window.addEventListener('popstate', (e) => {
+        // Zavře veškeré modály a detaily
+        document.getElementById('chal-detail-fullscreen').classList.remove('active');
+        document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+        if(cropper) { cropper.destroy(); cropper = null; }
+        if(chalCropper) { chalCropper.destroy(); chalCropper = null; }
+    });
+
+    // Unifikované zavírání oken přes UI tlačítka v apce
+    window.handleUIClose = (modalId) => {
+        if (history.state && history.state.isModal) {
+            history.back(); // Spustí popstate a zavře to
+        } else {
+            // Pokud z nějakého důvodu history state není, zavřeme to natvrdo
+            if (modalId) document.getElementById(modalId).classList.remove('active');
+            else {
+                document.getElementById('chal-detail-fullscreen').classList.remove('active');
+                document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+            }
+        }
+    };
+    // ----------------------------------------------
+
     function getCustomWeekString(date, startDay) {
         let d = new Date(date); d.setHours(0,0,0,0); let day = d.getDay(); let diff = (day - startDay + 7) % 7; d.setDate(d.getDate() - diff); return d.toLocaleDateString('cs-CZ'); 
     }
@@ -891,6 +921,7 @@
 
     // Spojení s uživateli
     window.openConnections = (type) => {
+        window.pushModalState();
         const myData = globalUsersMap[currentUser.uid] || {};
         let list = []; let title = '';
         if (type === 'followers') { list = myData.followers || []; title = 'Sledující'; }
@@ -916,7 +947,7 @@
         }
         document.getElementById('connections-modal').classList.add('active');
     }
-    window.closeConnections = () => { document.getElementById('connections-modal').classList.remove('active'); }
+    window.closeConnections = () => window.handleUIClose('connections-modal');
 
     window.requestFollow = async (targetUid) => {
         const btnContainer = document.getElementById('public-profile-action-btn');
@@ -1136,6 +1167,7 @@
 
     // STRAVA DETAIL VÝZVY/ZÁVODU
     window.openChallengeDetail = (cid) => {
+        window.pushModalState();
         const c = globalChallenges.find(x => x.id === cid); if(!c) return;
         
         const bgEl = document.getElementById('chal-detail-bg');
@@ -1214,9 +1246,7 @@
         if (scrollArea) scrollArea.scrollTop = 0;
     };
     
-    window.closeChallengeDetail = () => {
-        document.getElementById('chal-detail-fullscreen').classList.remove('active');
-    };
+    window.closeChallengeDetail = () => window.handleUIClose('chal-detail-fullscreen');
 
     window.handleChalFileSelect = (input, mode) => {
         const file = input.files[0]; if(!file) return;
@@ -1282,8 +1312,8 @@
         return { svg: `<svg width="120" height="120" viewBox="0 0 36 36" style="transform: rotate(-90deg); border-radius:50%;">${svgContent}</svg>`, legend: legendHtml };
     }
 
-    window.openMapListModal = () => { document.getElementById('map-list-modal').classList.add('active'); };
-    window.closeMapListModal = () => { document.getElementById('map-list-modal').classList.remove('active'); };
+    window.openMapListModal = () => { window.pushModalState(); document.getElementById('map-list-modal').classList.add('active'); };
+    window.closeMapListModal = () => window.handleUIClose('map-list-modal');
     
     window.toggleMapLayer = () => {
         if (!leafletMap) return;
@@ -1397,6 +1427,7 @@
     };
 
     window.openEditModal = (id, km, type, isoDate, stravaUrl) => {
+        window.pushModalState();
         selectedActivityId = id; selectedActivityOldKm = km; editActivityType = type; selectedActivityDate = isoDate;
         document.getElementById('edit-km-input').value = km; document.getElementById('edit-date-input').value = isoDate;
         document.getElementById('edit-strava-link-input').value = stravaUrl && stravaUrl !== 'undefined' ? stravaUrl : '';
@@ -1426,14 +1457,21 @@
     };
 
     window.openProfileEditModal = async () => {
+        window.pushModalState();
         if(!currentUser) return; const userSnap = await getDoc(doc(db, "users", currentUser.uid)); const deleteBtn = document.getElementById('btn-delete-avatar');
         if(userSnap.exists()){ const data = userSnap.data(); document.getElementById('profile-edit-name-input').value = data.name || ""; if(data.avatarUrl) { deleteBtn.style.display = "block"; } else { deleteBtn.style.display = "none"; } }
         document.getElementById('profile-file-input').value = ""; document.getElementById('cropper-wrapper').style.display = "none";
         if(cropper) { cropper.destroy(); cropper = null; } document.getElementById('profile-edit-modal').classList.add('active');
     };
-    window.closeProfileEditModal = () => { document.getElementById('profile-edit-modal').classList.remove('active'); if(cropper) { cropper.destroy(); cropper = null; } };
+    
+    window.closeProfileEditModal = () => { 
+        window.handleUIClose('profile-edit-modal'); 
+        if(cropper) { cropper.destroy(); cropper = null; } 
+    };
+    
     window.deleteProfilePhoto = async () => { if(confirm("Smazat fotku?")) { await updateDoc(doc(db, "users", currentUser.uid), { avatarUrl: "" }); window.closeProfileEditModal(); } };
     window.deleteUserAccount = async () => { if(confirm("⚠️ OPRAVDU smazat celý profil a data?")) { try { await deleteDoc(doc(db, "users", currentUser.uid)); await deleteUser(currentUser); window.closeProfileEditModal(); } catch (e) { alert("Chyba. Možná je nutné se odhlásit a znovu přihlásit."); } } };
+    
     window.handleProfileFileSelect = (input) => {
         const file = input.files[0]; if(!file) return; document.getElementById('btn-delete-avatar').style.display = "none";
         const reader = new FileReader(); reader.onload = function(e) {
@@ -1449,7 +1487,12 @@
     };
 
     window.toggleEditMode = () => { document.getElementById('profile-activity-list').classList.toggle('edit-mode-active'); };
-    window.closeEditModal = () => { document.getElementById('edit-modal').classList.remove('active'); selectedActivityId = null; };
+    
+    window.closeEditModal = () => { 
+        window.handleUIClose('edit-modal'); 
+        selectedActivityId = null; 
+    };
+    
     window.selectEditChip = (element) => { document.querySelectorAll('#edit-modal .chip').forEach(c => c.classList.remove('active')); element.classList.add('active'); editActivityType = element.getAttribute('data-type'); };
 
     window.joinChallenge = async (chalId) => { 
@@ -1469,13 +1512,15 @@
         } 
     };
 
-    window.openCreateChallengeModal = () => { document.getElementById('create-challenge-modal').classList.add('active'); };
+    window.openCreateChallengeModal = () => { window.pushModalState(); document.getElementById('create-challenge-modal').classList.add('active'); };
+    
     window.closeCreateChallengeModal = () => { 
-        document.getElementById('create-challenge-modal').classList.remove('active'); 
+        window.handleUIClose('create-challenge-modal'); 
         if(chalCropper) { chalCropper.destroy(); chalCropper = null; }
         document.getElementById('new-chal-cropper-wrapper').style.display = 'none';
         document.getElementById('new-chal-file-input').value = '';
     };
+    
     window.toggleChallengeChip = (element) => { element.classList.toggle('active'); };
     window.toggleMembersList = (cid) => { document.getElementById(`members-dropdown-${cid}`).classList.toggle('hidden'); };
     window.selectSingleChip = (element, containerId) => { document.querySelectorAll(`#${containerId} .chip`).forEach(c => c.classList.remove('active')); element.classList.add('active'); };
@@ -1511,6 +1556,7 @@
 
     let selectedChallengeId = null;
     window.openEditChallengeModal = async (id) => {
+        window.pushModalState();
         selectedChallengeId = id; const snap = await getDoc(doc(db, "challenges", id));
         if(snap.exists()) {
             const data = snap.data(); 
@@ -1532,12 +1578,15 @@
             document.getElementById('edit-challenge-modal').classList.add('active');
         }
     };
+    
     window.closeEditChallengeModal = () => { 
-        document.getElementById('edit-challenge-modal').classList.remove('active'); selectedChallengeId = null; 
+        window.handleUIClose('edit-challenge-modal'); 
+        selectedChallengeId = null; 
         if(chalCropper) { chalCropper.destroy(); chalCropper = null; }
         document.getElementById('edit-chal-cropper-wrapper').style.display = 'none';
         document.getElementById('edit-chal-file-input').value = '';
     };
+    
     window.saveEditedChallenge = async () => {
         if(isSaving) return;
         const name = document.getElementById('edit-chal-name').value.trim(); const targetKm = parseFloat(document.getElementById('edit-chal-km').value);
@@ -1575,6 +1624,7 @@
 
     window.openPublicProfile = async (uid) => {
         if(uid === currentUser?.uid) { window.switchTab('profile'); return; }
+        window.pushModalState();
         document.getElementById('public-profile-modal').classList.add('active');
         
         try {
@@ -1628,7 +1678,8 @@
             }
         } catch (e) { }
     };
-    window.closePublicProfile = () => { document.getElementById('public-profile-modal').classList.remove('active'); };
+    
+    window.closePublicProfile = () => window.handleUIClose('public-profile-modal');
 
     window.resetPassword = (event) => { event.preventDefault(); const email = document.getElementById('email-input').value.trim(); if(!email) return; sendPasswordResetEmail(auth, email); };
     window.registerUser = () => { const email = document.getElementById('email-input').value.trim(); const password = document.getElementById('password-input').value.trim(); createUserWithEmailAndPassword(auth, email, password); };
@@ -1638,11 +1689,12 @@
 
     const modal = document.getElementById('activity-modal');
     window.openModal = () => { 
+        window.pushModalState();
         modal.classList.add('active'); document.getElementById('km-input').value = ''; document.getElementById('calc-minutes').value = ''; document.getElementById('calc-speed').value = '4.5'; document.getElementById('calc-result').innerText = '0';
         document.getElementById('strava-link-input').value = '';
         currentActivityType = "Chůze"; document.querySelectorAll('#activity-modal .chip').forEach(c => c.classList.remove('active')); document.querySelector('#activity-modal .chip[data-type="Chůze"]').classList.add('active'); 
     };
-    window.closeModal = () => { modal.classList.remove('active'); };
+    window.closeModal = () => window.handleUIClose('activity-modal');
     window.selectChip = (element) => { document.querySelectorAll('#activity-modal .chip').forEach(c => c.classList.remove('active')); element.classList.add('active'); currentActivityType = element.getAttribute('data-type'); };
     
     window.toggleCalculator = () => {
