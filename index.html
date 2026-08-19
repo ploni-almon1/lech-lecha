@@ -318,8 +318,8 @@
                       <div class="chip" style="padding: 6px 16px;" data-val="custom" onclick="setPersonalFilter('custom')">Vlastní</div>
                   </div>
                   <div id="personal-custom-dates" style="display:none; gap:10px; margin-top: 15px;">
-                      <div style="flex:1;"><label style="font-size:0.8em;color:var(--text-gray); font-weight:600; display:block; margin-bottom:4px;">Od:</label><input type="date" id="p-date-from" class="date-input" style="margin-bottom:0; padding:8px;" onchange="updatePersonalDates()"></div>
-                      <div style="flex:1;"><label style="font-size:0.8em;color:var(--text-gray); font-weight:600; display:block; margin-bottom:4px;">Do:</label><input type="date" id="p-date-to" class="date-input" style="margin-bottom:0; padding:8px;" onchange="updatePersonalDates()"></div>
+                      <div style="flex:1;"><label style="font-size:0.8em;color:var(--text-gray); font-weight:600; display:block; margin-bottom:4px;">Od:</label><input type="date" id="p-date-from" class="date-input" style="background-color: var(--white); margin-bottom:0; padding:8px;" onchange="updatePersonalDates()"></div>
+                      <div style="flex:1;"><label style="font-size:0.8em;color:var(--text-gray); font-weight:600; display:block; margin-bottom:4px;">Do:</label><input type="date" id="p-date-to" class="date-input" style="background-color: var(--white); margin-bottom:0; padding:8px;" onchange="updatePersonalDates()"></div>
                   </div>
               </div>
           </div>
@@ -840,26 +840,21 @@
     let leafletMap = null; let mapLayers = []; let layerOsm = null; let layerSat = null; let currentMapLayerType = 'osm'; let currentSelectedChallengeIdForMap = null;
 
     // --- SYSTEM BACK BUTTON LOGIC (History API) ---
-    // Nahlásí prohlížeči, že jsme otevřeli nějaké vyskakovací okno
     window.pushModalState = () => {
         history.pushState({ isModal: true }, "");
     };
 
-    // Co se stane, když uživatel zmáčkne tlačítko Zpět na telefonu
     window.addEventListener('popstate', (e) => {
-        // Zavře veškeré modály a detaily
         document.getElementById('chal-detail-fullscreen').classList.remove('active');
         document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
         if(cropper) { cropper.destroy(); cropper = null; }
         if(chalCropper) { chalCropper.destroy(); chalCropper = null; }
     });
 
-    // Unifikované zavírání oken přes UI tlačítka v apce
     window.handleUIClose = (modalId) => {
         if (history.state && history.state.isModal) {
-            history.back(); // Spustí popstate a zavře to
+            history.back();
         } else {
-            // Pokud z nějakého důvodu history state není, zavřeme to natvrdo
             if (modalId) document.getElementById(modalId).classList.remove('active');
             else {
                 document.getElementById('chal-detail-fullscreen').classList.remove('active');
@@ -889,7 +884,6 @@
       "Běžky": `<img src="assets/ski.svg" class="activity-list-icon" alt="Běžky">`
     };
 
-    // Nová funkce pro aktualizaci textu k typu výzvy (Společná vs Závod)
     window.updateTypeInfo = (element, mode) => {
         const isRace = element.getAttribute('data-val') === 'race';
         const infoDiv = document.getElementById(mode + '-chal-type-info');
@@ -919,7 +913,6 @@
 
         const userRef = doc(db, "users", user.uid);
         if (!(await getDoc(userRef)).exists()) { 
-            // isPrivate defaultně false = veřejný
             await setDoc(userRef, { personalKm: 0, name: user.displayName || user.email.split('@')[0], avatarUrl: "", followers: [], following: [], followRequests: [], sentRequests: [], isPrivate: false }); 
         }
 
@@ -992,7 +985,6 @@
       }
     });
 
-    // Osobní statistiky a filtry
     window.setPersonalFilter = (type) => {
         personalFilterType = type;
         document.querySelectorAll('#personal-filter-chips .chip').forEach(c => c.classList.remove('active'));
@@ -1016,7 +1008,6 @@
         if(!currentUser) return;
         let myActivities = globalActivities.filter(act => act.uid === currentUser.uid);
         
-        // Aplikace filtru (Rok / Vlastní / Celkem)
         if (personalFilterType === 'year') {
             const currentYear = new Date().getFullYear();
             myActivities = myActivities.filter(act => {
@@ -1054,9 +1045,9 @@
                 ${htmlBarPersonal}
                 <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--gray-border);">
                     <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 15px;">Podíl mých aktivit</h4>
-                    <div style="display:flex; align-items:center; gap:20px;">
-                        <div style="flex:0 0 120px;">${pieObjPersonal.svg}</div>
-                        <div style="flex:1;">${pieObjPersonal.legend}</div>
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <div style="flex:0 0 90px;">${pieObjPersonal.svg}</div>
+                        <div style="flex:1; min-width:0;">${pieObjPersonal.legend}</div>
                     </div>
                 </div>`;
         } else {
@@ -1065,7 +1056,6 @@
         document.getElementById('personal-stats-wrapper').style.display = 'block';
     };
 
-    // Vyhledávání uživatelů
     window.openSearchModal = () => {
         window.pushModalState();
         document.getElementById('search-modal').classList.add('active');
@@ -1084,13 +1074,11 @@
             let u = globalUsersMap[uid];
             if (u.name && u.name.toLowerCase().includes(q)) {
                 let avatar = u.avatarUrl ? `<img src="${u.avatarUrl}">` : u.name.charAt(0).toUpperCase();
-                // Pro plynulé odstranění z historie při rozkliknutí používáme history.back() a časovač
                 resDiv.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.05); cursor:pointer;" onclick="closeSearchModal(); setTimeout(() => openPublicProfile('${uid}'), 100);"><div style="display:flex; align-items:center; gap:12px;"><div class="lb-avatar" style="width:36px;height:36px;margin:0;">${avatar}</div><span style="font-weight:600; font-size:0.95em; color:var(--text-dark);">${u.name}</span></div></div>`;
             }
         });
     };
 
-    // Nastavení soukromí
     window.openSettingsModal = async () => {
         window.pushModalState();
         document.getElementById('settings-modal').classList.add('active');
@@ -1107,7 +1095,6 @@
         window.closeSettingsModal();
     };
 
-    // Spojení s uživateli
     window.openConnections = (type) => {
         window.pushModalState();
         const myData = globalUsersMap[currentUser.uid] || {};
@@ -1282,7 +1269,7 @@
                 const statsCard = document.createElement('div'); statsCard.className = 'card-no-padding';
                 
                 let htmlWeekly = generateLeaderboardHtml(weeklyUserKm); let htmlOverall = generateLeaderboardHtml(overallKm); let htmlBar = generateBarChartHtml(weeklyTotalKm); let pieObj = generatePieChartHtml(pieData, validActivities.length);
-                statsCard.innerHTML = `${statsHeaderHTML}<div style="border-top: 1px solid var(--gray-border); padding: 20px;"><h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 15px;">Aktuální týdenní přehled</h4>${htmlWeekly}</div><div style="border-top: 1px solid var(--gray-border); padding: 20px;"><h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 15px;">Celkový přehled</h4>${htmlOverall}</div><div style="border-top: 1px solid var(--gray-border); padding: 20px;"><h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 5px;">Součet podle týdnů</h4><div style="font-size: 0.8em; color:var(--text-gray); margin-bottom:15px;">Součet km všech účastníků</div>${htmlBar}</div><div style="border-top: 1px solid var(--gray-border); padding: 20px;"><h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 15px;">Podíl aktivit</h4><div style="display:flex; align-items:center; gap:20px;"><div style="flex:0 0 120px;">${pieObj.svg}</div><div style="flex:1;">${pieObj.legend}</div></div></div>`;
+                statsCard.innerHTML = `${statsHeaderHTML}<div style="border-top: 1px solid var(--gray-border); padding: 20px;"><h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 15px;">Aktuální týdenní přehled</h4>${htmlWeekly}</div><div style="border-top: 1px solid var(--gray-border); padding: 20px;"><h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 15px;">Celkový přehled</h4>${htmlOverall}</div><div style="border-top: 1px solid var(--gray-border); padding: 20px;"><h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 5px;">Součet podle týdnů</h4><div style="font-size: 0.8em; color:var(--text-gray); margin-bottom:15px;">Součet km všech účastníků</div>${htmlBar}</div><div style="border-top: 1px solid var(--gray-border); padding: 20px;"><h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 15px;">Podíl aktivit</h4><div style="display:flex; align-items:center; gap:15px;"><div style="flex:0 0 90px;">${pieObj.svg}</div><div style="flex:1; min-width:0;">${pieObj.legend}</div></div></div>`;
                 
                 if (isRace) {
                     statsRaceDiv.appendChild(statsCard);
@@ -1485,25 +1472,25 @@
 
     function generatePieChartHtml(sums, actCount) {
         let total = Object.values(sums).reduce((a,b) => a+b, 0);
-        if(total === 0) { return { svg: `<svg width="120" height="120" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.915" fill="transparent" stroke="var(--gray-border)" stroke-width="4"></circle><text x="50%" y="55%" text-anchor="middle" font-size="5" font-weight="600" fill="var(--text-gray)">0%</text></svg>`, legend: `<div style="color:var(--text-gray); font-size:0.85em; text-align:center;">Žádná data</div>` }; }
+        if(total === 0) { return { svg: `<svg width="90" height="90" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.915" fill="transparent" stroke="var(--gray-border)" stroke-width="4"></circle><text x="50%" y="55%" text-anchor="middle" font-size="5" font-weight="600" fill="var(--text-gray)">0%</text></svg>`, legend: `<div style="color:var(--text-gray); font-size:0.85em; text-align:center;">Žádná data</div>` }; }
         const palette = ["#4F46E5", "#818CF8", "#A5B4FC", "#C7D2FE", "#E0E7FF"]; let sortedTypes = Object.keys(sums).filter(k => sums[k] > 0).sort((a, b) => sums[b] - sums[a]);
         let gap = sortedTypes.length > 1 ? 1.5 : 0; let offset = 100; let svgContent = ''; let legendHtml = `<div style="font-size:0.9em; font-weight:700; color:var(--text-dark); margin-bottom:12px;">Počet aktivit: ${actCount}</div>`;
         sortedTypes.forEach((key, index) => {
             let km = sums[key]; let color = palette[index % palette.length]; let pct = (km / total) * 100; let drawPct = Math.max(0, pct - gap);
             svgContent += `<circle cx="18" cy="18" r="15.915" fill="transparent" stroke="${color}" stroke-width="4" stroke-dasharray="${drawPct} ${100 - drawPct}" stroke-dashoffset="${offset}"></circle>`; offset -= pct;
             
-            legendHtml += `<div class="chart-legend-row">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <span style="width:10px; height:10px; background-color:${color}; border-radius:50%; display:inline-block;"></span>
-                    <span>${String(key).toLowerCase()}</span>
+            legendHtml += `<div class="chart-legend-row" style="flex-wrap: nowrap; align-items: center;">
+                <div style="display:flex; align-items:center; gap:6px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; flex: 1;">
+                    <span style="width:10px; height:10px; flex-shrink: 0; background-color:${color}; border-radius:50%; display:inline-block;"></span>
+                    <span style="overflow: hidden; text-overflow: ellipsis;">${String(key).toLowerCase()}</span>
                 </div>
-                <div style="display:flex; gap:10px; text-align:right;">
-                    <span style="width:40px; color:var(--text-gray);">${Math.round(pct)} %</span>
+                <div style="display:flex; gap:8px; text-align:right; white-space: nowrap; flex-shrink: 0;">
+                    <span style="width:35px; color:var(--text-gray);">${Math.round(pct)} %</span>
                     <span style="width:65px;">${km.toLocaleString('cs-CZ', {maximumFractionDigits:1})} km</span>
                 </div>
             </div>`;
         });
-        return { svg: `<svg width="120" height="120" viewBox="0 0 36 36" style="transform: rotate(-90deg); border-radius:50%;">${svgContent}</svg>`, legend: legendHtml };
+        return { svg: `<svg width="90" height="90" viewBox="0 0 36 36" style="transform: rotate(-90deg); border-radius:50%;">${svgContent}</svg>`, legend: legendHtml };
     }
 
     window.openMapListModal = () => { window.pushModalState(); document.getElementById('map-list-modal').classList.add('active'); };
