@@ -339,7 +339,15 @@
 
     <!-- ZÁLOŽKA 4: PROFIL -->
     <div id="tab-profile" class="hidden">
-      <div class="page-title">Můj profil</div>
+      <div class="page-title">
+        Můj profil
+        <div style="display:flex; gap: 15px; align-items:center;">
+          <!-- Ikonka Lupy -->
+          <svg onclick="openSearchModal()" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="cursor:pointer;"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <!-- Ikonka Nastavení (Kolečko) -->
+          <svg onclick="openSettingsModal()" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="cursor:pointer;"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+        </div>
+      </div>
 
       <div class="profile-header-new">
         <div class="profile-avatar-giant" id="profile-avatar">J</div>
@@ -454,6 +462,38 @@
 
 
   <!-- MODALY APLIKACE-->
+
+  <!-- Modál pro vyhledávání uživatelů -->
+  <div id="search-modal" class="modal-overlay" onclick="if(event.target===this) closeSearchModal()">
+    <div class="modal-content">
+        <h3 style="margin-bottom:15px;">Hledat uživatele</h3>
+        <input type="text" id="search-input" class="auth-input" placeholder="Zadejte jméno..." oninput="handleSearch()">
+        <div id="search-results" style="display:flex; flex-direction:column; max-height: 300px; overflow-y:auto; margin-top:10px; text-align:left;"></div>
+        <div class="modal-buttons-row">
+            <button class="btn-cancel" onclick="closeSearchModal()">Zavřít</button>
+        </div>
+    </div>
+  </div>
+
+  <!-- Modál pro nastavení soukromí -->
+  <div id="settings-modal" class="modal-overlay" onclick="if(event.target===this) closeSettingsModal()">
+    <div class="modal-content">
+        <h3 style="margin-bottom:15px;">Nastavení soukromí</h3>
+        <div class="date-input-wrapper" style="text-align:left;">
+            <label>Viditelnost mého profilu:</label>
+            <select id="privacy-select" class="date-input" style="background:var(--white);">
+                <option value="public">Veřejný (Všichni vidí mé aktivity)</option>
+                <option value="private">Soukromý (Jen sledující vidí mé aktivity)</option>
+            </select>
+            <p style="font-size:0.8em; color:var(--text-gray); margin-top:5px;">Ve výzvách a závodech, do kterých se připojíte, budou vaše kilometry vždy viditelné ostatním účastníkům dané akce bez ohledu na toto nastavení.</p>
+        </div>
+        <div class="modal-buttons-row">
+            <button class="btn-cancel" onclick="closeSettingsModal()">Zrušit</button>
+            <button class="btn-save" onclick="saveSettings()">Uložit</button>
+        </div>
+    </div>
+  </div>
+
   <div id="connections-modal" class="modal-overlay" onclick="if(event.target===this) closeConnections()">
       <div class="modal-content">
           <h3 id="connections-title" style="margin-bottom:15px;">Sledující</h3>
@@ -492,7 +532,7 @@
       <!-- Strava Odkaz -->
       <div class="date-input-wrapper">
           <label>Odkaz na Stravu (volitelné):</label>
-          <input type="text" id="strava-link-input" class="date-input" placeholder="https://strava.app.link/...">
+          <input type="text" id="strava-link-input" class="date-input" placeholder="https://strava.app.link/... nebo celý text ze Stravy">
       </div>
 
       <!-- Kalkulačka -->
@@ -537,7 +577,7 @@
         <span style="font-size: 1.2em; font-weight: 600;"> km</span>
       </div>
       <div class="date-input-wrapper"><label>Datum aktivity:</label><input type="date" id="edit-date-input" class="date-input"></div>
-      <div class="date-input-wrapper"><label>Odkaz na Stravu:</label><input type="text" id="edit-strava-link-input" class="date-input"></div>
+      <div class="date-input-wrapper"><label>Odkaz na Stravu:</label><input type="text" id="edit-strava-link-input" class="date-input" placeholder="https://strava.app.link/... nebo celý text ze Stravy"></div>
       
       <div class="modal-buttons-row">
         <button class="btn-cancel" onclick="closeEditModal()">Zrušit</button>
@@ -812,6 +852,14 @@
     };
     // ----------------------------------------------
 
+    // --- STRAVA EXTRACTOR HELPER ---
+    function extractStravaUrl(rawText) {
+        if (!rawText) return "";
+        const match = rawText.match(/(https?:\/\/[^\s]+)/);
+        return match ? match[0] : "";
+    }
+    // ----------------------------------------------
+
     function getCustomWeekString(date, startDay) {
         let d = new Date(date); d.setHours(0,0,0,0); let day = d.getDay(); let diff = (day - startDay + 7) % 7; d.setDate(d.getDate() - diff); return d.toLocaleDateString('cs-CZ'); 
     }
@@ -853,7 +901,10 @@
         }
 
         const userRef = doc(db, "users", user.uid);
-        if (!(await getDoc(userRef)).exists()) { await setDoc(userRef, { personalKm: 0, name: user.displayName || user.email.split('@')[0], avatarUrl: "", followers: [], following: [], followRequests: [], sentRequests: [] }); }
+        if (!(await getDoc(userRef)).exists()) { 
+            // isPrivate defaultně false = veřejný
+            await setDoc(userRef, { personalKm: 0, name: user.displayName || user.email.split('@')[0], avatarUrl: "", followers: [], following: [], followRequests: [], sentRequests: [], isPrivate: false }); 
+        }
 
         unsubscribeUsersList = onSnapshot(collection(db, "users"), (snapshot) => {
             globalUsersMap = {}; let rankArr = [];
@@ -923,6 +974,47 @@
         if(unsubscribeUser) unsubscribeUser(); if(unsubscribeUsersList) unsubscribeUsersList(); if(unsubscribeActivities) unsubscribeActivities(); if(unsubscribeChallengesList) unsubscribeChallengesList(); if(unsubscribeAllActivities) unsubscribeAllActivities();
       }
     });
+
+    // Vyhledávání uživatelů
+    window.openSearchModal = () => {
+        window.pushModalState();
+        document.getElementById('search-modal').classList.add('active');
+        document.getElementById('search-input').value = '';
+        document.getElementById('search-results').innerHTML = '';
+    };
+    window.closeSearchModal = () => window.handleUIClose('search-modal');
+    window.handleSearch = () => {
+        const q = document.getElementById('search-input').value.toLowerCase().trim();
+        const resDiv = document.getElementById('search-results');
+        resDiv.innerHTML = '';
+        if(q.length < 2) return;
+        
+        Object.keys(globalUsersMap).forEach(uid => {
+            if (uid === currentUser.uid) return;
+            let u = globalUsersMap[uid];
+            if (u.name && u.name.toLowerCase().includes(q)) {
+                let avatar = u.avatarUrl ? `<img src="${u.avatarUrl}">` : u.name.charAt(0).toUpperCase();
+                resDiv.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.05); cursor:pointer;" onclick="closeSearchModal(); openPublicProfile('${uid}')"><div style="display:flex; align-items:center; gap:12px;"><div class="lb-avatar" style="width:36px;height:36px;margin:0;">${avatar}</div><span style="font-weight:600; font-size:0.95em; color:var(--text-dark);">${u.name}</span></div></div>`;
+            }
+        });
+    };
+
+    // Nastavení soukromí
+    window.openSettingsModal = async () => {
+        window.pushModalState();
+        document.getElementById('settings-modal').classList.add('active');
+        let isPriv = false;
+        if(globalUsersMap[currentUser.uid]) {
+            isPriv = globalUsersMap[currentUser.uid].isPrivate === true;
+        }
+        document.getElementById('privacy-select').value = isPriv ? 'private' : 'public';
+    };
+    window.closeSettingsModal = () => window.handleUIClose('settings-modal');
+    window.saveSettings = async () => {
+        const isPriv = document.getElementById('privacy-select').value === 'private';
+        await updateDoc(doc(db, "users", currentUser.uid), { isPrivate: isPriv });
+        window.closeSettingsModal();
+    };
 
     // Spojení s uživateli
     window.openConnections = (type) => {
@@ -1424,7 +1516,7 @@
 
     window.saveActivity = async () => {
       if(isSaving) return; let rawInput = document.getElementById('km-input').value.replace(',', '.'); const km = parseFloat(rawInput);
-      const stravaUrl = document.getElementById('strava-link-input').value.trim();
+      const stravaUrl = extractStravaUrl(document.getElementById('strava-link-input').value);
       
       if(km > 0 && currentUser) {
         isSaving = true; const btn = document.getElementById('btn-save-activity'); btn.innerText = "Ukládám..."; btn.disabled = true;
@@ -1444,7 +1536,7 @@
 
     window.saveEditActivity = async () => {
         if(isSaving) return; let rawInput = document.getElementById('edit-km-input').value.replace(',', '.'); const newKm = parseFloat(rawInput); const newDateVal = document.getElementById('edit-date-input').value;
-        const stravaUrl = document.getElementById('edit-strava-link-input').value.trim();
+        const stravaUrl = extractStravaUrl(document.getElementById('edit-strava-link-input').value);
         
         if(newKm > 0 && selectedActivityId && currentUser) {
             isSaving = true; const btn = document.getElementById('btn-edit-activity'); btn.innerText = "Ukládám..."; btn.disabled = true;
@@ -1664,8 +1756,10 @@
                 const listContainer = document.getElementById('public-profile-activity-list'); 
                 listContainer.innerHTML = '';
                 
-                // POKUD NESLEDUJE, ZOBRAZIT ZÁMEČEK
-                if (!isFollowing) {
+                let isTargetPrivate = data.isPrivate === true;
+
+                // POKUD JE SOUKROMÝ A NESLEDUJE HO, ZOBRAZIT ZÁMEČEK
+                if (isTargetPrivate && !isFollowing && uid !== currentUser.uid) {
                     listContainer.innerHTML = `
                         <div style="text-align: center; padding: 30px 20px; color: var(--text-gray);">
                             <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor" style="margin-bottom:10px;"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>
