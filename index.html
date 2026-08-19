@@ -98,9 +98,12 @@
     .profile-stat-val { font-size: 1.1em; font-weight: 700; color: var(--text-dark); display: block; }
     .profile-stat-label { font-size: 0.75em; font-weight: 500; color: var(--text-gray); }
     
-    .profile-buttons-row { display: flex; justify-content: center; width: 100%; margin: 0 auto 20px auto; }
-    .btn-edit-prof { flex: 1; border: 1px solid var(--gray-border); background: var(--white); padding: 12px 15px; border-radius: 50px; font-size: 0.9em; font-weight: 600; cursor: pointer; color: var(--text-dark); display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-    
+    /* Strava styl pro tlačítko Upravit - Tvar pilulky, bez pozadí */
+    .profile-buttons-row { display: flex; justify-content: center; width: 100%; margin: 0 auto 20px auto; gap: 10px;}
+    .btn-edit-prof { background: transparent; border: 1px solid var(--primary-orange); color: var(--primary-orange); padding: 8px 24px; border-radius: 50px; font-size: 0.9em; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: none; transition: background 0.2s;}
+    .btn-edit-prof:active { background: rgba(255, 94, 0, 0.1); }
+    .btn-edit-prof svg { fill: var(--primary-orange); width: 16px; height: 16px; }
+
     .btn-requests { width: 100%; background: #FEF3C7; color: #D97706; border: none; padding: 12px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 700; cursor: pointer; margin: -10px auto 25px auto; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.15); display: none; text-align: center; }
 
     .activity-list-icon { width: 24px; height: 24px; margin-right: 15px; flex-shrink: 0; object-fit: contain; }
@@ -304,7 +307,7 @@
       
       <div id="stats-challenges-container"></div>
       
-      <!-- Obal pro osobní statistiku s funkčním filtrem -->
+      <!-- Obal pro osobní statistiku s funkčním filtrem a poznámkou -->
       <div id="personal-stats-wrapper" style="display:none;">
           <div class="card-no-padding" style="margin-top: 20px;">
               <div style="padding: 20px;">
@@ -317,9 +320,15 @@
                       <div class="chip" style="padding: 6px 16px;" data-val="year" onclick="setPersonalFilter('year')">Rok</div>
                       <div class="chip" style="padding: 6px 16px;" data-val="custom" onclick="setPersonalFilter('custom')">Vlastní</div>
                   </div>
-                  <div id="personal-custom-dates" style="display:none; gap:10px; margin-top: 15px;">
-                      <div style="flex:1;"><label style="font-size:0.8em;color:var(--text-gray); font-weight:600; display:block; margin-bottom:4px;">Od:</label><input type="date" id="p-date-from" class="date-input" style="background-color: var(--white); margin-bottom:0; padding:8px;" onchange="updatePersonalDates()"></div>
-                      <div style="flex:1;"><label style="font-size:0.8em;color:var(--text-gray); font-weight:600; display:block; margin-bottom:4px;">Do:</label><input type="date" id="p-date-to" class="date-input" style="background-color: var(--white); margin-bottom:0; padding:8px;" onchange="updatePersonalDates()"></div>
+                  <div id="personal-custom-dates" style="display:none; flex-direction:column; margin-top: 15px;">
+                      <div style="display:flex; gap:10px;">
+                          <div style="flex:1;"><label style="font-size:0.8em;color:var(--text-gray); font-weight:600; display:block; margin-bottom:4px;">Od:</label><input type="date" id="p-date-from" class="date-input" style="background-color: var(--white); margin-bottom:0; padding:8px;" onchange="updatePersonalDates()"></div>
+                          <div style="flex:1;"><label style="font-size:0.8em;color:var(--text-gray); font-weight:600; display:block; margin-bottom:4px;">Do:</label><input type="date" id="p-date-to" class="date-input" style="background-color: var(--white); margin-bottom:0; padding:8px;" onchange="updatePersonalDates()"></div>
+                      </div>
+                      <div style="margin-top: 10px;">
+                          <label style="font-size:0.8em;color:var(--text-gray); font-weight:600; display:block; margin-bottom:4px;">Moje poznámka (uloží se automaticky):</label>
+                          <textarea id="p-custom-note" class="date-input" rows="2" style="background-color: var(--white); margin-bottom:0; padding:8px; font-size: 0.85em;" placeholder="Např.: První sníh napadl 15.11..." onchange="saveCustomNote()"></textarea>
+                      </div>
                   </div>
               </div>
           </div>
@@ -379,21 +388,22 @@
             <button class="btn-edit-prof" onclick="openProfileEditModal()"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> Upravit</button>
         </div>
       </div>
-      
-      <div id="profile-active-challenges-wrapper" style="display:none;">
-          <div class="section-title" id="profile-active-title" style="margin: 0 20px 10px 20px;">Moje aktivní akce</div>
-          <div style="padding: 0 20px;">
-            <div id="profile-active-challenges"></div>
-          </div>
-      </div>
 
+      <!-- PŘESUNUTO: Přehled aktivit je nyní nahoře nad výzvami -->
       <div class="section-title" style="margin: 20px 20px 10px 20px;">Přehled mých aktivit <span onclick="toggleEditMode()" id="btn-toggle-edit-mode" style="display:flex; align-items:center; gap:4px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> Upravit</span></div>
       <div class="card" style="padding: 8px 20px;">
         <div id="profile-activity-list" class="leaderboard-list"></div>
       </div>
       
+      <div id="profile-active-challenges-wrapper" style="display:none;">
+          <div class="section-title" id="profile-active-title" style="margin: 20px 20px 10px 20px;">Moje aktivní akce</div>
+          <div style="padding: 0 20px;">
+            <div id="profile-active-challenges"></div>
+          </div>
+      </div>
+      
       <div id="profile-my-challenges-wrapper" style="display:none;">
-          <div class="section-title" style="margin: 0 20px 10px 20px;">Akce, které jsem vytvořil</div>
+          <div class="section-title" style="margin: 20px 20px 10px 20px;">Akce, které jsem vytvořil</div>
           <div style="padding: 0 20px;">
             <div id="profile-my-challenges"></div>
           </div>
@@ -896,6 +906,16 @@
         }
     };
 
+    window.saveCustomNote = async () => {
+        if(!currentUser) return;
+        const noteText = document.getElementById('p-custom-note').value.trim();
+        try {
+            await updateDoc(doc(db, "users", currentUser.uid), { customStatsNote: noteText });
+        } catch (e) {
+            console.error("Chyba při ukládání poznámky", e);
+        }
+    };
+
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         currentUser = user; publicView.classList.add('hidden'); privateView.classList.remove('hidden');
@@ -913,7 +933,7 @@
 
         const userRef = doc(db, "users", user.uid);
         if (!(await getDoc(userRef)).exists()) { 
-            await setDoc(userRef, { personalKm: 0, name: user.displayName || user.email.split('@')[0], avatarUrl: "", followers: [], following: [], followRequests: [], sentRequests: [], isPrivate: false }); 
+            await setDoc(userRef, { personalKm: 0, name: user.displayName || user.email.split('@')[0], avatarUrl: "", followers: [], following: [], followRequests: [], sentRequests: [], isPrivate: false, customStatsNote: "" }); 
         }
 
         unsubscribeUsersList = onSnapshot(collection(db, "users"), (snapshot) => {
@@ -937,6 +957,12 @@
           const pAvatarNode = document.getElementById('profile-avatar');
           if (data.avatarUrl) { pAvatarNode.innerHTML = `<img src="${data.avatarUrl}">`; } else { pAvatarNode.innerHTML = (data.name || 'N').charAt(0).toUpperCase(); }
           
+          if (data.customStatsNote) {
+              document.getElementById('p-custom-note').value = data.customStatsNote;
+          } else {
+              document.getElementById('p-custom-note').value = "";
+          }
+
           let followersCount = data.followers ? data.followers.length : 0;
           let followingCount = data.following ? data.following.length : 0;
           let requestsCount = data.followRequests ? data.followRequests.length : 0;
@@ -1241,7 +1267,7 @@
                 const profileActiveCard = document.createElement('div');
                 profileActiveCard.style.cssText = "background-color: var(--white); border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; cursor: pointer;";
                 profileActiveCard.onclick = () => openChallengeDetail(c.id);
-                profileActiveCard.innerHTML = `<div><div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div><div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Můj postup: ${myCurrentKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} km</div></div><button style="background:#FEE2E2; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; font-size:0.85em; font-weight:600; color:#EF4444;" onclick="event.stopPropagation(); leaveChallenge('${c.id}')">Odpojit</button>`;
+                profileActiveCard.innerHTML = `<div><div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div><div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Můj postup: ${myCurrentKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} km</div></div><button style="background:#FEE2E2; border:none; padding:8px 16px; border-radius:50px; cursor:pointer; font-size:0.85em; font-weight:600; color:#EF4444;" onclick="event.stopPropagation(); leaveChallenge('${c.id}')">Odpojit</button>`;
                 profileActiveChal.appendChild(profileActiveCard);
 
                 if(c.mapUrl) {
@@ -1293,7 +1319,7 @@
                 const profCard = document.createElement('div'); 
                 profCard.style.cssText = "background-color: var(--white); border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; cursor: pointer;";
                 profCard.onclick = () => openChallengeDetail(c.id);
-                profCard.innerHTML = `<div><div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div><div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Cíl: ${c.targetKm} km</div></div><button style="background:var(--gray-light); border:none; padding:8px 12px; border-radius:10px; display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.85em; font-weight:600; color:var(--text-dark);" onclick="event.stopPropagation(); openEditChallengeModal('${c.id}')"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Upravit</button>`;
+                profCard.innerHTML = `<div><div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div><div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Cíl: ${c.targetKm} km</div></div><button style="background:var(--gray-light); border:none; padding:8px 16px; border-radius:50px; display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.85em; font-weight:600; color:var(--text-dark);" onclick="event.stopPropagation(); openEditChallengeModal('${c.id}')"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Upravit</button>`;
                 profileMyChal.appendChild(profCard);
             }
         });
