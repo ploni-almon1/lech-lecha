@@ -429,7 +429,7 @@
               <h2 id="chal-detail-title" style="font-size: 1.8em; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; line-height: 1.2;">Název výzvy</h2>
               <div id="chal-detail-subtitle" style="font-size: 1em; color: var(--text-gray); margin-bottom: 30px; line-height: 1.5;">Podtitul výzvy...</div>
 
-              <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 10px;">Pořádatel</h4>
+              <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 10px;">Pořádající klub / autor</h4>
               <div class="chal-author-box">
                   <div id="chal-detail-author-avatar" class="chal-author-avatar"></div>
                   <div>
@@ -1090,7 +1090,7 @@
         });
     };
 
-    // Nastavení soukromí
+    // Nastavení soukromí a odhlášení
     window.openSettingsModal = async () => {
         window.pushModalState();
         document.getElementById('settings-modal').classList.add('active');
@@ -1199,6 +1199,7 @@
         if(!currentUser || Object.keys(globalUsersMap).length === 0) return;
         const dashJoinedList = document.getElementById('dash-joined-challenges'); dashJoinedList.innerHTML = '';
         const statsContainer = document.getElementById('stats-challenges-container'); statsContainer.innerHTML = '';
+        const personalStatsContainer = document.getElementById('stats-personal-container'); personalStatsContainer.innerHTML = '';
         const statsOtherList = document.getElementById('stats-other-challenges'); statsOtherList.innerHTML = '';
         const profileMyChal = document.getElementById('profile-my-challenges'); profileMyChal.innerHTML = '';
         const profileActiveChal = document.getElementById('profile-active-challenges'); profileActiveChal.innerHTML = '';
@@ -1491,7 +1492,17 @@
         sortedTypes.forEach((key, index) => {
             let km = sums[key]; let color = palette[index % palette.length]; let pct = (km / total) * 100; let drawPct = Math.max(0, pct - gap);
             svgContent += `<circle cx="18" cy="18" r="15.915" fill="transparent" stroke="${color}" stroke-width="4" stroke-dasharray="${drawPct} ${100 - drawPct}" stroke-dashoffset="${offset}"></circle>`; offset -= pct;
-            legendHtml += `<div class="chart-legend-row"><div style="display:flex; align-items:center; gap:8px;"><span style="width:10px; height:10px; background-color:${color}; border-radius:50%; display:inline-block;"></span><span>${key.toLowerCase()}</span></div><span>${km.toLocaleString('cs-CZ', {maximumFractionDigits:1})} km (${Math.round(pct)} %)</span></div>`;
+            
+            legendHtml += `<div class="chart-legend-row">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="width:10px; height:10px; background-color:${color}; border-radius:50%; display:inline-block;"></span>
+                    <span>${key.toLowerCase()}</span>
+                </div>
+                <div style="display:flex; gap:10px; text-align:right;">
+                    <span style="width:40px; color:var(--text-gray);">${Math.round(pct)} %</span>
+                    <span style="width:65px;">${km.toLocaleString('cs-CZ', {maximumFractionDigits:1})} km</span>
+                </div>
+            </div>`;
         });
         return { svg: `<svg width="120" height="120" viewBox="0 0 36 36" style="transform: rotate(-90deg); border-radius:50%;">${svgContent}</svg>`, legend: legendHtml };
     }
@@ -1871,7 +1882,12 @@
     window.registerUser = () => { const email = document.getElementById('email-input').value.trim(); const password = document.getElementById('password-input').value.trim(); createUserWithEmailAndPassword(auth, email, password); };
     window.loginUser = () => { const email = document.getElementById('email-input').value.trim(); const password = document.getElementById('password-input').value.trim(); signInWithEmailAndPassword(auth, email, password); };
     window.loginWithGoogle = () => { signInWithPopup(auth, googleProvider); };
-    window.logoutUser = () => { signOut(auth); };
+    
+    // OPRAVA ODHLÁŠENÍ (Skrytí okna)
+    window.logoutUser = () => { 
+        document.getElementById('settings-modal').classList.remove('active');
+        signOut(auth); 
+    };
 
     const modal = document.getElementById('activity-modal');
     window.openModal = () => { 
