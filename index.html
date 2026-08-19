@@ -92,14 +92,12 @@
     .profile-avatar-giant img { width: 100%; height: 100%; object-fit: cover; }
     .profile-name-giant { font-size: 1.4em; font-weight: 700; margin-bottom: 15px; text-align: center; }
     
-    /* Změna zarovnání - stejné okraje jako u karet (20px na každé straně) */
     .profile-stats-row { display: flex; justify-content: space-between; gap: 5px; margin-bottom: 25px; width: 100%; }
     .profile-stat-item { text-align: center; flex: 1; padding: 5px; cursor: pointer; border-radius: 12px; transition: background 0.2s; }
     .profile-stat-item:active { background: var(--gray-light); }
     .profile-stat-val { font-size: 1.1em; font-weight: 700; color: var(--text-dark); display: block; }
     .profile-stat-label { font-size: 0.75em; font-weight: 500; color: var(--text-gray); }
     
-    /* Pilulka upravit profil na celou šířku s okraji */
     .profile-buttons-row { display: flex; justify-content: center; width: 100%; margin: 0 auto 20px auto; }
     .btn-edit-prof { flex: 1; border: 1px solid var(--gray-border); background: var(--white); padding: 12px 15px; border-radius: 50px; font-size: 0.9em; font-weight: 600; cursor: pointer; color: var(--text-dark); display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
     
@@ -306,7 +304,26 @@
       
       <div id="stats-challenges-container"></div>
       
-      <div id="stats-personal-container"></div>
+      <!-- Obal pro osobní statistiku s funkčním filtrem -->
+      <div id="personal-stats-wrapper" style="display:none;">
+          <div class="card-no-padding" style="margin-top: 20px;">
+              <div style="padding: 20px;">
+                  <h3 style="color: var(--text-dark); font-size: 1.3em; font-weight: 800; margin-bottom: 15px;">Moje osobní statistika</h3>
+                  <div id="personal-charts-render-area"></div>
+              </div>
+              <div style="padding: 15px 20px; background: var(--gray-light); border-top: 1px solid var(--gray-border);">
+                  <div style="display:flex; justify-content:center; gap:10px;" id="personal-filter-chips">
+                      <div class="chip" data-val="custom" onclick="setPersonalFilter('custom')">Vlastní</div>
+                      <div class="chip" data-val="year" onclick="setPersonalFilter('year')">Rok</div>
+                      <div class="chip active" data-val="total" onclick="setPersonalFilter('total')">Celkem</div>
+                  </div>
+                  <div id="personal-custom-dates" style="display:none; gap:10px; margin-top: 15px;">
+                      <div style="flex:1;"><label style="font-size:0.8em;color:var(--text-gray); font-weight:600; display:block; margin-bottom:4px;">Od:</label><input type="date" id="p-date-from" class="date-input" style="margin-bottom:0; padding:8px;" onchange="updatePersonalDates()"></div>
+                      <div style="flex:1;"><label style="font-size:0.8em;color:var(--text-gray); font-weight:600; display:block; margin-bottom:4px;">Do:</label><input type="date" id="p-date-to" class="date-input" style="margin-bottom:0; padding:8px;" onchange="updatePersonalDates()"></div>
+                  </div>
+              </div>
+          </div>
+      </div>
 
       <div class="section-title" style="margin: 30px 20px 10px 20px;">Další komunitní akce</div>
       <div id="stats-other-challenges" style="display:flex; flex-direction:column;"></div>
@@ -815,6 +832,11 @@
     let currentActivityType = "Chůze"; let editActivityType = ""; let selectedActivityId = null; let selectedActivityOldKm = 0; let selectedActivityDate = null; let cropper = null; 
     let chalCropper = null; let currentEditChalBgUrl = "";
 
+    // Globální proměnné pro filtr osobních statistik
+    let personalFilterType = 'total'; 
+    let personalFilterFrom = ''; 
+    let personalFilterTo = '';
+
     let leafletMap = null; let mapLayers = []; let layerOsm = null; let layerSat = null; let currentMapLayerType = 'osm'; let currentSelectedChallengeIdForMap = null;
 
     // --- SYSTEM BACK BUTTON LOGIC (History API) ---
@@ -970,6 +992,79 @@
       }
     });
 
+    // Osobní statistiky a filtry
+    window.setPersonalFilter = (type) => {
+        personalFilterType = type;
+        document.querySelectorAll('#personal-filter-chips .chip').forEach(c => c.classList.remove('active'));
+        document.querySelector(`#personal-filter-chips .chip[data-val="${type}"]`).classList.add('active');
+        
+        if (type === 'custom') {
+            document.getElementById('personal-custom-dates').style.display = 'flex';
+        } else {
+            document.getElementById('personal-custom-dates').style.display = 'none';
+        }
+        window.renderPersonalStats();
+    };
+
+    window.updatePersonalDates = () => {
+        personalFilterFrom = document.getElementById('p-date-from').value;
+        personalFilterTo = document.getElementById('p-date-to').value;
+        window.renderPersonalStats();
+    };
+
+    window.renderPersonalStats = () => {
+        if(!currentUser) return;
+        let myActivities = globalActivities.filter(act => act.uid === currentUser.uid);
+        
+        // Aplikace filtru (Rok / Vlastní / Celkem)
+        if (personalFilterType === 'year') {
+            const currentYear = new Date().getFullYear();
+            myActivities = myActivities.filter(act => {
+                if(!act.timestamp) return false;
+                return act.timestamp.toDate().getFullYear() === currentYear;
+            });
+        } else if (personalFilterType === 'custom') {
+            let fromDate = personalFilterFrom ? new Date(personalFilterFrom) : new Date('2000-01-01');
+            let toDate = personalFilterTo ? new Date(personalFilterTo) : new Date('2100-01-01');
+            fromDate.setHours(0,0,0,0);
+            toDate.setHours(23,59,59,999);
+            myActivities = myActivities.filter(act => {
+                if(!act.timestamp) return false;
+                let d = act.timestamp.toDate();
+                return d >= fromDate && d <= toDate;
+            });
+        }
+
+        let myWeeklyKm = {}; let myPieData = {};
+        myActivities.forEach(act => {
+            if(!act.timestamp) return; 
+            let actDate = act.timestamp.toDate(); 
+            let actWeek = getCustomWeekString(actDate, 1); 
+            myWeeklyKm[actWeek] = (myWeeklyKm[actWeek] || 0) + act.km; 
+            myPieData[act.type] = (myPieData[act.type] || 0) + act.km;
+        });
+
+        const renderArea = document.getElementById('personal-charts-render-area');
+        if (myActivities.length > 0) {
+            let htmlBarPersonal = generateBarChartHtml(myWeeklyKm); 
+            let pieObjPersonal = generatePieChartHtml(myPieData, myActivities.length);
+            renderArea.innerHTML = `
+                <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 5px;">Celkové km v týdnech</h4>
+                <div style="font-size: 0.8em; color:var(--text-gray); margin-bottom:15px;">Vybrané období (týden od pondělí)</div>
+                ${htmlBarPersonal}
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--gray-border);">
+                    <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 15px;">Podíl mých aktivit</h4>
+                    <div style="display:flex; align-items:center; gap:20px;">
+                        <div style="flex:0 0 120px;">${pieObjPersonal.svg}</div>
+                        <div style="flex:1;">${pieObjPersonal.legend}</div>
+                    </div>
+                </div>`;
+        } else {
+            renderArea.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:0.9em; padding:20px 0;">Žádné aktivity ve vybraném období.</div>';
+        }
+        document.getElementById('personal-stats-wrapper').style.display = 'block';
+    };
+
     // Vyhledávání uživatelů
     window.openSearchModal = () => {
         window.pushModalState();
@@ -1104,7 +1199,6 @@
         if(!currentUser || Object.keys(globalUsersMap).length === 0) return;
         const dashJoinedList = document.getElementById('dash-joined-challenges'); dashJoinedList.innerHTML = '';
         const statsContainer = document.getElementById('stats-challenges-container'); statsContainer.innerHTML = '';
-        const personalStatsContainer = document.getElementById('stats-personal-container'); personalStatsContainer.innerHTML = '';
         const statsOtherList = document.getElementById('stats-other-challenges'); statsOtherList.innerHTML = '';
         const profileMyChal = document.getElementById('profile-my-challenges'); profileMyChal.innerHTML = '';
         const profileActiveChal = document.getElementById('profile-active-challenges'); profileActiveChal.innerHTML = '';
@@ -1238,17 +1332,12 @@
         if (dashTitleEl) dashTitleEl.innerText = newTitleText;
         if (profActiveTitleEl) profActiveTitleEl.innerText = newTitleText;
 
-        let myActivities = globalActivities.filter(act => act.uid === currentUser.uid); let myWeeklyKm = {}; let myPieData = {};
-        myActivities.forEach(act => {
-            if(!act.timestamp) return; let actDate = act.timestamp.toDate(); let actWeek = getCustomWeekString(actDate, 1); 
-            myWeeklyKm[actWeek] = (myWeeklyKm[actWeek] || 0) + act.km; myPieData[act.type] = (myPieData[act.type] || 0) + act.km;
-        });
-
-        if (myActivities.length > 0) {
-            let htmlBarPersonal = generateBarChartHtml(myWeeklyKm); let pieObjPersonal = generatePieChartHtml(myPieData, myActivities.length);
-            let personalCard = document.createElement('div'); personalCard.className = 'card-no-padding'; personalCard.style.marginTop = '20px';
-            personalCard.innerHTML = `<div style="padding: 20px;"><h3 style="color: var(--text-dark); font-size: 1.3em; font-weight: 800; margin-bottom: 15px;">Moje osobní statistika</h3><h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 5px;">Celkové km v týdnech</h4><div style="font-size: 0.8em; color:var(--text-gray); margin-bottom:15px;">Všechny tvé aktivity (týden od pondělí)</div>${htmlBarPersonal}</div><div style="border-top: 1px solid var(--gray-border); padding: 20px;"><h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 15px;">Podíl mých aktivit</h4><div style="display:flex; align-items:center; gap:20px;"><div style="flex:0 0 120px;">${pieObjPersonal.svg}</div><div style="flex:1;">${pieObjPersonal.legend}</div></div></div>`;
-            personalStatsContainer.appendChild(personalCard);
+        // Vykreslení osobních statistik
+        let totalMyActs = globalActivities.filter(act => act.uid === currentUser.uid);
+        if(totalMyActs.length > 0) {
+             window.renderPersonalStats();
+        } else {
+             document.getElementById('personal-stats-wrapper').style.display = 'none';
         }
 
         document.getElementById('dash-joined-wrapper').style.display = (joinedCollabCount + joinedRaceCount) > 0 ? 'block' : 'none';
@@ -1402,7 +1491,7 @@
         sortedTypes.forEach((key, index) => {
             let km = sums[key]; let color = palette[index % palette.length]; let pct = (km / total) * 100; let drawPct = Math.max(0, pct - gap);
             svgContent += `<circle cx="18" cy="18" r="15.915" fill="transparent" stroke="${color}" stroke-width="4" stroke-dasharray="${drawPct} ${100 - drawPct}" stroke-dashoffset="${offset}"></circle>`; offset -= pct;
-            legendHtml += `<div class="chart-legend-row"><div style="display:flex; align-items:center; gap:8px;"><span style="width:10px; height:10px; background-color:${color}; border-radius:50%; display:inline-block;"></span><span>${key.toLowerCase()}</span></div><span>${Math.round(pct)} %</span></div>`;
+            legendHtml += `<div class="chart-legend-row"><div style="display:flex; align-items:center; gap:8px;"><span style="width:10px; height:10px; background-color:${color}; border-radius:50%; display:inline-block;"></span><span>${key.toLowerCase()}</span></div><span>${km.toLocaleString('cs-CZ', {maximumFractionDigits:1})} km (${Math.round(pct)} %)</span></div>`;
         });
         return { svg: `<svg width="120" height="120" viewBox="0 0 36 36" style="transform: rotate(-90deg); border-radius:50%;">${svgContent}</svg>`, legend: legendHtml };
     }
