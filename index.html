@@ -1090,7 +1090,7 @@
         });
     };
 
-    // Nastavení soukromí a odhlášení
+    // Nastavení soukromí
     window.openSettingsModal = async () => {
         window.pushModalState();
         document.getElementById('settings-modal').classList.add('active');
@@ -1199,7 +1199,6 @@
         if(!currentUser || Object.keys(globalUsersMap).length === 0) return;
         const dashJoinedList = document.getElementById('dash-joined-challenges'); dashJoinedList.innerHTML = '';
         const statsContainer = document.getElementById('stats-challenges-container'); statsContainer.innerHTML = '';
-        const personalStatsContainer = document.getElementById('stats-personal-container'); personalStatsContainer.innerHTML = '';
         const statsOtherList = document.getElementById('stats-other-challenges'); statsOtherList.innerHTML = '';
         const profileMyChal = document.getElementById('profile-my-challenges'); profileMyChal.innerHTML = '';
         const profileActiveChal = document.getElementById('profile-active-challenges'); profileActiveChal.innerHTML = '';
@@ -1496,7 +1495,7 @@
             legendHtml += `<div class="chart-legend-row">
                 <div style="display:flex; align-items:center; gap:8px;">
                     <span style="width:10px; height:10px; background-color:${color}; border-radius:50%; display:inline-block;"></span>
-                    <span>${key.toLowerCase()}</span>
+                    <span>${String(key).toLowerCase()}</span>
                 </div>
                 <div style="display:flex; gap:10px; text-align:right;">
                     <span style="width:40px; color:var(--text-gray);">${Math.round(pct)} %</span>
