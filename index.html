@@ -313,9 +313,9 @@
               </div>
               <div style="padding: 15px 20px; background: var(--gray-light); border-top: 1px solid var(--gray-border);">
                   <div style="display:flex; justify-content:center; gap:10px;" id="personal-filter-chips">
-                      <div class="chip" data-val="custom" onclick="setPersonalFilter('custom')">Vlastní</div>
-                      <div class="chip" data-val="year" onclick="setPersonalFilter('year')">Rok</div>
-                      <div class="chip active" data-val="total" onclick="setPersonalFilter('total')">Celkem</div>
+                      <div class="chip active" style="padding: 6px 16px;" data-val="total" onclick="setPersonalFilter('total')">Celkem</div>
+                      <div class="chip" style="padding: 6px 16px;" data-val="year" onclick="setPersonalFilter('year')">Rok</div>
+                      <div class="chip" style="padding: 6px 16px;" data-val="custom" onclick="setPersonalFilter('custom')">Vlastní</div>
                   </div>
                   <div id="personal-custom-dates" style="display:none; gap:10px; margin-top: 15px;">
                       <div style="flex:1;"><label style="font-size:0.8em;color:var(--text-gray); font-weight:600; display:block; margin-bottom:4px;">Od:</label><input type="date" id="p-date-from" class="date-input" style="margin-bottom:0; padding:8px;" onchange="updatePersonalDates()"></div>
@@ -429,7 +429,7 @@
               <h2 id="chal-detail-title" style="font-size: 1.8em; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; line-height: 1.2;">Název výzvy</h2>
               <div id="chal-detail-subtitle" style="font-size: 1em; color: var(--text-gray); margin-bottom: 30px; line-height: 1.5;">Podtitul výzvy...</div>
 
-              <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 10px;">Pořádající klub / autor</h4>
+              <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 10px;">Pořádatel</h4>
               <div class="chal-author-box">
                   <div id="chal-detail-author-avatar" class="chal-author-avatar"></div>
                   <div>
