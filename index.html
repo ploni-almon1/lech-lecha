@@ -136,7 +136,7 @@
     .modal-content { background-color: var(--white); padding: 25px; border-radius: 24px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; text-align: center; position: relative; }
     .modal-content h3 { margin-bottom: 20px; color: var(--primary-dark); }
     
-    /* DETAIL VÝZVY "STRAVA" STYL - SPRÁVNÉ SCROLLOVÁNÍ (BOTTOM SHEET OVERYLAY) */
+    /* DETAIL VÝZVY "STRAVA" STYL - OPRAVA 16:9 A SCROLLOVÁNÍ */
     .chal-detail-fullscreen { 
         position: fixed; top: 0; left: 0; width: 100%; height: 100vh; 
         z-index: 3000; background: var(--bg-color); 
@@ -144,31 +144,27 @@
     }
     .chal-detail-fullscreen.active { transform: translateY(0); }
     
-    /* Obrázek na pozadí je fixní, skrolovací plocha ho přejíždí */
-    .chal-detail-bg-image { 
-        position: absolute; top: 0; left: 0; width: 100%; height: 45vh; 
-        background-size: cover; background-position: center; background-color: var(--primary-dark); 
-        z-index: 1; 
-    }
-    
-    /* Zpětná šipka ukotvená nahoře */
     .chal-detail-close-btn { 
         position: absolute; top: 20px; left: 20px; width: 40px; height: 40px; 
         background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-        z-index: 10; cursor: pointer; border: none; color: var(--text-dark); box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        z-index: 20; cursor: pointer; border: none; color: var(--text-dark); box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
     }
     
-    /* Samotná scrollovací oblast, která překrývá vše */
     .chal-detail-scroll-area {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         overflow-y: auto; -webkit-overflow-scrolling: touch; z-index: 2;
     }
 
-    /* Bílá karta, která je odsunutá dolů (margin-top), aby šel vidět obrázek pod ní */
+    .chal-detail-bg-image { 
+        width: 100%; max-width: 600px; margin: 0 auto; 
+        aspect-ratio: 16 / 9; /* GARANCE 16:9 POMĚRU! */
+        background-size: cover; background-position: center; background-color: var(--primary-dark); 
+    }
+    
     .chal-detail-sheet { 
         background: var(--white); border-radius: 24px 24px 0 0; padding: 20px 20px 120px 20px; 
-        margin-top: 40vh; /* Tímto nastavíme, kolik obrázku jde vidět */
-        position: relative; min-height: 100vh; max-width: 600px; margin-left: auto; margin-right: auto; 
+        margin-top: -24px; /* Odsazení nahoru, aby překryla obrázek zaoblenými rohy */
+        position: relative; min-height: 80vh; max-width: 600px; margin-left: auto; margin-right: auto; 
         box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
     }
     .drag-handle { width: 40px; height: 5px; background: #D1D5DB; border-radius: 3px; margin: 0 auto 20px auto; }
@@ -232,7 +228,6 @@
 </head>
 <body>
 
-  <!-- VEŘEJNÁ ČÁST -->
   <div id="public-view">
     <h1 class="page-title" style="justify-content: center; font-size: 2em; margin-top: 40px;">Lech lecha!</h1>
     <p style="color: var(--text-gray); text-align: center;">Přidej se k naší společné výzvě.</p>
@@ -254,10 +249,8 @@
     </div>
   </div>
 
-  <!-- SOUKROMÁ ČÁST -->
   <div id="private-view" class="hidden">
     
-    <!-- ZÁLOŽKA 1: PŘEHLED -->
     <div id="tab-dashboard">
       <div class="page-title">Lech lecha!</div>
       
@@ -292,7 +285,6 @@
       </div>
     </div> 
 
-    <!-- ZÁLOŽKA 2: STATISTIKA -->
     <div id="tab-statistics" class="hidden">
       <div class="page-title">Statistika</div>
       
@@ -307,12 +299,10 @@
       </div>
     </div> 
 
-    <!-- ZÁLOŽKA 3: MAPA (FULLSCREEN) -->
     <div id="tab-map" class="hidden">
       <div id="real-map" class="real-map-container"></div>
       <div id="map-empty-state" class="map-overlay-message">Vyberte akci s mapou z nabídky vpravo nahoře.</div>
       
-      <!-- FAB Ovládání -->
       <div class="map-fab-container">
           <button class="map-fab" onclick="openMapListModal()">
               <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
@@ -323,7 +313,6 @@
       </div>
     </div>
 
-    <!-- ZÁLOŽKA 4: PROFIL -->
     <div id="tab-profile" class="hidden">
       <div class="page-title">Můj profil</div>
 
@@ -366,7 +355,6 @@
       </div>
     </div> 
 
-    <!-- SPODNÍ NAVIGAČNÍ LIŠTA -->
     <div class="bottom-nav">
       <div class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Přehled</div>
       <div class="nav-item" id="nav-statistics" onclick="switchTab('statistics')"><svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>Statistika</div>
@@ -375,19 +363,16 @@
     </div>
   </div>
 
-  <!-- STRAVA-STYLE DETAIL VÝZVY S PLYNULÝM SCROLLOVÁNÍM -->
   <div id="chal-detail-fullscreen" class="chal-detail-fullscreen">
       
-      <!-- Fixní obrázek a tlačítko na pozadí -->
-      <div id="chal-detail-bg" class="chal-detail-bg-image"></div>
       <button class="chal-detail-close-btn" onclick="closeChallengeDetail()">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
       </button>
       
-      <!-- Tato vrstva překrývá vše a zachytává doteky na scroll -->
       <div class="chal-detail-scroll-area">
           
-          <!-- Bílá karta s odsazením nahoře (aby šel vidět obrázek) -->
+          <div id="chal-detail-bg" class="chal-detail-bg-image"></div>
+          
           <div class="chal-detail-sheet">
               <div class="drag-handle"></div>
               
@@ -431,14 +416,12 @@
           </div>
       </div>
 
-      <!-- Plovoucí patička s tlačítkem - je fixní přes celý displej nezávisle na scrollu -->
       <div class="chal-floating-action">
           <button id="chal-action-btn" class="chal-btn-main"></button>
       </div>
   </div>
 
 
-  <!-- MODALY APLIKACE-->
   <div id="connections-modal" class="modal-overlay" onclick="if(event.target===this) closeConnections()">
       <div class="modal-content">
           <h3 id="connections-title" style="margin-bottom:15px;">Sledující</h3>
@@ -474,13 +457,11 @@
         <span style="font-size: 1.2em; font-weight: 600;"> km</span>
       </div>
 
-      <!-- Strava Odkaz -->
       <div class="date-input-wrapper">
           <label>Odkaz na Stravu (volitelné):</label>
           <input type="text" id="strava-link-input" class="date-input" placeholder="https://strava.app.link/...">
       </div>
 
-      <!-- Kalkulačka -->
       <div style="margin: 15px 0 25px 0; border-top: 1px solid var(--gray-border); padding-top: 15px; text-align: left;">
           <div style="font-size: 0.85em; font-weight: 600; margin-bottom: 10px; cursor:pointer; color: var(--primary-dark); display: flex; align-items: center; justify-content: center; gap: 5px;" onclick="toggleCalculator()">
               <svg id="calc-chevron" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="transition: transform 0.2s;"><path d="M7 10l5 5 5-5z"/></svg>
