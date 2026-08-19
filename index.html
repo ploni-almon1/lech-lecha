@@ -98,11 +98,11 @@
     .profile-stat-val { font-size: 1.1em; font-weight: 700; color: var(--text-dark); display: block; }
     .profile-stat-label { font-size: 0.75em; font-weight: 500; color: var(--text-gray); }
     
-    /* Strava styl pro tlačítko Upravit - Tvar pilulky, bez pozadí */
-    .profile-buttons-row { display: flex; justify-content: center; width: 100%; margin: 0 auto 20px auto; gap: 10px;}
-    .btn-edit-prof { background: transparent; border: 1px solid var(--primary-orange); color: var(--primary-orange); padding: 8px 24px; border-radius: 50px; font-size: 0.9em; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: none; transition: background 0.2s;}
-    .btn-edit-prof:active { background: rgba(255, 94, 0, 0.1); }
-    .btn-edit-prof svg { fill: var(--primary-orange); width: 16px; height: 16px; }
+    /* Strava styl pro tlačítko Upravit - ZAROVNÁNO DOLEVA, ČERNÉ, MENŠÍ */
+    .profile-buttons-row { display: flex; justify-content: flex-start; width: 100%; margin: 0 auto 20px auto; gap: 10px;}
+    .btn-edit-prof { background: transparent; border: 1px solid var(--text-dark); color: var(--text-dark); padding: 6px 14px; border-radius: 50px; font-size: 0.85em; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: none; transition: background 0.2s;}
+    .btn-edit-prof:active { background: var(--gray-light); }
+    .btn-edit-prof svg { fill: var(--text-dark); width: 14px; height: 14px; }
 
     .btn-requests { width: 100%; background: #FEF3C7; color: #D97706; border: none; padding: 12px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 700; cursor: pointer; margin: -10px auto 25px auto; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.15); display: none; text-align: center; }
 
@@ -1100,6 +1100,7 @@
             let u = globalUsersMap[uid];
             if (u.name && u.name.toLowerCase().includes(q)) {
                 let avatar = u.avatarUrl ? `<img src="${u.avatarUrl}">` : u.name.charAt(0).toUpperCase();
+                // Pro plynulé odstranění z historie při rozkliknutí používáme history.back() a časovač
                 resDiv.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.05); cursor:pointer;" onclick="closeSearchModal(); setTimeout(() => openPublicProfile('${uid}'), 100);"><div style="display:flex; align-items:center; gap:12px;"><div class="lb-avatar" style="width:36px;height:36px;margin:0;">${avatar}</div><span style="font-weight:600; font-size:0.95em; color:var(--text-dark);">${u.name}</span></div></div>`;
             }
         });
@@ -1267,7 +1268,7 @@
                 const profileActiveCard = document.createElement('div');
                 profileActiveCard.style.cssText = "background-color: var(--white); border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; cursor: pointer;";
                 profileActiveCard.onclick = () => openChallengeDetail(c.id);
-                profileActiveCard.innerHTML = `<div><div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div><div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Můj postup: ${myCurrentKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} km</div></div><button style="background:#FEE2E2; border:none; padding:8px 16px; border-radius:50px; cursor:pointer; font-size:0.85em; font-weight:600; color:#EF4444;" onclick="event.stopPropagation(); leaveChallenge('${c.id}')">Odpojit</button>`;
+                profileActiveCard.innerHTML = `<div><div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div><div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Můj postup: ${myCurrentKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} km</div></div><button style="background:transparent; border:1px solid #EF4444; padding:6px 14px; border-radius:50px; cursor:pointer; font-size:0.85em; font-weight:600; color:#EF4444;" onclick="event.stopPropagation(); leaveChallenge('${c.id}')">Odpojit</button>`;
                 profileActiveChal.appendChild(profileActiveCard);
 
                 if(c.mapUrl) {
@@ -1319,7 +1320,7 @@
                 const profCard = document.createElement('div'); 
                 profCard.style.cssText = "background-color: var(--white); border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; cursor: pointer;";
                 profCard.onclick = () => openChallengeDetail(c.id);
-                profCard.innerHTML = `<div><div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div><div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Cíl: ${c.targetKm} km</div></div><button style="background:var(--gray-light); border:none; padding:8px 16px; border-radius:50px; display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.85em; font-weight:600; color:var(--text-dark);" onclick="event.stopPropagation(); openEditChallengeModal('${c.id}')"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Upravit</button>`;
+                profCard.innerHTML = `<div><div style="font-weight:700; color:var(--text-dark); margin-bottom:4px; font-size:1.05em;">${c.name}</div><div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Cíl: ${c.targetKm} km</div></div><button style="background:transparent; border:1px solid var(--text-dark); padding:6px 14px; border-radius:50px; display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.85em; font-weight:600; color:var(--text-dark);" onclick="event.stopPropagation(); openEditChallengeModal('${c.id}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Upravit</button>`;
                 profileMyChal.appendChild(profCard);
             }
         });
