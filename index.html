@@ -103,7 +103,7 @@
     .btn-edit-prof:active { background: var(--gray-light); }
     .btn-edit-prof svg { fill: var(--text-dark); width: 14px; height: 14px; }
 
-    .btn-requests { width: 100%; background: #FEF3C7; color: #D97706; border: none; padding: 12px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 700; cursor: pointer; margin: -10px auto 25px auto; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.15); display: none; text-align: center; }
+    .btn-requests { width: 100%; background: #FEF3C7; color: #D97706; border: none; padding: 12px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 700; cursor: margin: -10px auto 25px auto; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.15); display: none; text-align: center; }
 
     .activity-list-icon { width: 24px; height: 24px; margin-right: 15px; flex-shrink: 0; object-fit: contain; }
     .btn-inline-edit { display: none; background: transparent; border: none; padding: 5px; width: 28px; height: 28px; cursor: pointer; align-items: center; justify-content: center; margin-left: 10px; flex-shrink: 0; }
@@ -1647,15 +1647,24 @@
         const isVirtual = c.mapType === 'virtual' && c.virtualMapUrl && c.virtualSvgPath;
 
         if (isVirtual) {
-            // PŘIDÁNO zoomSnap: 0 pro plynulý přepočet přiblížení
-            leafletMap = L.map('real-map', { crs: L.CRS.Simple, zoomControl: false, minZoom: -3, maxZoom: 4, zoomSnap: 0 });
-            L.control.zoom({ position: 'bottomright' }).addTo(leafletMap);
-
             const w = c.virtualMapWidth || 3200;
             const h = c.virtualMapHeight || 2400;
             const bounds = [[0, 0], [-h, w]]; 
+
+            // PŘIDÁNO: maxBounds a maxBoundsViscosity řeknou Leafletu, že nesmí NIKDY 
+            // ukázat prostor mimo souřadnice obrázku (žádné bílé/šedé pruhy).
+            leafletMap = L.map('real-map', { 
+                crs: L.CRS.Simple, 
+                zoomControl: false, 
+                minZoom: -5, 
+                maxZoom: 4, 
+                zoomSnap: 0,
+                maxBounds: bounds,
+                maxBoundsViscosity: 1.0 
+            });
+            L.control.zoom({ position: 'bottomright' }).addTo(leafletMap);
+
             L.imageOverlay(c.virtualMapUrl, bounds).addTo(leafletMap);
-            // leafletMap.fitBounds(bounds); // Odstraněno, nastavíme vlastní pohled na konci
 
             const tempSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             tempSvg.setAttribute('viewBox', `0 0 ${w} ${h}`);
@@ -1670,7 +1679,7 @@
             const stats = window.challengeStatsMap[challengeId];
             const isRace = stats && stats.type === 'race';
 
-            // Bod pro zacílení kamery (defaultně začátek trasy, kdyby uživatel neměl žádné km)
+            // Bod pro zacílení kamery
             const startPt = pathEl.getPointAtLength(0);
             let myCenterPoint = [-startPt.y, startPt.x];
 
@@ -1690,7 +1699,7 @@
 
                         const pt = pathEl.getPointAtLength(progressPct * totalSvgLen);
 
-                        // Uložení pozice přihlášeného uživatele pro centrování
+                        // Uložení pozice přihlášeného uživatele
                         if (uid === currentUser.uid) {
                             myCenterPoint = [-pt.y, pt.x];
                         }
@@ -1712,9 +1721,8 @@
                 let progressPct = c.targetKm > 0 ? (currentKm / c.targetKm) : 0; if(progressPct > 1) progressPct = 1; 
 
                 const pt = pathEl.getPointAtLength(progressPct * totalSvgLen);
-                myCenterPoint = [-pt.y, pt.x]; // U společné výzvy centrujeme na aktuální společný bod
+                myCenterPoint = [-pt.y, pt.x]; // U společné výzvy
 
-                // Zvýraznění ušlé části trasy (přesně vizuálně jako u GPX)
                 const highlightSvgOverlay = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                 highlightSvgOverlay.setAttribute('viewBox', `0 0 ${w} ${h}`);
                 highlightSvgOverlay.innerHTML = `<g fill="none" stroke="#4F46E5" stroke-width="12" stroke-dasharray="${progressPct * totalSvgLen} ${totalSvgLen}" stroke-linecap="round">${cleanPath}</g>`;
@@ -1726,31 +1734,26 @@
             }
             document.body.removeChild(tempSvg);
 
-            // Výpočet dynamického přiblížení podle orientace displeje
+            // Výpočet dynamického přiblížení
             setTimeout(() => {
                 const mapSize = leafletMap.getSize();
                 const cw = mapSize.x > 0 ? mapSize.x : window.innerWidth;
                 const ch = mapSize.y > 0 ? mapSize.y : window.innerHeight;
                 
-                let targetScale;
-                
-                if (ch > cw) {
-                    // Mobil / displej na výšku: 
-                    // Přizpůsobíme výšce obrázku, aby nahoře a dole nebylo prázdno.
-                    targetScale = ch / h; 
-                } else {
-                    // Počítač / displej na šířku: 
-                    // Přizpůsobíme šířce obrázku, aby se vešla celá na displej.
-                    targetScale = cw / w; 
-                }
-                
-                // Přepočet scale na Leaflet zoom (crs: Simple => zoom 0 = scale 1)
+                // Místo IFu použijeme Math.max. Tím vybereme to měřítko, 
+                // které zaručí pokrytí OBOCH rozměrů obrazovky (jako object-fit: cover v CSS).
+                let targetScale = Math.max(cw / w, ch / h); 
                 let targetZoom = Math.log(targetScale) / Math.LN2;
                 
-                // Kontrola limitů zoomu (aby to uživatel mohl případně sám oddálit)
+                // Aplikujeme to i jako absolutní minimální zoom mapy. Tím se úplně 
+                // znemožní uživateli to prstem oddálit do bílých obdélníků.
+                leafletMap.setMinZoom(targetZoom);
+                
                 if (targetZoom > leafletMap.getMaxZoom()) targetZoom = leafletMap.getMaxZoom();
-                if (targetZoom < leafletMap.getMinZoom()) targetZoom = leafletMap.getMinZoom();
 
+                // Leaflet teď ví, že má povolené maxBounds. Když zavoláme setView na tvou
+                // pozici, Leaflet zkusí zamířit tam, ale jelikož nemůže ukázat místo mimo
+                // obrázek, automaticky si posune osu tak, aby byl obraz bez prázdného místa!
                 leafletMap.setView(myCenterPoint, targetZoom);
             }, 50);
 
