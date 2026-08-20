@@ -1095,7 +1095,7 @@
     const yearSel = document.getElementById('p-year-select');
     if(yearSel) {
         const currY = new Date().getFullYear();
-        for(let y = currY + 5; y >= 2015; y--) {
+        for(let y = currY + 24; y >= 2026; y--) {
             let o = document.createElement('option'); o.value = y; o.text = y;
             if(y === currY) o.selected = true;
             yearSel.appendChild(o);
@@ -1578,7 +1578,7 @@
 
         if (c.authorDisplay === 'admin') {
             authorBoxAvatar.innerHTML = `<img src="icon1.png" style="width:100%; height:100%; object-fit:cover; background:white;">`;
-            authorBoxName.innerText = "Správce";
+            authorBoxName.innerText = "Kadima";
             authorBoxAvatar.style.borderRadius = "14px"; 
         } else {
             const authorData = globalUsersMap[c.creatorId];
