@@ -321,6 +321,15 @@
                       <div class="chip" style="padding: 6px 16px;" data-val="year" onclick="setPersonalFilter('year')">Rok</div>
                       <div class="chip" style="padding: 6px 16px;" data-val="custom" onclick="setPersonalFilter('custom')">Vlastní</div>
                   </div>
+
+                  <!-- Přidaná roletka pro výběr roku -->
+                  <div id="personal-year-select-wrapper" style="display:none; flex-direction:column; margin-top: 15px;">
+                      <label style="font-size:0.8em;color:var(--text-gray); font-weight:600; display:block; margin-bottom:4px;">Vyberte rok:</label>
+                      <select id="p-year-select" class="date-input" style="background-color: var(--white); margin-bottom:0; padding:8px;" onchange="updatePersonalDates()">
+                          <!-- Vykresluje se dynamicky z JS -->
+                      </select>
+                  </div>
+
                   <div id="personal-custom-dates" style="display:none; flex-direction:column; margin-top: 15px;">
                       <div style="display:flex; gap:10px;">
                           <div style="flex:1;"><label style="font-size:0.8em;color:var(--text-gray); font-weight:600; display:block; margin-bottom:4px;">Od:</label><input type="date" id="p-date-from" class="date-input" style="background-color: var(--white); margin-bottom:0; padding:8px;" onchange="updatePersonalDates()"></div>
@@ -691,7 +700,7 @@
               <textarea id="new-chal-v-svg" class="date-input" rows="4" style="background:var(--white); font-family:monospace; font-size:0.8em;" placeholder='Vložte SVG kód trasy (např. <path d="M 100 200 L 300 400" />)'></textarea>
           </div>
           
-          <!-- Nové extra nastavení trasy -->
+          <!-- Extra nastavení trasy -->
           <div class="date-input-wrapper" style="margin-top: 15px; border-top: 1px solid #ccc; padding-top: 15px; margin-bottom:0;">
               <label style="text-align:center; font-weight:700;">Vzhled vyznačené trasy</label>
               <div style="display:flex; gap:10px; margin-bottom:10px;">
@@ -1082,6 +1091,17 @@
         }
     };
 
+    // PŘIDÁNO: Zajištění předvyplnění letopočtů ve statistice při startu javascriptu
+    const yearSel = document.getElementById('p-year-select');
+    if(yearSel) {
+        const currY = new Date().getFullYear();
+        for(let y = currY + 5; y >= 2015; y--) {
+            let o = document.createElement('option'); o.value = y; o.text = y;
+            if(y === currY) o.selected = true;
+            yearSel.appendChild(o);
+        }
+    }
+
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         currentUser = user; publicView.classList.add('hidden'); privateView.classList.remove('hidden');
@@ -1184,8 +1204,13 @@
 
         if (type === 'custom') {
             document.getElementById('personal-custom-dates').style.display = 'flex';
+            document.getElementById('personal-year-select-wrapper').style.display = 'none';
+        } else if (type === 'year') {
+            document.getElementById('personal-custom-dates').style.display = 'none';
+            document.getElementById('personal-year-select-wrapper').style.display = 'flex';
         } else {
             document.getElementById('personal-custom-dates').style.display = 'none';
+            document.getElementById('personal-year-select-wrapper').style.display = 'none';
         }
         window.renderPersonalStats();
     };
@@ -1201,10 +1226,10 @@
         let myActivities = globalActivities.filter(act => act.uid === currentUser.uid);
 
         if (personalFilterType === 'year') {
-            const currentYear = new Date().getFullYear();
+            const selectedYear = parseInt(document.getElementById('p-year-select').value) || new Date().getFullYear();
             myActivities = myActivities.filter(act => {
                 if(!act.timestamp) return false;
-                return act.timestamp.toDate().getFullYear() === currentYear;
+                return act.timestamp.toDate().getFullYear() === selectedYear;
             });
         } else if (personalFilterType === 'custom') {
             let fromDate = personalFilterFrom ? new Date(personalFilterFrom) : new Date('2000-01-01');
@@ -1530,15 +1555,17 @@
         if(!document.getElementById('tab-map').classList.contains('hidden') && currentSelectedChallengeIdForMap){ window.handleMapSelect(currentSelectedChallengeIdForMap); }
     }
 
+    // PŘIDÁNO: Automatické dosazení virtuální mapy na pozadí, pokud výzva nemá nastavený explicitní hlavičkový obrázek
     window.openChallengeDetail = (cid) => {
         window.pushModalState();
         const c = globalChallenges.find(x => x.id === cid); if(!c) return;
 
         const bgEl = document.getElementById('chal-detail-bg');
         if (c.bgUrl) {
-            bgEl.style.backgroundImage = `url('${c.bgUrl}')`;
+            bgEl.style.background = `url('${c.bgUrl}') center/cover no-repeat`;
+        } else if (c.mapType === 'virtual' && c.virtualMapUrl) {
+            bgEl.style.background = `url('${c.virtualMapUrl}') center/cover no-repeat`;
         } else {
-            bgEl.style.backgroundImage = 'none';
             bgEl.style.background = 'linear-gradient(135deg, #1E1B4B 0%, #2A245C 100%)';
         }
 
