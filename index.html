@@ -2,8 +2,8 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Lech Lecha</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Kadima</title>
 
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon1.png">
@@ -111,7 +111,7 @@
     .edit-mode-active .btn-inline-edit { display: flex; } 
 
     /* SPODNÍ NAVIGAČNÍ LIŠTA */
-    .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--white); display: flex; justify-content: space-around; padding: 12px 0 20px 0; border-top: 1px solid var(--gray-border); z-index: 1000; }
+    .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--white); display: flex; justify-content: space-around; padding: 12px 0 20px 0; border-top: 1px solid var(--gray-border); z-index: 1000; padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)); }
     .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #9CA3AF; font-size: 0.7em; font-weight: 600; cursor: pointer; transition: color 0.2s; gap: 4px; }
     .nav-item svg { width: 24px; height: 24px; fill: #9CA3AF; transition: fill 0.2s; }
     .nav-item.active { color: var(--primary-dark); }
@@ -120,7 +120,7 @@
     /* MAPA A FAB TLAČÍTKA */
     #tab-map { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 50; overflow: hidden; background: #E5E5F7; }
     .real-map-container { position: absolute; top: 0; left: 0; right: 0; bottom: 65px; z-index: 1; }
-    .map-fab-container { position: absolute; top: 20px; right: 20px; z-index: 1001; display: flex; flex-direction: column; gap: 12px; }
+    .map-fab-container { position: absolute; top: calc(20px + env(safe-area-inset-top, 0px)); right: 20px; z-index: 1001; display: flex; flex-direction: column; gap: 12px; }
     .map-fab { width: 46px; height: 46px; background: var(--white); border: none; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-dark); transition: transform 0.2s; }
     .map-fab:active { transform: scale(0.95); }
     .map-fab svg { fill: currentColor; }
@@ -155,7 +155,7 @@
     }
 
     .chal-detail-close-btn { 
-        position: absolute; top: 20px; left: 20px; width: 40px; height: 40px; 
+        position: absolute; top: calc(20px + env(safe-area-inset-top, 0px)); left: 20px; width: 40px; height: 40px; 
         background: rgba(255,255,255,0.95); border-radius: 50%; display: flex; align-items: center; justify-content: center; 
         z-index: 100; cursor: pointer; border: 1px solid var(--gray-border); color: var(--text-dark); box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
     }
@@ -182,7 +182,7 @@
     .chal-author-avatar { width: 48px; height: 48px; background: var(--primary-dark); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; overflow: hidden; font-size: 1.2em; flex-shrink: 0; transition: border-radius 0.2s;}
     .chal-author-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-    .chal-floating-action { position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(255,255,255,1) 70%, rgba(255,255,255,0)); padding: 30px 20px 20px 20px; z-index: 10; display: flex; justify-content: center; pointer-events: none;}
+    .chal-floating-action { position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(255,255,255,1) 70%, rgba(255,255,255,0)); padding: 30px 20px calc(20px + env(safe-area-inset-bottom, 0px)) 20px; z-index: 10; display: flex; justify-content: center; pointer-events: none;}
 
     .chal-btn-main { background: #4F46E5; color: white; border: none; padding: 16px; border-radius: 50px; font-weight: 700; font-size: 1.05em; width: 100%; max-width: 560px; cursor: pointer; transition: 0.2s; pointer-events: auto;}
     .chal-btn-main:active { transform: scale(0.98); }
@@ -244,7 +244,7 @@
 
   <!-- VEŘEJNÁ ČÁST -->
   <div id="public-view">
-    <h1 class="page-title" style="justify-content: center; font-size: 2em; margin-top: 40px;">Lech lecha!</h1>
+    <h1 class="page-title" style="justify-content: center; font-size: 2em; margin-top: 40px;">Kadima</h1>
     <p style="color: var(--text-gray); text-align: center;">Přidej se k naší společné výzvě.</p>
 
     <div class="auth-form">
@@ -269,7 +269,7 @@
 
     <!-- ZÁLOŽKA 1: PŘEHLED -->
     <div id="tab-dashboard">
-      <div class="page-title">Lech lecha!</div>
+      <div class="page-title">Kadima</div>
 
       <div class="main-distance-card">
         <div class="main-distance-label">Moje celková vzdálenost</div>
@@ -448,7 +448,7 @@
               <h2 id="chal-detail-title" style="font-size: 1.8em; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; line-height: 1.2;">Název výzvy</h2>
               <div id="chal-detail-subtitle" style="font-size: 1em; color: var(--text-gray); margin-bottom: 30px; line-height: 1.5;">Podtitul výzvy...</div>
 
-              <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 10px;">Pořádající klub / autor</h4>
+              <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 10px;">Autor</h4>
               <div class="chal-author-box">
                   <div id="chal-detail-author-avatar" class="chal-author-avatar"></div>
                   <div>
@@ -1095,7 +1095,7 @@
     const yearSel = document.getElementById('p-year-select');
     if(yearSel) {
         const currY = new Date().getFullYear();
-        for(let y = currY + 5; y >= 2026; y--) {
+        for(let y = currY + 5; y >= 2015; y--) {
             let o = document.createElement('option'); o.value = y; o.text = y;
             if(y === currY) o.selected = true;
             yearSel.appendChild(o);
@@ -1578,7 +1578,7 @@
 
         if (c.authorDisplay === 'admin') {
             authorBoxAvatar.innerHTML = `<img src="icon1.png" style="width:100%; height:100%; object-fit:cover; background:white;">`;
-            authorBoxName.innerText = "Správce (Lech Lecha)";
+            authorBoxName.innerText = "Správce";
             authorBoxAvatar.style.borderRadius = "14px"; 
         } else {
             const authorData = globalUsersMap[c.creatorId];
