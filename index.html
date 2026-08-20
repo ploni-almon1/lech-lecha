@@ -1095,7 +1095,7 @@
     const yearSel = document.getElementById('p-year-select');
     if(yearSel) {
         const currY = new Date().getFullYear();
-        for(let y = currY + 5; y >= 2015; y--) {
+        for(let y = currY + 5; y >= 2026; y--) {
             let o = document.createElement('option'); o.value = y; o.text = y;
             if(y === currY) o.selected = true;
             yearSel.appendChild(o);
