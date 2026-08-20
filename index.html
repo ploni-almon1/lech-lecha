@@ -103,7 +103,7 @@
     .btn-edit-prof:active { background: var(--gray-light); }
     .btn-edit-prof svg { fill: var(--text-dark); width: 14px; height: 14px; }
 
-    .btn-requests { width: 100%; background: #FEF3C7; color: #D97706; border: none; padding: 12px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 700; cursor: margin: -10px auto 25px auto; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.15); display: none; text-align: center; }
+    .btn-requests { width: 100%; background: #FEF3C7; color: #D97706; border: none; padding: 12px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 700; cursor: pointer; margin: -10px auto 25px auto; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.15); display: none; text-align: center; }
 
     .activity-list-icon { width: 24px; height: 24px; margin-right: 15px; flex-shrink: 0; object-fit: contain; }
     .btn-inline-edit { display: none; background: transparent; border: none; padding: 5px; width: 28px; height: 28px; cursor: pointer; align-items: center; justify-content: center; margin-left: 10px; flex-shrink: 0; }
@@ -193,6 +193,10 @@
     .chip { background-color: var(--gray-light); color: var(--text-dark); padding: 10px 16px; border-radius: 20px; font-size: 0.9em; font-weight: 600; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; user-select: none; }
     .chip.active { background-color: #E0E7FF; color: var(--primary-dark); border-color: var(--primary-dark); }
     .chip-small { padding: 8px 12px; font-size: 0.85em; }
+
+    /* Color picker pro trasy */
+    .color-chip { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; flex-shrink: 0; transition: transform 0.2s, border-color 0.2s; }
+    .color-chip.active { border-color: var(--text-dark) !important; transform: scale(1.15); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
     .km-input-wrapper { margin-bottom: 20px; }
     .km-input { width: 120px; font-size: 2.5em; font-weight: 800; text-align: center; border: none; border-bottom: 2px solid var(--primary-dark); outline: none; color: var(--text-dark); padding: 5px; }
@@ -686,6 +690,32 @@
               <label>Kód trasy (&lt;path d="..."&gt;):</label>
               <textarea id="new-chal-v-svg" class="date-input" rows="4" style="background:var(--white); font-family:monospace; font-size:0.8em;" placeholder='Vložte SVG kód trasy (např. <path d="M 100 200 L 300 400" />)'></textarea>
           </div>
+          
+          <!-- Nové extra nastavení trasy -->
+          <div class="date-input-wrapper" style="margin-top: 15px; border-top: 1px solid #ccc; padding-top: 15px; margin-bottom:0;">
+              <label style="text-align:center; font-weight:700;">Vzhled vyznačené trasy</label>
+              <div style="display:flex; gap:10px; margin-bottom:10px;">
+                  <div style="flex:1;">
+                      <label>Šířka čáry (px):</label>
+                      <input type="number" id="new-chal-v-width" class="date-input" style="background:var(--white); margin-bottom:0;" value="10">
+                  </div>
+                  <div style="flex:1;">
+                      <label>Typ čáry:</label>
+                      <div class="activity-chips" id="new-chal-v-style" style="margin-bottom:0; justify-content:flex-start;">
+                          <div class="chip active" data-val="solid" onclick="selectSingleChip(this, 'new-chal-v-style')" style="padding: 8px 12px; font-size:0.8em;">Plná</div>
+                          <div class="chip" data-val="dashed" onclick="selectSingleChip(this, 'new-chal-v-style')" style="padding: 8px 12px; font-size:0.8em;">Čárkovaná</div>
+                      </div>
+                  </div>
+              </div>
+              <label>Barva čáry:</label>
+              <div class="activity-chips" id="new-chal-v-color" style="justify-content:flex-start; margin-bottom:0;">
+                  <div class="color-chip active" data-val="#4F46E5" onclick="selectColorChip(this, 'new-chal-v-color')" style="background:#4F46E5; border-color:var(--text-dark);"></div>
+                  <div class="color-chip" data-val="#FC4C02" onclick="selectColorChip(this, 'new-chal-v-color')" style="background:#FC4C02;"></div>
+                  <div class="color-chip" data-val="#10B981" onclick="selectColorChip(this, 'new-chal-v-color')" style="background:#10B981;"></div>
+                  <div class="color-chip" data-val="#000000" onclick="selectColorChip(this, 'new-chal-v-color')" style="background:#000000;"></div>
+                  <div class="color-chip" data-val="#ffffff" onclick="selectColorChip(this, 'new-chal-v-color')" style="background:#ffffff; border-color:#ccc;"></div>
+              </div>
+          </div>
       </div>
 
       <div class="date-input-wrapper">
@@ -795,6 +825,32 @@
           <div class="date-input-wrapper" style="margin-bottom:0;">
               <label>Kód trasy (&lt;path d="..."&gt;):</label>
               <textarea id="edit-chal-v-svg" class="date-input" rows="4" style="background:var(--white); font-family:monospace; font-size:0.8em;"></textarea>
+          </div>
+          
+          <!-- Extra nastavení trasy (Edit) -->
+          <div class="date-input-wrapper" style="margin-top: 15px; border-top: 1px solid #ccc; padding-top: 15px; margin-bottom:0;">
+              <label style="text-align:center; font-weight:700;">Vzhled vyznačené trasy</label>
+              <div style="display:flex; gap:10px; margin-bottom:10px;">
+                  <div style="flex:1;">
+                      <label>Šířka čáry (px):</label>
+                      <input type="number" id="edit-chal-v-width" class="date-input" style="background:var(--white); margin-bottom:0;" value="10">
+                  </div>
+                  <div style="flex:1;">
+                      <label>Typ čáry:</label>
+                      <div class="activity-chips" id="edit-chal-v-style" style="margin-bottom:0; justify-content:flex-start;">
+                          <div class="chip active" data-val="solid" onclick="selectSingleChip(this, 'edit-chal-v-style')" style="padding: 8px 12px; font-size:0.8em;">Plná</div>
+                          <div class="chip" data-val="dashed" onclick="selectSingleChip(this, 'edit-chal-v-style')" style="padding: 8px 12px; font-size:0.8em;">Čárkovaná</div>
+                      </div>
+                  </div>
+              </div>
+              <label>Barva čáry:</label>
+              <div class="activity-chips" id="edit-chal-v-color" style="justify-content:flex-start; margin-bottom:0;">
+                  <div class="color-chip active" data-val="#4F46E5" onclick="selectColorChip(this, 'edit-chal-v-color')" style="background:#4F46E5; border-color:var(--text-dark);"></div>
+                  <div class="color-chip" data-val="#FC4C02" onclick="selectColorChip(this, 'edit-chal-v-color')" style="background:#FC4C02;"></div>
+                  <div class="color-chip" data-val="#10B981" onclick="selectColorChip(this, 'edit-chal-v-color')" style="background:#10B981;"></div>
+                  <div class="color-chip" data-val="#000000" onclick="selectColorChip(this, 'edit-chal-v-color')" style="background:#000000;"></div>
+                  <div class="color-chip" data-val="#ffffff" onclick="selectColorChip(this, 'edit-chal-v-color')" style="background:#ffffff; border-color:#ccc;"></div>
+              </div>
           </div>
       </div>
 
@@ -1651,8 +1707,6 @@
             const h = c.virtualMapHeight || 2400;
             const bounds = [[0, 0], [-h, w]]; 
 
-            // PŘIDÁNO: maxBounds a maxBoundsViscosity řeknou Leafletu, že nesmí NIKDY 
-            // ukázat prostor mimo souřadnice obrázku (žádné bílé/šedé pruhy).
             leafletMap = L.map('real-map', { 
                 crs: L.CRS.Simple, 
                 zoomControl: false, 
@@ -1683,11 +1737,15 @@
             const startPt = pathEl.getPointAtLength(0);
             let myCenterPoint = [-startPt.y, startPt.x];
 
-            // Šedá základní trasa na virtuální mapě
+            // Vykreslení kompletní jednolité čáry přesně podle uživatelského nastavení
+            const vColor = c.virtualLineColor || '#4F46E5';
+            const vWidth = c.virtualLineWidth || 10;
+            const vStyle = c.virtualLineStyle === 'dashed' ? `${vWidth * 1.5}, ${vWidth * 1.5}` : 'none';
+
             const mapSvgOverlay = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             mapSvgOverlay.setAttribute('viewBox', `0 0 ${w} ${h}`);
             let cleanPath = c.virtualSvgPath.replace(/style="[^"]*"/g, '').replace(/stroke="[^"]*"/g, '').replace(/stroke-width="[^"]*"/g, '');
-            mapSvgOverlay.innerHTML = `<g fill="none" stroke="rgba(156, 163, 175, 0.6)" stroke-width="10" stroke-dasharray="15, 15" stroke-linecap="round">${cleanPath}</g>`;
+            mapSvgOverlay.innerHTML = `<g fill="none" stroke="${vColor}" stroke-width="${vWidth}" stroke-dasharray="${vStyle}" stroke-linecap="round">${cleanPath}</g>`;
             L.svgOverlay(mapSvgOverlay, bounds).addTo(leafletMap);
 
             if (isRace) {
@@ -1723,10 +1781,8 @@
                 const pt = pathEl.getPointAtLength(progressPct * totalSvgLen);
                 myCenterPoint = [-pt.y, pt.x]; // U společné výzvy
 
-                const highlightSvgOverlay = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                highlightSvgOverlay.setAttribute('viewBox', `0 0 ${w} ${h}`);
-                highlightSvgOverlay.innerHTML = `<g fill="none" stroke="#4F46E5" stroke-width="12" stroke-dasharray="${progressPct * totalSvgLen} ${totalSvgLen}" stroke-linecap="round">${cleanPath}</g>`;
-                L.svgOverlay(highlightSvgOverlay, bounds).addTo(leafletMap);
+                // Staré vykreslení postupného postupu je ODSTRANĚNO (highlightSvgOverlay).
+                // Čára se vykreslila už nahoře jedním tahem rovnou celá.
 
                 const customIcon = L.divIcon({ className: 'custom-map-marker', html: `<div style="background:#FC4C02; width:22px; height:22px; border-radius:50%; border:3px solid white; box-shadow:0 2px 8px rgba(0,0,0,0.5);"></div>`, iconSize: [28, 28], iconAnchor: [14, 14] });
                 const m = L.marker([-pt.y, pt.x], {icon: customIcon}).addTo(leafletMap).bindPopup(`<div style="text-align:center; font-family:'Inter',sans-serif;"><b>${c.name}</b><br>Společně zdoláno:<br><strong style="font-size:1.2em;">${currentKm.toLocaleString('cs-CZ', {maximumFractionDigits:1})} km</strong></div>`);
@@ -1740,20 +1796,13 @@
                 const cw = mapSize.x > 0 ? mapSize.x : window.innerWidth;
                 const ch = mapSize.y > 0 ? mapSize.y : window.innerHeight;
                 
-                // Místo IFu použijeme Math.max. Tím vybereme to měřítko, 
-                // které zaručí pokrytí OBOCH rozměrů obrazovky (jako object-fit: cover v CSS).
                 let targetScale = Math.max(cw / w, ch / h); 
                 let targetZoom = Math.log(targetScale) / Math.LN2;
                 
-                // Aplikujeme to i jako absolutní minimální zoom mapy. Tím se úplně 
-                // znemožní uživateli to prstem oddálit do bílých obdélníků.
                 leafletMap.setMinZoom(targetZoom);
                 
                 if (targetZoom > leafletMap.getMaxZoom()) targetZoom = leafletMap.getMaxZoom();
 
-                // Leaflet teď ví, že má povolené maxBounds. Když zavoláme setView na tvou
-                // pozici, Leaflet zkusí zamířit tam, ale jelikož nemůže ukázat místo mimo
-                // obrázek, automaticky si posune osu tak, aby byl obraz bez prázdného místa!
                 leafletMap.setView(myCenterPoint, targetZoom);
             }, 50);
 
@@ -1923,6 +1972,20 @@
 
     window.selectEditChip = (element) => { document.querySelectorAll('#edit-modal .chip').forEach(c => c.classList.remove('active')); element.classList.add('active'); editActivityType = element.getAttribute('data-type'); };
 
+    // Nová funkce pro klikání na kolečka s barvami
+    window.selectColorChip = (element, containerId) => {
+        document.querySelectorAll(`#${containerId} .color-chip`).forEach(c => {
+            c.classList.remove('active');
+            if(c.getAttribute('data-val') === '#ffffff') {
+                c.style.borderColor = '#ccc';
+            } else {
+                c.style.borderColor = 'transparent';
+            }
+        });
+        element.classList.add('active');
+        element.style.borderColor = 'var(--text-dark)';
+    };
+
     window.joinChallenge = async (chalId) => { 
         try { 
             await updateDoc(doc(db, "challenges", chalId), { members: arrayUnion(currentUser.uid) }); 
@@ -1966,6 +2029,11 @@
         const vH = parseFloat(document.getElementById('new-chal-v-h').value) || 2400;
         const vSvg = document.getElementById('new-chal-v-svg').value.trim();
 
+        // Nové proměnné nastavení trasy
+        const vLineWidth = parseFloat(document.getElementById('new-chal-v-width').value) || 10;
+        const vLineStyle = document.querySelector('#new-chal-v-style .chip.active').getAttribute('data-val');
+        const vLineColor = document.querySelector('#new-chal-v-color .color-chip.active').getAttribute('data-val');
+
         let finalBgUrl = "";
         if (chalCropper) { finalBgUrl = chalCropper.getCroppedCanvas({ width: 800, height: 450 }).toDataURL('image/jpeg', 0.7); }
 
@@ -1982,7 +2050,7 @@
 
         isSaving = true; const btn = document.getElementById('btn-create-chal'); btn.innerText = "Vytvářím..."; btn.disabled = true;
         try { 
-            await addDoc(collection(db, "challenges"), { name, targetKm, challengeType, mapType, mapUrl, virtualMapUrl: vImg, virtualMapWidth: vW, virtualMapHeight: vH, virtualSvgPath: vSvg, bgUrl: finalBgUrl, description: desc, rules: rules, authorDisplay: authorDisplay, start, end, startDay, allowedActivities, creatorId: currentUser.uid, members: [currentUser.uid], createdAt: new Date() }); 
+            await addDoc(collection(db, "challenges"), { name, targetKm, challengeType, mapType, mapUrl, virtualMapUrl: vImg, virtualMapWidth: vW, virtualMapHeight: vH, virtualSvgPath: vSvg, virtualLineWidth: vLineWidth, virtualLineStyle: vLineStyle, virtualLineColor: vLineColor, bgUrl: finalBgUrl, description: desc, rules: rules, authorDisplay: authorDisplay, start, end, startDay, allowedActivities, creatorId: currentUser.uid, members: [currentUser.uid], createdAt: new Date() }); 
             window.closeCreateChallengeModal(); 
             document.getElementById('new-chal-name').value = ''; document.getElementById('new-chal-km').value = ''; document.getElementById('new-chal-map').value = ''; document.getElementById('new-chal-desc').value = ''; document.getElementById('new-chal-rules').value = '';
             document.getElementById('new-chal-v-img').value = ''; document.getElementById('new-chal-v-svg').value = ''; document.getElementById('new-chal-v-file').value = '';
@@ -2009,6 +2077,24 @@
             document.getElementById('edit-chal-v-w').value = data.virtualMapWidth || 3200;
             document.getElementById('edit-chal-v-h').value = data.virtualMapHeight || 2400;
             document.getElementById('edit-chal-v-svg').value = data.virtualSvgPath || '';
+
+            // Nahrání uložených nastavení trasy
+            document.getElementById('edit-chal-v-width').value = data.virtualLineWidth || 10;
+            let vStyle = data.virtualLineStyle || 'solid';
+            document.querySelectorAll('#edit-chal-v-style .chip').forEach(c => {
+                c.classList.remove('active');
+                if(c.getAttribute('data-val') === vStyle) c.classList.add('active');
+            });
+            let vColor = data.virtualLineColor || '#4F46E5';
+            document.querySelectorAll('#edit-chal-v-color .color-chip').forEach(c => {
+                c.classList.remove('active');
+                if(c.getAttribute('data-val') === '#ffffff') c.style.borderColor = '#ccc';
+                else c.style.borderColor = 'transparent';
+                if(c.getAttribute('data-val') === vColor) {
+                    c.classList.add('active');
+                    c.style.borderColor = 'var(--text-dark)';
+                }
+            });
 
             document.getElementById('edit-chal-desc').value = data.description || '';
             document.getElementById('edit-chal-rules').value = data.rules || '';
@@ -2047,6 +2133,11 @@
         const vH = parseFloat(document.getElementById('edit-chal-v-h').value) || 2400;
         const vSvg = document.getElementById('edit-chal-v-svg').value.trim();
 
+        // Proměnné nastavení trasy pro Edit
+        const vLineWidth = parseFloat(document.getElementById('edit-chal-v-width').value) || 10;
+        const vLineStyle = document.querySelector('#edit-chal-v-style .chip.active').getAttribute('data-val');
+        const vLineColor = document.querySelector('#edit-chal-v-color .color-chip.active').getAttribute('data-val');
+
         let finalBgUrl = currentEditChalBgUrl;
         if(chalCropper) { finalBgUrl = chalCropper.getCroppedCanvas({ width: 800, height: 450 }).toDataURL('image/jpeg', 0.7); }
 
@@ -2060,7 +2151,7 @@
 
         if(selectedChallengeId) { 
             isSaving = true; const btn = document.getElementById('btn-edit-chal'); btn.innerText = "Ukládám..."; btn.disabled = true;
-            try { await updateDoc(doc(db, "challenges", selectedChallengeId), { name, targetKm, challengeType, mapType, mapUrl, virtualMapUrl: vImg, virtualMapWidth: vW, virtualMapHeight: vH, virtualSvgPath: vSvg, bgUrl: finalBgUrl, description: desc, rules: rules, authorDisplay: authorDisplay, start, end, startDay, allowedActivities }); window.closeEditChallengeModal(); } 
+            try { await updateDoc(doc(db, "challenges", selectedChallengeId), { name, targetKm, challengeType, mapType, mapUrl, virtualMapUrl: vImg, virtualMapWidth: vW, virtualMapHeight: vH, virtualSvgPath: vSvg, virtualLineWidth: vLineWidth, virtualLineStyle: vLineStyle, virtualLineColor: vLineColor, bgUrl: finalBgUrl, description: desc, rules: rules, authorDisplay: authorDisplay, start, end, startDay, allowedActivities }); window.closeEditChallengeModal(); } 
             catch (e) { alert("Chyba."); } finally { isSaving = false; btn.innerText = "Uložit"; btn.disabled = false; }
         }
     };
