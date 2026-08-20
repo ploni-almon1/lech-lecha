@@ -1465,7 +1465,7 @@
 
                 if(hasMap) {
                     let mapBtn = document.createElement('div'); mapBtn.className = 'leaderboard-item'; mapBtn.style.padding = '15px'; mapBtn.style.borderRadius = '12px'; mapBtn.style.background = 'var(--gray-light)';
-                    let typIkony = c.mapType === 'virtual' ? '🎨 Virtuální mapa' : '📍 GPX mapa';
+                    let typIkony = c.mapType === 'virtual' ? 'Virtuální mapa' : 'GPX mapa';
                     mapBtn.innerHTML = `<div><div class="lb-name" style="font-size:1.05em;">${c.name}</div><div style="font-size:0.8em; color:#4F46E5; font-weight:600; margin-top:4px;">${typIkony}</div></div><div style="margin-left:auto; font-size:0.8em; color:var(--text-gray); font-weight:600;">${totalChallengeKm.toLocaleString('cs-CZ', {maximumFractionDigits:1})} / ${c.targetKm} km</div>`;
                     mapBtn.onclick = () => { closeMapListModal(); handleMapSelect(c.id); }; mapListModal.appendChild(mapBtn);
                 }
