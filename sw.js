@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lech-lecha-cache-v1';
+const CACHE_NAME = 'kadima-cache-v1';
 
 // Seznam všeho, co se má uložit pro fungování bez internetu
 const urlsToCache = [
