@@ -159,6 +159,13 @@
         background: rgba(255,255,255,0.95); border-radius: 50%; display: flex; align-items: center; justify-content: center; 
         z-index: 100; cursor: pointer; border: 1px solid var(--gray-border); color: var(--text-dark); box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
     }
+    
+    /* NOVÉ TLAČÍTKO SDÍLENÍ */
+    .chal-detail-share-btn { 
+        position: absolute; top: calc(20px + env(safe-area-inset-top, 0px)); right: 20px; width: 40px; height: 40px; 
+        background: rgba(255,255,255,0.95); border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+        z-index: 100; cursor: pointer; border: 1px solid var(--gray-border); color: var(--text-dark); box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+    }
 
     .chal-detail-scroll-area {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -435,6 +442,11 @@
       <div id="chal-detail-bg" class="chal-detail-bg-image"></div>
       <button class="chal-detail-close-btn" onclick="closeChallengeDetail()">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
+      </button>
+      
+      <!-- Nové tlačítko pro sdílení akce -->
+      <button class="chal-detail-share-btn" onclick="shareChallenge()">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
       </button>
 
       <!-- Tato vrstva překrývá vše a zachytává doteky na scroll -->
@@ -971,6 +983,11 @@
 
     let leafletMap = null; let mapLayers = []; let layerOsm = null; let layerSat = null; let currentMapLayerType = 'osm'; let currentSelectedChallengeIdForMap = null;
 
+    // Globální proměnné pro sdílení a detekci sdíleného odkazu
+    let currentChallengeIdForShare = null;
+    let currentChallengeNameForShare = "";
+    let hasCheckedSharedLink = false;
+
     // --- AUTOMATICKÉ NAČTENÍ ROZMĚRŮ OBRÁZKU PRO VIRTUÁLNÍ MAPU ---
     window.handleVirtualImgUrlInput = (url) => {
         if (!url) return;
@@ -1050,6 +1067,21 @@
         }
     };
 
+    // --- NATIVNÍ SDÍLENÍ ---
+    window.shareChallenge = () => {
+        if (!currentChallengeIdForShare) return;
+        const url = window.location.origin + window.location.pathname + "?challenge=" + currentChallengeIdForShare;
+        if (navigator.share) {
+            navigator.share({
+                title: currentChallengeNameForShare,
+                text: 'Přidej se ke mně do této akce v aplikaci Kadima!',
+                url: url,
+            }).catch((error) => console.log('Chyba sdílení', error));
+        } else {
+            prompt("Zkopírujte tento odkaz pro sdílení:", url);
+        }
+    };
+
     // --- STRAVA EXTRACTOR HELPER ---
     function extractStravaUrl(rawText) {
         if (!rawText) return "";
@@ -1091,7 +1123,7 @@
         }
     };
 
-    // PŘIDÁNO: Zajištění předvyplnění letopočtů ve statistice při startu javascriptu
+    // Zajištění předvyplnění letopočtů ve statistice při startu javascriptu
     const yearSel = document.getElementById('p-year-select');
     if(yearSel) {
         const currY = new Date().getFullYear();
@@ -1194,6 +1226,18 @@
       } else {
         currentUser = null; publicView.classList.remove('hidden'); privateView.classList.add('hidden');
         if(unsubscribeUser) unsubscribeUser(); if(unsubscribeUsersList) unsubscribeUsersList(); if(unsubscribeActivities) unsubscribeActivities(); if(unsubscribeChallengesList) unsubscribeChallengesList(); if(unsubscribeAllActivities) unsubscribeAllActivities();
+      }
+
+      // Check URL for direct shared challenge link (only run once)
+      if (!hasCheckedSharedLink) {
+          hasCheckedSharedLink = true;
+          const urlParams = new URLSearchParams(window.location.search);
+          const sharedChallengeId = urlParams.get('challenge');
+          if (sharedChallengeId) {
+              window.openChallengeDetail(sharedChallengeId);
+              // Očištění URL po načtení
+              window.history.replaceState({}, document.title, window.location.pathname);
+          }
       }
     });
 
@@ -1464,14 +1508,11 @@
                 profileActiveChal.appendChild(profileActiveCard);
 
                 if(hasMap) {
-    let mapBtn = document.createElement('div'); mapBtn.className = 'leaderboard-item'; mapBtn.style.padding = '15px'; mapBtn.style.borderRadius = '12px'; mapBtn.style.background = 'var(--gray-light)';
-    let typIkony = c.mapType === 'virtual' ? 'Virtuální mapa' : 'GPX mapa';
-    
-    // TADY JE TEN UPRAVENÝ ŘÁDEK S text-align: left;
-    mapBtn.innerHTML = `<div style="text-align: left;"><div class="lb-name" style="font-size:1.05em;">${c.name}</div><div style="font-size:0.8em; color:#4F46E5; font-weight:600; margin-top:4px;">${typIkony}</div></div><div style="margin-left:auto; font-size:0.8em; color:var(--text-gray); font-weight:600;">${totalChallengeKm.toLocaleString('cs-CZ', {maximumFractionDigits:1})} /${c.targetKm} km</div>`;
-    
-    mapBtn.onclick = () => { closeMapListModal(); handleMapSelect(c.id); }; mapListModal.appendChild(mapBtn);
-}
+                    let mapBtn = document.createElement('div'); mapBtn.className = 'leaderboard-item'; mapBtn.style.padding = '15px'; mapBtn.style.borderRadius = '12px'; mapBtn.style.background = 'var(--gray-light)';
+                    let typIkony = c.mapType === 'virtual' ? 'Virtuální mapa' : 'GPX mapa';
+                    mapBtn.innerHTML = `<div style="text-align: left;"><div class="lb-name" style="font-size:1.05em;">${c.name}</div><div style="font-size:0.8em; color:#4F46E5; font-weight:600; margin-top:4px;">${typIkony}</div></div><div style="margin-left:auto; font-size:0.8em; color:var(--text-gray); font-weight:600;">${totalChallengeKm.toLocaleString('cs-CZ', {maximumFractionDigits:1})} /${c.targetKm} km</div>`;
+                    mapBtn.onclick = () => { closeMapListModal(); handleMapSelect(c.id); }; mapListModal.appendChild(mapBtn);
+                }
 
                 let dashHeaderHTML = `<div style="padding: 20px;"><div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;"><div><h3 style="color: var(--text-dark); font-size: 1.3em; font-weight: 800; margin:0; cursor:pointer;" onclick="openChallengeDetail('${c.id}')">${c.name}</h3></div><div style="color: var(--text-gray); font-size: 0.85em; font-weight: 500; background:var(--gray-light); padding:5px 10px; border-radius:12px;">${daysText}</div></div><div style="color: var(--text-dark); font-size: 1.15em; font-weight: 800; margin-bottom: 8px;">${displayKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} / ${c.targetKm} <span style="font-size:0.7em; font-weight:700; color:var(--text-gray);">km</span></div><div class="chal-progress-bg"><div class="chal-progress-fill" style="width: ${totalPct}%;"></div></div></div>`;
 
@@ -1558,10 +1599,26 @@
         if(!document.getElementById('tab-map').classList.contains('hidden') && currentSelectedChallengeIdForMap){ window.handleMapSelect(currentSelectedChallengeIdForMap); }
     }
 
-    // PŘIDÁNO: Automatické dosazení virtuální mapy na pozadí, pokud výzva nemá nastavený explicitní hlavičkový obrázek
-    window.openChallengeDetail = (cid) => {
-        window.pushModalState();
-        const c = globalChallenges.find(x => x.id === cid); if(!c) return;
+    // Automatické dosazení virtuální mapy na pozadí, načtení pro neautentizované uživatele
+    window.openChallengeDetail = async (cid) => {
+        let c = null;
+        // Zkusíme najít lokálně (rychlejší pro přihlášené)
+        if (globalChallenges.length > 0) {
+            c = globalChallenges.find(x => x.id === cid);
+        }
+        
+        // Pokud nemáme (např. neregistrovaný uživatel přišel přes odkaz), stáhneme z DB
+        if (!c) {
+            try {
+                const docSnap = await getDoc(doc(db, "challenges", cid));
+                if (docSnap.exists()) {
+                    c = { id: docSnap.id, ...docSnap.data() };
+                } else return;
+            } catch(e) { console.error(e); return; }
+        }
+
+        currentChallengeIdForShare = c.id;
+        currentChallengeNameForShare = c.name;
 
         const bgEl = document.getElementById('chal-detail-bg');
         if (c.bgUrl) {
@@ -1584,7 +1641,13 @@
             authorBoxName.innerText = "Kadima";
             authorBoxAvatar.style.borderRadius = "14px"; 
         } else {
-            const authorData = globalUsersMap[c.creatorId];
+            let authorData = globalUsersMap[c.creatorId];
+            if (!authorData && c.creatorId) {
+                try {
+                    const authorSnap = await getDoc(doc(db, "users", c.creatorId));
+                    if (authorSnap.exists()) authorData = authorSnap.data();
+                } catch(e){}
+            }
             if (authorData) {
                 authorBoxAvatar.innerHTML = authorData.avatarUrl ? `<img src="${authorData.avatarUrl}">` : authorData.name.charAt(0).toUpperCase();
                 authorBoxName.innerText = authorData.name;
@@ -1616,9 +1679,14 @@
         } else { rulesWrapper.style.display = 'none'; }
 
         const btn = document.getElementById('chal-action-btn');
-        const isMember = c.members && c.members.includes(currentUser.uid);
+        const isMember = currentUser && c.members ? c.members.includes(currentUser.uid) : false;
 
         btn.onclick = () => {
+            if (!currentUser) {
+                alert("Nejprve se musíte zaregistrovat nebo přihlásit.");
+                window.closeChallengeDetail();
+                return;
+            }
             if (isMember) { leaveChallenge(c.id); } 
             else { joinChallenge(c.id); }
         };
@@ -1631,6 +1699,7 @@
             btn.className = "chal-btn-main";
         }
 
+        window.pushModalState();
         const modal = document.getElementById('chal-detail-fullscreen');
         modal.classList.add('active');
         const scrollArea = document.querySelector('.chal-detail-scroll-area');
@@ -1788,13 +1857,13 @@
                         const pt = pathEl.getPointAtLength(progressPct * totalSvgLen);
 
                         // Uložení pozice přihlášeného uživatele
-                        if (uid === currentUser.uid) {
+                        if (currentUser && uid === currentUser.uid) {
                             myCenterPoint = [-pt.y, pt.x];
                         }
 
                         let userObj = globalUsersMap[uid] || {name: 'Neznámý', avatarUrl: ''};
                         let avatarHtml = userObj.avatarUrl ? `<img src="${userObj.avatarUrl}">` : userObj.name.charAt(0).toUpperCase();
-                        let borderColor = uid === currentUser.uid ? '#10B981' : '#FC4C02'; 
+                        let borderColor = (currentUser && uid === currentUser.uid) ? '#10B981' : '#FC4C02'; 
 
                         const customIcon = L.divIcon({ 
                             className: 'custom-map-marker', html: `<div class="race-marker-container" style="border-color: ${borderColor};">${avatarHtml}</div>`, 
@@ -1810,9 +1879,6 @@
 
                 const pt = pathEl.getPointAtLength(progressPct * totalSvgLen);
                 myCenterPoint = [-pt.y, pt.x]; // U společné výzvy
-
-                // Staré vykreslení postupného postupu je ODSTRANĚNO (highlightSvgOverlay).
-                // Čára se vykreslila už nahoře jedním tahem rovnou celá.
 
                 const customIcon = L.divIcon({ className: 'custom-map-marker', html: `<div style="background:#FC4C02; width:22px; height:22px; border-radius:50%; border:3px solid white; box-shadow:0 2px 8px rgba(0,0,0,0.5);"></div>`, iconSize: [28, 28], iconAnchor: [14, 14] });
                 const m = L.marker([-pt.y, pt.x], {icon: customIcon}).addTo(leafletMap).bindPopup(`<div style="text-align:center; font-family:'Inter',sans-serif;"><b>${c.name}</b><br>Společně zdoláno:<br><strong style="font-size:1.2em;">${currentKm.toLocaleString('cs-CZ', {maximumFractionDigits:1})} km</strong></div>`);
@@ -1882,7 +1948,7 @@
 
                             let userObj = globalUsersMap[uid] || {name: 'Neznámý', avatarUrl: ''};
                             let avatarHtml = userObj.avatarUrl ? `<img src="${userObj.avatarUrl}">` : userObj.name.charAt(0).toUpperCase();
-                            let borderColor = uid === currentUser.uid ? '#10B981' : '#FC4C02'; 
+                            let borderColor = (currentUser && uid === currentUser.uid) ? '#10B981' : '#FC4C02'; 
 
                             const customIcon = L.divIcon({ 
                                 className: 'custom-map-marker', html: `<div class="race-marker-container" style="border-color: ${borderColor};">${avatarHtml}</div>`, 
@@ -2002,7 +2068,6 @@
 
     window.selectEditChip = (element) => { document.querySelectorAll('#edit-modal .chip').forEach(c => c.classList.remove('active')); element.classList.add('active'); editActivityType = element.getAttribute('data-type'); };
 
-    // Nová funkce pro klikání na kolečka s barvami
     window.selectColorChip = (element, containerId) => {
         document.querySelectorAll(`#${containerId} .color-chip`).forEach(c => {
             c.classList.remove('active');
