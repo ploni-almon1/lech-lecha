@@ -1726,26 +1726,28 @@
             }
             document.body.removeChild(tempSvg);
 
-            // Výpočet dynamického přiblížení, aby mapa pokryla celý displej bez bílých pruhů
+            // Výpočet dynamického přiblížení podle orientace displeje
             setTimeout(() => {
                 const mapSize = leafletMap.getSize();
                 const cw = mapSize.x > 0 ? mapSize.x : window.innerWidth;
                 const ch = mapSize.y > 0 ? mapSize.y : window.innerHeight;
                 
-                // Měřítko potřebné k pokrytí šířky nebo výšky
-                const scaleX = cw / w;
-                const scaleY = ch / h;
-                const coverScale = Math.max(scaleX, scaleY);
+                let targetScale;
+                
+                if (ch > cw) {
+                    // Mobil / displej na výšku: 
+                    // Přizpůsobíme výšce obrázku, aby nahoře a dole nebylo prázdno.
+                    targetScale = ch / h; 
+                } else {
+                    // Počítač / displej na šířku: 
+                    // Přizpůsobíme šířce obrázku, aby se vešla celá na displej.
+                    targetScale = cw / w; 
+                }
                 
                 // Přepočet scale na Leaflet zoom (crs: Simple => zoom 0 = scale 1)
-                const coverZoom = Math.log(coverScale) / Math.LN2;
+                let targetZoom = Math.log(targetScale) / Math.LN2;
                 
-                // Přidáme trochu extra zoomu podle orientace
-                // Pokud je na výšku (mobil), přiblížíme trochu více než na šířku (PC)
-                let extraZoom = (cw < ch) ? 1.5 : 0.8;
-                let targetZoom = coverZoom + extraZoom;
-                
-                // Kontrola limitů zoomu
+                // Kontrola limitů zoomu (aby to uživatel mohl případně sám oddálit)
                 if (targetZoom > leafletMap.getMaxZoom()) targetZoom = leafletMap.getMaxZoom();
                 if (targetZoom < leafletMap.getMinZoom()) targetZoom = leafletMap.getMinZoom();
 
