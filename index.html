@@ -252,7 +252,21 @@
 
     <div class="auth-form">
       <input type="email" id="email-input" class="auth-input" placeholder="Tvůj e-mail">
-      <input type="password" id="password-input" class="auth-input" placeholder="Heslo (min. 6 znaků)">
+      
+      <div style="position: relative; margin-bottom: 12px;">
+        <input type="password" id="password-input" class="auth-input" placeholder="Heslo (min. 6 znaků)" style="margin-bottom:0; padding-right:45px;">
+        <div onclick="togglePassword('password-input')" style="position: absolute; right: 15px; top: 15px; cursor: pointer; color: var(--text-gray);">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        </div>
+      </div>
+      
+      <div style="position: relative; margin-bottom: 12px;">
+        <input type="password" id="password-confirm-input" class="auth-input" placeholder="Heslo znovu (pro registraci)" style="margin-bottom:0; padding-right:45px;">
+        <div onclick="togglePassword('password-confirm-input')" style="position: absolute; right: 15px; top: 15px; cursor: pointer; color: var(--text-gray);">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        </div>
+      </div>
+
       <a href="#" style="display:block; text-align:right; font-size:0.85em; font-weight:600; color:var(--primary-dark); margin-bottom:15px; text-decoration:none;" onclick="resetPassword(event)">Zapomněl(a) jsi heslo?</a>
 
       <button onclick="loginUser()" class="btn-login">Přihlásit se</button>
@@ -412,6 +426,15 @@
             <div id="profile-my-challenges"></div>
           </div>
       </div>
+
+      <!-- NOVÝ BLOK: AKCE MÝCH SLEDUJÍCÍCH -->
+      <div id="profile-followers-challenges-wrapper" style="display:none;">
+          <div class="section-title" style="margin: 20px 20px 10px 20px;">Akce mých sledujících</div>
+          <div style="padding: 0 20px;">
+            <div id="profile-followers-challenges"></div>
+          </div>
+      </div>
+
     </div> 
 
     <!-- SPODNÍ NAVIGAČNÍ LIŠTA -->
@@ -479,9 +502,6 @@
                   </div>
               </div>
 
-              <!-- VYSVĚTLENÍ VÝZVY/ZÁVODU -->
-              <div id="chal-detail-explanation" style="background: var(--gray-light); padding: 15px; border-radius: 16px; margin-bottom: 20px; font-size: 0.9em; color: var(--text-dark); line-height: 1.5;"></div>
-
               <div id="chal-desc-wrapper" style="margin-top: 30px; display:none;">
                   <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 10px;">Přehled a popis</h4>
                   <div id="chal-detail-desc" style="font-size: 0.95em; color: var(--text-dark); line-height: 1.6; white-space: pre-wrap;"></div>
@@ -491,6 +511,10 @@
                   <h4 style="font-size: 1.05em; font-weight: 700; margin-bottom: 10px;">Pravidla</h4>
                   <div id="chal-detail-rules" style="font-size: 0.95em; color: var(--text-dark); line-height: 1.6; white-space: pre-wrap;"></div>
               </div>
+
+              <!-- VYSVĚTLENÍ VÝZVY/ZÁVODU PŘESUNUTO DOLŮ -->
+              <div id="chal-detail-explanation" style="background: var(--gray-light); padding: 15px; border-radius: 16px; margin-top: 30px; margin-bottom: 20px; font-size: 0.9em; color: var(--text-dark); line-height: 1.5;"></div>
+
           </div>
       </div>
 
@@ -642,7 +666,6 @@
       <h3>Nová výzva / závod</h3>
       <div class="date-input-wrapper"><label>Název akce:</label><input type="text" id="new-chal-name" class="date-input" placeholder="Např. Křížem krážem"></div>
 
-      <!-- ZDE JE NOVÉ NASTAVENÍ VIDITELNOSTI A MOTIVAČNÍHO TEXTU -->
       <div class="date-input-wrapper">
           <label>Motivační podtitul (volitelné):</label>
           <input type="text" id="new-chal-subtitle" class="date-input" placeholder="Např.: Absolvujte cíl a posuňte své hranice.">
@@ -1014,6 +1037,12 @@
     let currentChallengeIdForShare = null;
     let currentChallengeNameForShare = "";
     let hasCheckedSharedLink = false;
+
+    window.togglePassword = (id) => {
+        const input = document.getElementById(id);
+        if (input.type === "password") { input.type = "text"; } 
+        else { input.type = "password"; }
+    };
 
     window.handleVirtualImgUrlInput = (url) => {
         if (!url) return;
@@ -1474,10 +1503,13 @@
         const statsContainer = document.getElementById('stats-challenges-container'); statsContainer.innerHTML = '';
         const statsOtherList = document.getElementById('stats-other-challenges'); statsOtherList.innerHTML = '';
         const profileMyChal = document.getElementById('profile-my-challenges'); profileMyChal.innerHTML = '';
+        const profileFollowersChal = document.getElementById('profile-followers-challenges');
+        if(profileFollowersChal) profileFollowersChal.innerHTML = '';
+        
         const profileActiveChal = document.getElementById('profile-active-challenges'); profileActiveChal.innerHTML = '';
         const mapListModal = document.getElementById('map-challenge-list'); mapListModal.innerHTML = '';
 
-        let joinedCollabCount = 0; let joinedRaceCount = 0; let myAuthoredCount = 0;
+        let joinedCollabCount = 0; let joinedRaceCount = 0; let myAuthoredCount = 0; let followerChalCount = 0;
         let sortedChallenges = [...globalChallenges].sort((a, b) => a.name.localeCompare(b.name, 'cs'));
         window.challengeStatsMap = {}; let firstMapChallengeId = null;
 
@@ -1528,7 +1560,7 @@
             
             let badgeImgHtml = c.badgeUrl 
                 ? `<img src="${c.badgeUrl}" style="width: 100%; height: 100%; object-fit: cover;">` 
-                : `<img src="icon.png" style="width: 100%; height: 100%; object-fit: contain; background: var(--white); padding: 4px;">`;
+                : `<img src="icon.png" style="width: 100%; height: 100%; object-fit: cover; background: var(--white);">`;
 
             if (isMember) {
                 if (isRace) joinedRaceCount++; else joinedCollabCount++;
@@ -1641,6 +1673,23 @@
                 <button style="background:transparent; border:1px solid var(--text-dark); padding:6px 14px; border-radius:50px; display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.85em; font-weight:600; color:var(--text-dark);" onclick="event.stopPropagation(); openEditChallengeModal('${c.id}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>Upravit</button>`;
                 profileMyChal.appendChild(profCard);
             }
+
+            // NOVÉ PRO AKCE SLEDUJÍCÍCH
+            if (isFollowingCreator && !isCreator) {
+                followerChalCount++;
+                const fCard = document.createElement('div');
+                fCard.style.cssText = "background-color: var(--white); border: 1px solid var(--gray-border); border-radius: 16px; padding: 15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; cursor: pointer;";
+                fCard.onclick = () => openChallengeDetail(c.id);
+                fCard.innerHTML = `
+                <div style="display:flex; gap:12px; align-items:center;">
+                    <div style="width: 48px; height: 48px; border-radius: 12px; overflow: hidden; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 1px solid var(--gray-border); background: var(--white);">${badgeImgHtml}</div>
+                    <div>
+                        <div style="font-weight:700; color:var(--text-dark); margin-bottom:2px; font-size:1.05em;">${c.name}</div>
+                        <div style="font-size: 0.8em; color: var(--text-gray); font-weight:500;">Cíl: ${c.targetKm} km</div>
+                    </div>
+                </div>`;
+                if(profileFollowersChal) profileFollowersChal.appendChild(fCard);
+            }
         });
 
         if (joinedCollabCount > 0) {
@@ -1675,6 +1724,12 @@
         document.getElementById('profile-active-challenges-wrapper').style.display = (joinedCollabCount + joinedRaceCount) > 0 ? 'block' : 'none';
         if(statsOtherList.innerHTML === '') statsOtherList.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:0.9em; padding:10px;">Žádné další komunitní akce zatím nejsou.</div>';
         document.getElementById('profile-my-challenges-wrapper').style.display = myAuthoredCount > 0 ? 'block' : 'none';
+        
+        const followerChalWrapper = document.getElementById('profile-followers-challenges-wrapper');
+        if (followerChalWrapper) {
+            followerChalWrapper.style.display = followerChalCount > 0 ? 'block' : 'none';
+        }
+
         if(mapListModal.innerHTML === '') { mapListModal.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:0.9em; padding:10px;">Žádná akce zatím neobsahuje mapu.</div>'; }
         if(!currentSelectedChallengeIdForMap && firstMapChallengeId) { currentSelectedChallengeIdForMap = firstMapChallengeId; }
         if(!document.getElementById('tab-map').classList.contains('hidden') && currentSelectedChallengeIdForMap){ window.handleMapSelect(currentSelectedChallengeIdForMap); }
@@ -1714,7 +1769,7 @@
             badgeContainer.style.border = 'none';
             badgeContainer.style.display = 'block';
         } else {
-            badgeContainer.innerHTML = `<img src="icon.png" style="width: 100%; height: 100%; object-fit: contain; padding: 5px; background: var(--white);">`;
+            badgeContainer.innerHTML = `<img src="icon.png" style="width: 100%; height: 100%; object-fit: cover; background: var(--white);">`;
             badgeContainer.style.border = '1px solid var(--gray-border)';
             badgeContainer.style.display = 'block';
         }
@@ -1758,7 +1813,6 @@
         }).join('');
         document.getElementById('chal-detail-activities').innerHTML = actsHtml;
 
-        // SESTAVENÍ VYSVĚTLUJÍCÍHO TEXTU
         let explanationHtml = "";
         if (c.challengeType === 'race') {
             explanationHtml += "Tato akce je <b>Závod</b>. Každý účastník plní cíl sám za sebe, nesčítáte se dohromady a soutěžíte s ostatními.";
@@ -2461,8 +2515,38 @@
     window.closePublicProfile = () => window.handleUIClose('public-profile-modal');
 
     window.resetPassword = (event) => { event.preventDefault(); const email = document.getElementById('email-input').value.trim(); if(!email) return; sendPasswordResetEmail(auth, email); };
-    window.registerUser = () => { const email = document.getElementById('email-input').value.trim(); const password = document.getElementById('password-input').value.trim(); createUserWithEmailAndPassword(auth, email, password); };
-    window.loginUser = () => { const email = document.getElementById('email-input').value.trim(); const password = document.getElementById('password-input').value.trim(); signInWithEmailAndPassword(auth, email, password); };
+    
+    // REGISTRACE VČETNĚ KONTROLY DRUHÉHO HESLA
+    window.registerUser = () => { 
+        const email = document.getElementById('email-input').value.trim(); 
+        const password = document.getElementById('password-input').value.trim();
+        const passwordConfirm = document.getElementById('password-confirm-input').value.trim();
+        const errorEl = document.getElementById('auth-error');
+        errorEl.style.display = 'none';
+
+        if (password !== passwordConfirm) {
+            errorEl.innerText = "Hesla se neshodují. Zkuste to znova.";
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        createUserWithEmailAndPassword(auth, email, password).catch(error => {
+            errorEl.innerText = "Chyba registrace: " + error.message;
+            errorEl.style.display = 'block';
+        });
+    };
+
+    window.loginUser = () => { 
+        const email = document.getElementById('email-input').value.trim(); 
+        const password = document.getElementById('password-input').value.trim(); 
+        const errorEl = document.getElementById('auth-error');
+        errorEl.style.display = 'none';
+
+        signInWithEmailAndPassword(auth, email, password).catch(error => {
+            errorEl.innerText = "Chyba přihlášení: " + error.message;
+            errorEl.style.display = 'block';
+        });
+    };
     window.loginWithGoogle = () => { signInWithPopup(auth, googleProvider); };
 
     window.logoutUser = () => { 
