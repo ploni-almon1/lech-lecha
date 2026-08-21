@@ -103,7 +103,8 @@
     .btn-edit-prof:active { background: var(--gray-light); }
     .btn-edit-prof svg { fill: var(--text-dark); width: 14px; height: 14px; }
 
-    .btn-requests { width: 100%; background: #FEF3C7; color: #D97706; border: none; padding: 12px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 700; cursor: pointer; margin: -10px auto 25px auto; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.15); display: none; text-align: center; }
+    /* UPRAVENO: Modrý styl oznámení pro žádosti místo žlutého */
+    .btn-requests { width: 100%; background: #4F46E5; color: var(--white); border: none; padding: 12px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 700; cursor: pointer; margin: -10px auto 25px auto; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2); display: none; text-align: center; }
 
     .activity-list-icon { width: 24px; height: 24px; margin-right: 15px; flex-shrink: 0; object-fit: contain; }
     .btn-inline-edit { display: none; background: transparent; border: none; padding: 5px; width: 28px; height: 28px; cursor: pointer; align-items: center; justify-content: center; margin-left: 10px; flex-shrink: 0; }
@@ -359,6 +360,14 @@
 
       <div class="section-title" style="margin: 30px 20px 10px 20px;">Další komunitní akce</div>
       <div id="stats-other-challenges" style="display:flex; flex-direction:column;"></div>
+      
+      <!-- PŘESUNUTO SEM ZE ZÁLOŽKY PROFIL: AKCE MÝCH SLEDUJÍCÍCH -->
+      <div id="profile-followers-challenges-wrapper" style="display:none;">
+          <div class="section-title" style="margin: 20px 20px 10px 20px;">Akce mých sledujících</div>
+          <div style="padding: 0 20px;">
+            <div id="profile-followers-challenges"></div>
+          </div>
+      </div>
 
       <div style="padding: 0 20px 20px 20px;">
         <button id="btn-create-challenge-admin" style="display:none; width: 100%; background: var(--white); box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: none; padding: 16px; border-radius: 50px; font-weight: 700; font-size: 1.05em; color: var(--text-dark); cursor:pointer;" onclick="openCreateChallengeModal()">+ Vytvořit novou akci</button>
@@ -424,14 +433,6 @@
           <div class="section-title" style="margin: 20px 20px 10px 20px;">Akce, které jsem vytvořil</div>
           <div style="padding: 0 20px;">
             <div id="profile-my-challenges"></div>
-          </div>
-      </div>
-
-      <!-- NOVÝ BLOK: AKCE MÝCH SLEDUJÍCÍCH -->
-      <div id="profile-followers-challenges-wrapper" style="display:none;">
-          <div class="section-title" style="margin: 20px 20px 10px 20px;">Akce mých sledujících</div>
-          <div style="padding: 0 20px;">
-            <div id="profile-followers-challenges"></div>
           </div>
       </div>
 
@@ -1428,11 +1429,28 @@
             list.forEach(uid => {
                 let u = globalUsersMap[uid]; if(!u) return;
                 let avatar = u.avatarUrl ? `<img src="${u.avatarUrl}">` : u.name.charAt(0).toUpperCase();
-                let actions = '';
+                
                 if (type === 'requests') {
-                    actions = `<button class="btn-req-accept" onclick="acceptRequest('${uid}')">Přijmout</button><button class="btn-req-reject" onclick="rejectRequest('${uid}')">Odmítnout</button>`;
+                    container.innerHTML += `
+                    <div style="padding:12px 0; border-bottom:1px solid rgba(0,0,0,0.05);">
+                        <div style="display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="openPublicProfile('${uid}')">
+                            <div class="lb-avatar" style="width:36px;height:36px;margin:0;">${avatar}</div>
+                            <span style="font-weight:600; font-size:0.95em; color:var(--text-dark);">${u.name}</span>
+                        </div>
+                        <div style="display:flex; gap: 10px; margin-top: 10px; padding-left: 48px;">
+                            <button class="btn-req-accept" onclick="acceptRequest('${uid}')">Přijmout</button>
+                            <button class="btn-req-reject" onclick="rejectRequest('${uid}')">Odmítnout</button>
+                        </div>
+                    </div>`;
+                } else {
+                    container.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(0,0,0,0.05);">
+                        <div style="display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="openPublicProfile('${uid}')">
+                            <div class="lb-avatar" style="width:36px;height:36px;margin:0;">${avatar}</div>
+                            <span style="font-weight:600; font-size:0.95em; color:var(--text-dark);">${u.name}</span>
+                        </div>
+                    </div>`;
                 }
-                container.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(0,0,0,0.05);"><div style="display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="openPublicProfile('${uid}')"><div class="lb-avatar" style="width:36px;height:36px;margin:0;">${avatar}</div><span style="font-weight:600; font-size:0.95em; color:var(--text-dark);">${u.name}</span></div><div>${actions}</div></div>`;
             });
         }
         document.getElementById('connections-modal').classList.add('active');
@@ -1599,9 +1617,9 @@
                         <div style="width: 64px; height: 64px; border-radius: 16px; overflow: hidden; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid var(--gray-border); background: var(--white);">${badgeImgHtml}</div>
                         <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
                             <h3 style="color: var(--text-dark); font-size: 1.25em; font-weight: 800; margin:0 0 6px 0; cursor:pointer; line-height:1.2;" onclick="openChallengeDetail('${c.id}')">${c.name}</h3>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div style="color: var(--text-dark); font-size: 1.15em; font-weight: 800;">${displayKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} / ${c.targetKm} <span style="font-size:0.7em; font-weight:700; color:var(--text-gray);">km</span></div>
-                                <div style="color: var(--text-gray); font-size: 0.8em; font-weight: 500; background:var(--gray-light); padding:4px 10px; border-radius:12px;">${daysText}</div>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                                <div style="color: var(--text-dark); font-size: 1.15em; font-weight: 800; line-height: 1;">${displayKm.toLocaleString('cs-CZ', {maximumFractionDigits: 1})} / ${c.targetKm} <span style="font-size:0.7em; font-weight:700; color:var(--text-gray);">km</span></div>
+                                <div style="color: var(--text-gray); font-size: 0.75em; font-weight: 500; line-height: 1; padding-bottom: 2px;">${daysText}</div>
                             </div>
                         </div>
                     </div>
@@ -1674,7 +1692,7 @@
                 profileMyChal.appendChild(profCard);
             }
 
-            // NOVÉ PRO AKCE SLEDUJÍCÍCH
+            // PŘESUNUTO SEM ZE ZÁLOŽKY PROFIL: AKCE MÝCH SLEDUJÍCÍCH
             if (isFollowingCreator && !isCreator) {
                 followerChalCount++;
                 const fCard = document.createElement('div');
