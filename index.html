@@ -1834,12 +1834,12 @@
         const descWrapper = document.getElementById('chal-desc-wrapper');
         const rulesWrapper = document.getElementById('chal-rules-wrapper');
         if (c.description) {
-            document.getElementById('chal-detail-desc').innerText = c.description;
+            document.getElementById('chal-detail-desc').innerHTML = c.description;
             descWrapper.style.display = 'block';
         } else { descWrapper.style.display = 'none'; }
 
         if (c.rules) {
-            document.getElementById('chal-detail-rules').innerText = c.rules;
+            document.getElementById('chal-detail-rules').innerHTML = c.rules;
             rulesWrapper.style.display = 'block';
         } else { rulesWrapper.style.display = 'none'; }
 
